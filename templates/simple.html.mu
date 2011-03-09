@@ -21,7 +21,7 @@
         <script type="text/javascript">
             $(document).ready(
                 function(){
-                    setTimeout(fetchMessages, 1);
+                    setTimeout(fetchMessages, 10);
                     $('#send').click(sendMessage);
                     $('#newchat').keypress( function(e){
                         if(e.keyCode==13 && $(this).val().length > 0 ){
@@ -76,14 +76,18 @@
                         evt.preventDefault();
                     }
                     var dropbox = document.getElementById("uploadArea")
-                    console.debug(dropbox);
                     dropbox.addEventListener("dragenter", cancel, false);
                     dropbox.addEventListener("dragexit", cancel, false);
                     dropbox.addEventListener("dragover", cancel, false);
                     dropbox.addEventListener("drop", drophandler, false);
+                    window.addEventListener("dragenter", cancel, false);
+                    window.addEventListener("dragexit", cancel, false);
+                    window.addEventListener("dragover", cancel, false);
+                    window.addEventListener("drop", cancel, false);
                 }
             )
         </script>
+        <!--link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'/-->
     </head>
     <body>
 

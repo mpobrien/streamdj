@@ -1,6 +1,25 @@
+body{
+    font-family:Verdana, sans-serif;
+}
+
 .progressContainer{
   width:300px; height:10px;border:1px solid black;
 }
+
+.message{
+  padding-left:5px;
+  margin-top:4px;
+}
+
+.enqueued{
+  padding-left:5px;
+  margin-top:4px;
+  color:#666;
+}
+.filename{
+  font-style:italic;
+}
+
 .progressBar{
   width:0%;
  height:10px; background-color:black;

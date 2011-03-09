@@ -5,12 +5,15 @@ var fetchMessages = function(){
             for(msg in data.messages){
                 message = data.messages[msg]
                 console.debug(message);
+                var newmsghtml;
                 if( message.type=='chat'){
-                  var newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + message["from"] + ': </b>' +  message["body"] + '</div>')
-                  newmsghtml.appendTo('#chats')
-                  var objDiv = document.getElementById("chats");
-                  objDiv.scrollTop = objDiv.scrollHeight;
+                  newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + message["from"] + ': </b>' +  message["body"] + '</div>')
+                }else if(message.type=='enq'){
+                  newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["from"] + ' </b> added <span class="filename">' +  message["body"] + '</span> to the queue.</div>')
                 }
+                newmsghtml.appendTo('#chats')
+                var objDiv = document.getElementById("chats");
+                objDiv.scrollTop = objDiv.scrollHeight;
             }
             fetchMessages();
         },'json')

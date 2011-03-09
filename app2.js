@@ -17,6 +17,18 @@ Array.prototype.remove = function(e) {//{{{
     }
 };//}}}
 
+function randomString(bits){
+  var chars,rand,i,ret;
+  chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-'
+  ret=''
+  while(bits > 0){
+      rand=Math.floor(Math.random()*0x100000000) // 32-bit integer
+      // base 64 means 6 bits per character, so we use the top 30 bits from rand to give 30/6=5 characters.
+      for(i=26; i>0 && bits>0; i-=6, bits-=6) ret+=chars[0x3F & rand >>> i]
+  }
+  return ret
+}
+
 var streamlisteners = [];
 var stream = new mp3.Mp3Stream();
 var listeners = [];
@@ -26,14 +38,19 @@ var writeFrame = function(frameData){
   })
 }
 stream.onFrameReady = writeFrame;
-stream.onFileFinish = function(){ stream.loadNext( function(){ stream.startStream(writeFrame) } ); };
+stream.onFileFinish = function(){ 
+    sys.puts("End of file.");
+    stream.loadNext(
+      function(){ stream.startStream(writeFrame) }
+    ); 
+};
 //stream.queuePath('/home/mike/Music/shugo tokumaru - night piece - 2004/08 paparazzi.mp3');
 //stream.queuePath( '/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3');
 stream.loadNext( function(){ stream.startStream( writeFrame ); });
 
 var msgId = 0;
 var fileId = 0;
-var uploadDirectory = "/home/mike/uploaded/"
+var uploadDirectory = "/home/mpobrien/uploaded/"
 
 var sendTemplate = function(res, template, context){
   Mu.render(template, context, {}, function(err, output){
@@ -138,7 +155,9 @@ function getUpdates(req, res){//{{{
 function upload_file(req, res) {//{{{
   var buf = []; var bufLen = 0;
   fileId++;
-  var fname = req.headers['X-File-Name']
+  sys.puts(util.inspect(req.headers));
+  var fname = req.headers['x-file-name'] 
+  sys.puts(fname);
   req.addListener("data", function(data){
     buf.push(data)
     bufLen += data.length;
@@ -150,12 +169,14 @@ function upload_file(req, res) {//{{{
       buf[i].copy(finalbuf, pos);
       pos += buf[i].length;
     }  
-    fs.open(uploadDirectory + fileId + ".mp3", 'w', 
+    var filePath = randomString(64);
+    fs.open(uploadDirectory + filePath + ".mp3", 'w', 
       function(err, fd){
         fs.write(fd, finalbuf, 0, finalbuf.length, null, function(){
           fs.close(fd);
           res.end();
-          stream.queuePath(uploadDirectory + fileId + ".mp3");
+          sys.puts("queueing up!: " + filePath);
+          stream.queuePath(uploadDirectory + filePath + ".mp3");
           msgId++;
           broadcast({messages:[{"type":"enq","id":msgId,'from':'dude','body':fname}]})
         });

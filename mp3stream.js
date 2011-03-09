@@ -149,8 +149,8 @@ exports.Mp3Stream = function(){
   this.startStream = function startStreaming(){
     var d = readFrame(currentFile);
     if( d == null ){
+      currentFile = null;
       that.onFileFinish();
-      that.currentFile = null;
       return;
     }
     var delay = 0;
