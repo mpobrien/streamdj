@@ -1,5 +1,6 @@
 require.paths.unshift('/usr/local/lib/node')
 var mp3 = require('./mp3stream');
+var io = require('socket.io')
 var fs = require('fs')
 var http = require('http');
 var path = require('path');
@@ -117,19 +118,41 @@ var server = http.createServer(function(req, res) {
 });
 server.listen(3000);
 
+var socket = io.listen(server);
+socket.on('connection', function(client){
+    msgId++;
+    var message = JSON.stringify({messages:[{"type":"join","id":msgId,'from':'dude','body':''}]})
+    client.broadcast(message);
+    sys.puts("connection!");
+    client.on('message',
+        function(m){
+            msgId++;
+            var chat = JSON.stringify({messages:[{"type":"chat","id":msgId,'from':'dude','body':m}]})
+            sys.puts("message!", m);
+            client.broadcast(chat); 
+        } 
+    )
+    client.on('disconnect', function(){
+        msgId++;
+        var disconnectmsg = JSON.stringify({messages:[{"type":"left","id":msgId,'from':'dude','body':''}]})
+        client.broadcast(disconnectmsg); 
+        sys.puts("disconnect!"); 
+    } )
+})
+
 function display_form(req, res) {//{{{
   res.statusCode=200
   //res.setHeader('Content-Type', 'text/html');
   sendTemplate(res, "simple.html", {name: "Chris",value: 10000,taxed_value: function() { return 10; }, in_ca: true })
 }//}}}
 
-function sendMessage(req, res){//{{{
-  var qs = require('url').parse(req.url, true)
-  sys.puts(require('util').inspect(qs.query))
-  msgId++;
-  broadcast({messages:[{"type":"chat","id":msgId,'from':'dude','body':qs.query['chat']}]});
-  res.end()
-}//}}}
+/*function sendMessage(req, res){//{{{*/
+/*var qs = require('url').parse(req.url, true)*/
+/*//sys.puts(require('util').inspect(qs.query))*/
+/*msgId++;*/
+/*broadcast({messages:[{"type":"chat","id":msgId,'from':'dude','body':qs.query['chat']}]});*/
+/*res.end()*/
+/*}//}}}*/
 
 function broadcast(jsonobj){
   var message = JSON.stringify(jsonobj)

@@ -2,8 +2,48 @@
     <head>
       <link href="/static/style.css" rel="stylesheet" />
         <script type="text/javascript" src="/static/jquery.js"></script>
+        <script type="text/javascript" src="/static/socket.io.min.js"></script>
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
         <script type="text/javascript" src="/static/chat.js"></script>
+        <script type="text/javascript">
+            var socket = new io.Socket();
+            socket.on("connect", function(){console.debug("connected.")});
+            socket.on("message", 
+                function(data){
+                    var msgs = $.parseJSON(data);
+                    for( var i in msgs.messages){
+                        var message = msgs.messages[i]
+                        console.debug(message);
+                        var newmsghtml;
+                        if( message.type=='chat'){
+                          newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + message["from"] + ': </b>' +  message["body"] + '</div>')
+                        }else if(message.type=='enq'){
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["from"] + ' </b> added <span class="filename">' +  message["body"] + '</span> to the queue.</div>')
+                        }else if(message.type=='join'){
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["from"] + ' </b> joined the room.</div>')
+                        }else if(message.type=='left'){
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["from"] + ' </b> left the room.</div>')
+                        }
+                        newmsghtml.appendTo('#chats')
+                        var objDiv = document.getElementById("chats");
+                        objDiv.scrollTop = objDiv.scrollHeight;
+                        console.debug("got some data:  ", data)
+                    }
+                } );
+            socket.on('disconnect', function(m){ console.debug("disconnect!")});
+            socket.connect();
+
+            var mymsgs =1;
+            var sendMessage = function(){
+                var msgtext = $('#newchat').val()
+                var mynewmsghtml = $('<div class="message" id="mymsgs' + ( mymsgs++ ) + '"><b>' + "dude" + ': </b>' +msgtext + '</div>')
+                socket.send(msgtext);
+                mynewmsghtml.appendTo('#chats')
+                var objDiv = document.getElementById("chats");
+                objDiv.scrollTop = objDiv.scrollHeight;
+                $('#newchat').val('');
+            }
+        </script>
         <script type="text/javascript">
           soundManager.url = '/static/swf/';
           soundManager.debugMode = false;
@@ -19,16 +59,23 @@
           });
         </script>
         <script type="text/javascript">
+            var muted = false;
             $(document).ready(
                 function(){
-                    setTimeout(fetchMessages, 10);
+                    //setTimeout(fetchMessages, 10);
                     $('#send').click(sendMessage);
                     $('#newchat').keypress( function(e){
                         if(e.keyCode==13 && $(this).val().length > 0 ){
                           sendMessage();
-                        }                  1
+                        } 
                       }
                     )
+                    $('#mute').click(
+                      function(){
+                        muted = !muted;
+                        soundManager.setVolume('mySound', muted ? 0 : 100);
+                        $(this).text(muted ? "Unmute" : "Mute");
+                      })
 
                     var handleFiles =function(files){
                         for( var fn in files ){
@@ -100,6 +147,9 @@
         </div>
 
         <div id="rightPanel">
+          <div id="audio">
+            <button id="mute">Mute</button>
+          </div>
           <div id="whosInRoom">
             <h3>Listeners</h3>
             <ul>
