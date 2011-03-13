@@ -28,8 +28,7 @@ body{
 #chatpanel{
   border:1px solid black;
   height:400px;
-  width:700px;
-  float:left;
+  width:500px;
 }
 
 #chats{
@@ -44,7 +43,10 @@ body{
 }
 
 #rightPanel{
-  float:left;
+  position:absolute;
+  left:500px;
+  margin-left:10px;
+  top:0px;
   width:200px;
 }
 
