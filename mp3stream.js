@@ -61,7 +61,7 @@ var readFrame = function(buf){
   var chunk = buf.getChunk(4)
   if( chunk == null ) return null;
   var s = chunk.toString("ascii").slice(0,3)
-  if(s[0] == 'T'){
+  if(s.length == 3 && s[0] == 'T'){
     sys.puts("got tag")
     return -1;
   }else if(s[0] =='I'){
@@ -109,6 +109,8 @@ var readFrame = function(buf){
     buf.rewind(4)
     var data = buf.getChunk(parseInt(framesize))
     if( data == null ) return null;
+    if( data.length == 0 ) return null;
+    if( isNaN(framesize) ) return null;
     return [data, bitrate, framesize];
   }
 }
