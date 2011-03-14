@@ -1,7 +1,7 @@
 <html>
     <head>
       <link href="/static/style.css" rel="stylesheet" />
-        <script type="text/javascript" src="/static/jquery.js"></script>
+        <script type="text/javascript" src="/static/jquery.min.js"></script>
         <script type="text/javascript" src="/static/socket.io.min.js"></script>
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
         <script type="text/javascript" src="/static/chat.js"></script>
@@ -23,6 +23,10 @@
                           newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["from"] + ' </b> joined the room.</div>')
                         }else if(message.type=='left'){
                           newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["from"] + ' </b> left the room.</div>')
+                        }else if(message.type=='stopped'){
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["body"] + ' </b> finished playing.</div>')
+                        }else if(message.type=='started'){
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["body"] + ' </b> started playing.</div>')
                         }
                         newmsghtml.appendTo('#chats')
                         var objDiv = document.getElementById("chats");
@@ -131,6 +135,23 @@
                     window.addEventListener("dragexit", cancel, false);
                     window.addEventListener("dragover", cancel, false);
                     window.addEventListener("drop", cancel, false);
+
+                    var currentVolume = 90;
+                    $('#volcontrol').click(
+                        function(e){
+                            var x = e.pageX - $(this).offset().left;
+                            var pct = parseInt((x * 100) / 140)
+                            currentVolume = pct;
+                            soundManager.setVolume('mySound', pct);
+                            $('#volinside').css('width', pct + '%')
+                        }
+                    );
+                    $('#volicon').click(function(){
+                            muted = !muted;
+                            soundManager.setVolume('mySound', muted ? 0 : currentVolume);
+                            $('#volinside').css('width', muted ? '0%' : currentVolume + '%')
+                        }
+                    );
                 }
             )
         </script>
@@ -151,9 +172,13 @@
         </div>
 
         <div id="rightPanel">
-          <div id="audio">
-            <button id="mute">Mute</button>
-          </div>
+            <div id="volwrapper">
+                <div id="volicon">
+                </div>
+                <div id="volcontrol">
+                    <div id="volinside">&nbsp;</div>
+                </div>
+            </div>
           <div id="whosInRoom">
             <h3>Listeners</h3>
             <ul>

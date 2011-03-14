@@ -57,8 +57,12 @@ body{
 
 #rightPanel > div{
   border:1px solid black;
-  margin:10px;
 }
 #whosInRoom{ }
 #uploadArea{ }
 #queue{ }
+
+#volwrapper{ height:40px; }
+#volcontrol{ width:140px; border:1px solid black; height:14px; float:left; margin-top:13px; margin-bottom:13px; }
+#volinside{ width:90%; background-color: black; height:100%; padding:0px; margin:0px; }
+#volicon{ background:url('volume.png'); height:40px; width:40px; float:left; }
