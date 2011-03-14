@@ -8,6 +8,13 @@ var multipart = require('multipart');
 var sys = require('sys');
 var util = require('util')
 var Mu = require('Mu')
+var redis = require('redis'),
+    redisClient = redis.createClient();
+
+redisClient.on("error", function(err){
+    console.log("Error: " + err); 
+});
+
 
 Mu.templateRoot = './templates'
 var jquery = fs.readFileSync("./static/jquery.js")
@@ -39,12 +46,22 @@ var writeFrame = function(frameData){
   })
 }
 stream.onFrameReady = writeFrame;
-stream.onFileFinish = function(){ 
+stream.onFileFinish = function(filename, whouploaded){ 
+    msgId++;
+    broadcast({messages:[{"type":"stopped","id":msgId,'from':whouploaded,'body':filename}]})
     sys.puts("End of file.");
     stream.loadNext(
-      function(){ stream.startStream(writeFrame) }
+      function(newfilename, newwhouploaded){ 
+        stream.startStream(writeFrame)
+      }
     ); 
 };
+
+stream.onFileStart = function(filename, whouploaded){ 
+    msgId++;
+    broadcast({messages:[{"type":"started","id":msgId,'from':whouploaded,'body':filename}]})
+};
+
 //stream.queuePath('/home/mike/Music/shugo tokumaru - night piece - 2004/08 paparazzi.mp3');
 //stream.queuePath( '/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3');
 stream.loadNext( function(){ stream.startStream( writeFrame ); });
@@ -109,16 +126,14 @@ var server = http.createServer(function(req, res) {
       getUpdates(req, res);
       break;
     case '/getfile':
-    upload_file(req, res)
-      break
-    default:
-      show_404(req, res);
+      upload_file(req, res)
       break;
   }
 });
 server.listen(3000);
 
-var socket = io.listen(server);
+//var socket = io.listen(server, {transports:  ['websocket', 'xhr-polling','flashsocket', 'jsonp-polling', 'htmlfile']});
+var socket = io.listen(server, {transports:  ['websocket', 'flashsocket']});
 socket.on('connection', function(client){
     msgId++;
     var message = JSON.stringify({messages:[{"type":"join","id":msgId,'from':'dude','body':''}]})
@@ -130,6 +145,8 @@ socket.on('connection', function(client){
             var chat = JSON.stringify({messages:[{"type":"chat","id":msgId,'from':'dude','body':m}]})
             sys.puts("message!", m);
             client.broadcast(chat); 
+            redisClient.lpush("chatlog", chat,
+                function(){ redisClient.ltrim("chatlog", 100, function(){}) });
         } 
     )
     client.on('disconnect', function(){
@@ -156,11 +173,7 @@ function display_form(req, res) {//{{{
 
 function broadcast(jsonobj){
   var message = JSON.stringify(jsonobj)
-  listeners.forEach(function(listener){
-      listener.write(message)
-      listener.end()
-      listeners.remove(listener)
-  })
+  socket.broadcast(message);
 }
 
 function getUpdates(req, res){//{{{
@@ -199,7 +212,7 @@ function upload_file(req, res) {//{{{
           fs.close(fd);
           res.end();
           sys.puts("queueing up!: " + filePath);
-          stream.queuePath(uploadDirectory + filePath + ".mp3");
+          stream.queuePath(uploadDirectory + filePath + ".mp3", fname, "dude");
           msgId++;
           broadcast({messages:[{"type":"enq","id":msgId,'from':'dude','body':fname}]})
         });

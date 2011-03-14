@@ -122,10 +122,13 @@ exports.Mp3Stream = function(){
   var frames = 0;
   var syncTime = 0;
   var currentFile = null;
+  var currentFileUploader  = null;
+  var currentFileName  = null;
   var currentId3 = null;
   var that = this;
 
-  this.onFileFinish = function(){sys.puts("file done")};
+  this.onFileFinish = function(currentFileName, currentFileUploader){sys.puts("file done")};
+  this.onFileStart = function(currentFileName, currentFileUploader){sys.puts("file started")};
   this.onFrameReady = function(){};
 
   this.loadNext = function(callback){
@@ -134,15 +137,21 @@ exports.Mp3Stream = function(){
     syncTime = (new Date()).getTime();
     var that = this;
     if( filePaths.length > 0 ){
-      var filePath = filePaths.shift();
+      var fileInfo = filePaths.shift();
+      var filePath = fileInfo[0]
+      var fileName = fileInfo[1]
+      var fileUploader = fileInfo[2]
       sys.puts(filePath);
       var setupFile = function(err, fd){ // TODO - check for an error and handle it
         currentFile = fd;
+        currentFileUploader = fileUploader;
+        currentFileName = fileName;
         fd.pointer = 0;
         var tag = getId3Tag(fd);
         sys.puts(util.inspect(tag));
         fd.reset(0);
-        callback();
+        callback(fileName, fileUploader);
+        that.onFileStart(fileName, fileUploader);
       }
       fs.readFile(filePath, setupFile);
     }
@@ -152,7 +161,9 @@ exports.Mp3Stream = function(){
     var d = readFrame(currentFile);
     if( d == null ){
       currentFile = null;
-      that.onFileFinish();
+      that.onFileFinish(currentFileName, currentFileUploader);
+      currentFileName = null;
+      currentFileUploader = null;
       return;
     }
     var delay = 0;
@@ -170,8 +181,8 @@ exports.Mp3Stream = function(){
     setTimeout(startStreaming, parseInt(delay)) 
   }
 
-  this.queuePath = function(path){
-    filePaths.push(path);
+  this.queuePath = function(path, name, who){
+    filePaths.push([path, name, who]);
     if( filePaths.length == 1 && currentFile == null){
       var callback = that.startStream;
       this.loadNext(callback);
