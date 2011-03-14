@@ -2,6 +2,10 @@ body{
     font-family:Verdana, sans-serif;
 }
 
+#header{
+    height:80px;
+}
+
 .progressContainer{
   width:300px; height:10px;border:1px solid black;
 }
@@ -27,6 +31,7 @@ body{
 
 #chatpanel{
   border:1px solid black;
+  top:80px;
   height:400px;
   width:500px;
 }
@@ -38,7 +43,7 @@ body{
 
 #messagesender{
   position:absolute;
-  top:420px;
+  top:500px;
   width:700px;
 }
 

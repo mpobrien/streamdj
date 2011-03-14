@@ -137,7 +137,11 @@
         <!--link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'/-->
     </head>
     <body>
-
+        <div id="header" >
+            <h1>
+                d[-_-]b
+            </h1>
+        </div>
         <div id="chatpanel">
           <div id="chats">
           </div>
