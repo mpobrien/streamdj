@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+        <style type="text/css">
+            #volwrapper{
+                height:40px;
+            }
+            #volcontrol{
+                width:140px;
+                border:1px solid black;
+                height:14px;
+                float:left;
+                margin-top:13px;
+                margin-bottom:13px;
+            }
+
+            #volinside{
+                width:90%;
+                background-color: black;
+                height:100%;
+                padding:0px;
+                margin:0px;
+            }
+            #volicon{
+                background:url('volume.png');
+                height:40px;
+                width:40px;
+                float:left;
+            }
+        
+        </style>
+        <script type="text/javascript">
+            $(document).ready(
+                function(){
+                    $('#volcontrol').click(
+                        function(e){
+                            var x = e.pageX - this.offsetLeft;
+                            var pct = parseInt((x * 100) / 140)
+                            $('#volinside').css('width', pct + '%')
+                        }
+                    );
+                    $('#volicon').click(function(){
+                            $('#volinside').css('width', '0%')
+                        }
+                    );
+                    //$('#volinside').css('width', '100%')
+                }
+            )
+        </script>
+    </head>
+    <body>
+        <div id="volwrapper">
+            <div id="volicon">
+            </div>
+            <div id="volcontrol">
+                <div id="volinside">&nbsp;</div>
+            </div>
+        </div>
+    </body>
+</html>
