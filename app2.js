@@ -126,6 +126,9 @@ var server = http.createServer(function(req, res) {
     case '/':
       display_form(req, res);
       break;
+    case '/changename/':
+      changename(req, res, qs)
+      break;
     case '/upload':
       upload_file(req, res);
       break;
@@ -240,6 +243,15 @@ function upload_file(req, res) {//{{{
   });
   return;
 }//}}}
+
+function changename(req, res, qs){
+  var newname = qs.query['name']
+  var oldname = req.session.name
+  sys.puts("old name: " + oldname);
+  req.session.name = newname;
+  res.end(JSON.stringify({ok:'ok'}));
+  broadcast({messages:[{"type":"namechange","id":msgId,'from':oldname,'body':newname}]})
+}
 
 function show_404(req, res) {//{{{
   res.end('You r doing it rong!');

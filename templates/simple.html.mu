@@ -30,6 +30,8 @@
                           newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> finished playing.</div>')
                         }else if(message.type=='started'){
                           newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> started playing.</div>')
+                        }else if(message.type=='namechange'){
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"> changed their username to <b>' + safebody + '</b></div>')
                         }
                         newmsghtml.appendTo('#chats')
                         var objDiv = document.getElementById("chats");
@@ -70,6 +72,21 @@
             $(document).ready(
                 function(){
                     //setTimeout(fetchMessages, 10);
+                    $('#changename').click(
+                      function(){
+                      newname = prompt("Change your username to:")
+                      if(newname != null){
+                        $.getJSON('/changename/', {name:newname},
+                          function(data){
+                            if(data.ok == 'ok'){
+                              $('#myname').text(newname);
+                              username = newname
+                            }
+                          });
+                          
+                        }
+                      }
+                    );
                     $('#send').click(sendMessage);
                     $('#newchat').keypress( function(e){
                         if(e.keyCode==13 && $(this).val().length > 0 ){
@@ -185,6 +202,7 @@
           <div id="whosInRoom">
             <h3>Listeners</h3>
             <ul>
+              <li><span id="myname">{{username}}</span><a id="changename" href="javascript:void(0)">change</a></li>
               <li>mike</li>
               <li>steven</li>
               <li>person</li>
