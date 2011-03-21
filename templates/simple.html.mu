@@ -15,18 +15,20 @@
                         var message = msgs.messages[i]
                         console.debug(message);
                         var newmsghtml;
+                        var safefrom = $('<div/>').text(message["from"]).html(); 
+                        var safebody = $('<div/>').text(message["body"]).html();
                         if( message.type=='chat'){
-                          newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + message["from"] + ': </b>' +  message["body"] + '</div>')
+                          newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + safefrom + ': </b>' +  safebody + '</div>')
                         }else if(message.type=='enq'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["from"] + ' </b> added <span class="filename">' +  message["body"] + '</span> to the queue.</div>')
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
                         }else if(message.type=='join'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["from"] + ' </b> joined the room.</div>')
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> joined the room.</div>')
                         }else if(message.type=='left'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["from"] + ' </b> left the room.</div>')
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> left the room.</div>')
                         }else if(message.type=='stopped'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["body"] + ' </b> finished playing.</div>')
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> finished playing.</div>')
                         }else if(message.type=='started'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + message["body"] + ' </b> started playing.</div>')
+                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> started playing.</div>')
                         }
                         newmsghtml.appendTo('#chats')
                         var objDiv = document.getElementById("chats");
