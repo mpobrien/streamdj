@@ -6,6 +6,7 @@
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
         <script type="text/javascript" src="/static/chat.js"></script>
         <script type="text/javascript">
+            var username = '{{username}}'
             var socket = new io.Socket();
             socket.on("connect", function(){console.debug("connected.")});
             socket.on("message", 
@@ -42,7 +43,7 @@
             var mymsgs =1;
             var sendMessage = function(){
                 var msgtext = $('#newchat').val()
-                var mynewmsghtml = $('<div class="message" id="mymsgs' + ( mymsgs++ ) + '"><b>' + "dude" + ': </b>' +msgtext + '</div>')
+                var mynewmsghtml = $('<div class="message" id="mymsgs' + ( mymsgs++ ) + '"><b>' + username + ': </b>' +msgtext + '</div>')
                 socket.send(msgtext);
                 mynewmsghtml.appendTo('#chats')
                 var objDiv = document.getElementById("chats");

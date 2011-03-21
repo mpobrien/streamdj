@@ -8,6 +8,7 @@ var multipart = require('multipart');
 var sys = require('sys');
 var util = require('util')
 var Mu = require('Mu')
+var sessions = require('./session');
 var redis = require('redis'),
     redisClient = redis.createClient();
 
@@ -68,7 +69,7 @@ stream.loadNext( function(){ stream.startStream( writeFrame ); });
 
 var msgId = 0;
 var fileId = 0;
-var uploadDirectory = "/home/mpobrien/uploaded/"
+var uploadDirectory = "/home/mike/uploaded/"
 
 var sendTemplate = function(res, template, context){
   Mu.render(template, context, {}, function(err, output){
@@ -81,9 +82,18 @@ var sendTemplate = function(res, template, context){
 }
 
 
+var numusers = 1;
 
 
 var server = http.createServer(function(req, res) {
+  var session = sessions.lookupOrCreate(req,{ lifetime:604800 });
+  if(!session.name){
+    session.name = "user" + (numusers++);
+  }
+  res.setHeader('Set-Cookie', session.getSetCookieHeaderValue());
+  sys.puts(session.getSetCookieHeaderValue());
+  req.session = session
+
   var qs = require('url').parse(req.url, true)
   if( qs.pathname.indexOf('/static/') === 0 ){
     var uri = qs.pathname
@@ -135,15 +145,22 @@ server.listen(3000);
 //var socket = io.listen(server, {transports:  ['websocket', 'xhr-polling','flashsocket', 'jsonp-polling', 'htmlfile']});
 var socket = io.listen(server, {transports:  ['websocket', 'flashsocket']});
 socket.on('connection', function(client){
+     
+    var session = sessions.lookupOrCreate(client.request,{ lifetime:604800 });
+    if(!session.name){
+      session.name = "user" + (numusers++);
+    }
+    client.request.session = session
+
     msgId++;
-    var message = JSON.stringify({messages:[{"type":"join","id":msgId,'from':'dude','body':''}]})
+    var message = JSON.stringify({messages:[{"type":"join","id":msgId,'from':session.name,'body':''}]})
     client.broadcast(message);
-    sys.puts("connection!");
+
     client.on('message',
         function(m){
+            sys.puts("message from: " + session.name );
             msgId++;
-            var chat = JSON.stringify({messages:[{"type":"chat","id":msgId,'from':'dude','body':m}]})
-            sys.puts("message!", m);
+            var chat = JSON.stringify({messages:[{"type":"chat","id":msgId,'from':session.name,'body':m}]})
             client.broadcast(chat); 
             redisClient.lpush("chatlog", chat,
                 function(){ redisClient.ltrim("chatlog", 100, function(){}) });
@@ -151,7 +168,8 @@ socket.on('connection', function(client){
     )
     client.on('disconnect', function(){
         msgId++;
-        var disconnectmsg = JSON.stringify({messages:[{"type":"left","id":msgId,'from':'dude','body':''}]})
+        sys.puts("disconnected: " + session.name );
+        var disconnectmsg = JSON.stringify({messages:[{"type":"left","id":msgId,'from':session.name,'body':''}]})
         client.broadcast(disconnectmsg); 
         sys.puts("disconnect!"); 
     } )
@@ -160,7 +178,7 @@ socket.on('connection', function(client){
 function display_form(req, res) {//{{{
   res.statusCode=200
   //res.setHeader('Content-Type', 'text/html');
-  sendTemplate(res, "simple.html", {name: "Chris",value: 10000,taxed_value: function() { return 10; }, in_ca: true })
+  sendTemplate(res, "simple.html", {username:req.session.name,value: 10000,taxed_value: function() { return 10; }, in_ca: true })
 }//}}}
 
 /*function sendMessage(req, res){//{{{*/
@@ -189,6 +207,7 @@ function getUpdates(req, res){//{{{
 
 
 function upload_file(req, res) {//{{{
+  var sess = req.session;
   var buf = []; var bufLen = 0;
   fileId++;
   sys.puts(util.inspect(req.headers));
@@ -212,9 +231,9 @@ function upload_file(req, res) {//{{{
           fs.close(fd);
           res.end();
           sys.puts("queueing up!: " + filePath);
-          stream.queuePath(uploadDirectory + filePath + ".mp3", fname, "dude");
+          stream.queuePath(uploadDirectory + filePath + ".mp3", fname,sess.name);
           msgId++;
-          broadcast({messages:[{"type":"enq","id":msgId,'from':'dude','body':fname}]})
+          broadcast({messages:[{"type":"enq","id":msgId,'from':sess.name,'body':fname}]})
         });
       }
     );
