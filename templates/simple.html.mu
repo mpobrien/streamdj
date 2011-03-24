@@ -6,9 +6,35 @@
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
         <script type="text/javascript" src="/static/chat.js"></script>
         <script type="text/javascript">
+            var msgs = [{{{msgs}}}]
             var username = '{{username}}'
             var socket = new io.Socket();
             socket.on("connect", function(){console.debug("connected.")});
+
+            function processMessage(message){
+              console.debug(message)
+              var safefrom = $('<div/>').text(message["from"]).html(); 
+              var safebody = $('<div/>').text(message["body"]).html();
+              if( message.type=='chat'){
+                newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + safefrom + ': </b>' +  safebody + '</div>')
+              }else if(message.type=='enq'){
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
+              }else if(message.type=='join'){
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> joined the room.</div>')
+              }else if(message.type=='left'){
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> left the room.</div>')
+              }else if(message.type=='stopped'){
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> finished playing.</div>')
+                $('#nowplayingtext').text('');
+              }else if(message.type=='started'){
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> started playing.</div>')
+                $('#nowplayingtext').text(safebody);
+              }else if(message.type=='namechange'){
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"> changed their username to <b>' + safebody + '</b></div>')
+              }
+              newmsghtml.appendTo('#chats')
+            }
+
             socket.on("message", 
                 function(data){
                     var msgs = $.parseJSON(data);
@@ -16,24 +42,7 @@
                         var message = msgs.messages[i]
                         console.debug(message);
                         var newmsghtml;
-                        var safefrom = $('<div/>').text(message["from"]).html(); 
-                        var safebody = $('<div/>').text(message["body"]).html();
-                        if( message.type=='chat'){
-                          newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + safefrom + ': </b>' +  safebody + '</div>')
-                        }else if(message.type=='enq'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
-                        }else if(message.type=='join'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> joined the room.</div>')
-                        }else if(message.type=='left'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> left the room.</div>')
-                        }else if(message.type=='stopped'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> finished playing.</div>')
-                        }else if(message.type=='started'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> started playing.</div>')
-                        }else if(message.type=='namechange'){
-                          newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"> changed their username to <b>' + safebody + '</b></div>')
-                        }
-                        newmsghtml.appendTo('#chats')
+                        processMessage(message);
                         var objDiv = document.getElementById("chats");
                         objDiv.scrollTop = objDiv.scrollHeight;
                         console.debug("got some data:  ", data)
@@ -172,6 +181,15 @@
                             $('#volinside').css('width', muted ? '0%' : currentVolume + '%')
                         }
                     );
+                    
+                    var y;
+                    while(y = msgs.pop()){
+                      for( var j in y.messages ){
+                        processMessage(y.messages[j]);
+                      }
+                    }
+                    var objDiv = document.getElementById("chats");
+                    objDiv.scrollTop = objDiv.scrollHeight;
                 }
             )
         </script>
@@ -184,10 +202,13 @@
             </h1>
         </div>
         <div id="chatpanel">
+          <div id="nowplaying">
+            <marquee id="nowplayingtext">Now playing: {{nowplaying}}</marquee>
+          </div>
           <div id="chats">
           </div>
           <div id="messagesender">
-              <input type="text" style="width:90%;" id="newchat" placeholder="say something..."></input><button id="send" style="width:10%">send</button>
+              <input type="text" style="width:90%;" id="newchat" placeholder="say something..."></input><button id="send" style="width:10%" class="awesome">send</button>
           </div>
         </div>
 

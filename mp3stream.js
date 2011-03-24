@@ -145,7 +145,7 @@ exports.Mp3Stream = function(){
       var setupFile = function(err, fd){ // TODO - check for an error and handle it
         currentFile = fd;
         currentFileUploader = fileUploader;
-        currentFileName = fileName;
+        that.currentFileName = fileName;
         fd.pointer = 0;
         var tag = getId3Tag(fd);
         sys.puts(util.inspect(tag));
@@ -162,7 +162,7 @@ exports.Mp3Stream = function(){
     if( d == null ){
       currentFile = null;
       that.onFileFinish(currentFileName, currentFileUploader);
-      currentFileName = null;
+      that.currentFileName = null;
       currentFileUploader = null;
       return;
     }

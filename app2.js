@@ -16,6 +16,7 @@ redisClient.on("error", function(err){
     console.log("Error: " + err); 
 });
 
+redisClient.ltrim("chatlog", -1, 0);
 
 Mu.templateRoot = './templates'
 var jquery = fs.readFileSync("./static/jquery.js")
@@ -181,7 +182,12 @@ socket.on('connection', function(client){
 function display_form(req, res) {//{{{
   res.statusCode=200
   //res.setHeader('Content-Type', 'text/html');
-  sendTemplate(res, "simple.html", {username:req.session.name,value: 10000,taxed_value: function() { return 10; }, in_ca: true })
+  sys.puts(stream.currentFileName)
+  redisClient.lrange("chatlog", 0, 99, function(err, reply){
+    sendTemplate(res, "simple.html", {username:req.session.name,value: 10000,taxed_value: function() { return 10; }, in_ca: true, msgs:reply, nowplaying:stream.currentFileName })
+  })
+  
+  //sendTemplate(res, "simple.html", {username:req.session.name,value: 10000,taxed_value: function() { return 10; }, in_ca: true })
 }//}}}
 
 /*function sendMessage(req, res){//{{{*/

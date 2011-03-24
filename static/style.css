@@ -66,3 +66,36 @@ body{
 #volcontrol{ width:140px; border:1px solid black; height:14px; float:left; margin-top:13px; margin-bottom:13px; }
 #volinside{ width:90%; background-color: black; height:100%; padding:0px; margin:0px; }
 #volicon{ background:url('volume.png'); height:40px; width:40px; float:left; }
+
+.awesome{
+    background: #ccc url(/static/alert-overlay.png) repeat-x;
+    display: inline-block;
+    padding: 5px 10px 6px;
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    line-height: 1;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 0 1px 3px #111;
+    -webkit-box-shadow: 0 1px 3px #111;
+    text-shadow: 0 -1px 1px #222;
+    border-bottom: 1px solid #222;
+    position: relative;
+    cursor: pointer;
+}
+
+#messagesender{
+  line-height:20px;
+}
+#send{
+  font-size:18px;
+}
+#newchat{
+  line-height:30px;
+  font-size:20px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 0 1px 3px #999;
+    -webkit-box-shadow: 0 1px 3px #999;
+}
