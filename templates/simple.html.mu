@@ -15,8 +15,9 @@
               console.debug(message)
               var safefrom = $('<div/>').text(message["from"]).html(); 
               var safebody = $('<div/>').text(message["body"]).html();
+              console.debug(safebody)
               if( message.type=='chat'){
-                newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + safefrom + ': </b>' +  safebody + '</div>')
+                newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + safefrom + ': </b>' +  linkify(safebody) + '</div>')
               }else if(message.type=='enq'){
                 newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
               }else if(message.type=='join'){
@@ -54,7 +55,8 @@
             var mymsgs =1;
             var sendMessage = function(){
                 var msgtext = $('#newchat').val()
-                var mynewmsghtml = $('<div class="message" id="mymsgs' + ( mymsgs++ ) + '"><b>' + username + ': </b>' +msgtext + '</div>')
+                msgtext = $('<div/>').text(msgtext).html();
+                var mynewmsghtml = $('<div class="message" id="mymsgs' + ( mymsgs++ ) + '"><b>' + username + ': </b>' + linkify(msgtext) + '</div>')
                 socket.send(msgtext);
                 mynewmsghtml.appendTo('#chats')
                 var objDiv = document.getElementById("chats");

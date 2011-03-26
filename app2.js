@@ -16,6 +16,8 @@ redisClient.on("error", function(err){
     console.log("Error: " + err); 
 });
 
+eval(fs.readFileSync('./localdev.js', encoding="ascii"))
+
 redisClient.ltrim("chatlog", -1, 0);
 
 Mu.templateRoot = './templates'
@@ -70,7 +72,7 @@ stream.loadNext( function(){ stream.startStream( writeFrame ); });
 
 var msgId = 0;
 var fileId = 0;
-var uploadDirectory = "/home/mike/uploaded/"
+var uploadDirectory = settings.upload_directory
 
 var sendTemplate = function(res, template, context){
   Mu.render(template, context, {}, function(err, output){
@@ -144,7 +146,7 @@ var server = http.createServer(function(req, res) {
       break;
   }
 });
-server.listen(3000);
+server.listen(settings.port);
 
 //var socket = io.listen(server, {transports:  ['websocket', 'xhr-polling','flashsocket', 'jsonp-polling', 'htmlfile']});
 var socket = io.listen(server, {transports:  ['websocket', 'flashsocket']});
