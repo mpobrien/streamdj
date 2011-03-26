@@ -1,45 +1,33 @@
 require.paths.unshift('/usr/local/lib/node')
-var mp3 = require('./mp3stream');
-var io = require('socket.io')
-var fs = require('fs')
-var http = require('http');
-var path = require('path');
-var multipart = require('multipart');
-var sys = require('sys');
-var util = require('util')
-var Mu = require('Mu')
-var sessions = require('./session');
-var redis = require('redis'),
-    redisClient = redis.createClient();
 
-redisClient.on("error", function(err){
-    console.log("Error: " + err); 
-});
+// Modules//{{{
+var randomString = require('./utilities').randomString
+var mp3 = require('./mp3stream'),
+    io = require('socket.io'),
+    fs = require('fs'),
+    http = require('http'),
+    path = require('path'),
+    multipart = require('multipart'),
+    sys = require('sys'),
+    util = require('util'),
+    Mu = require('Mu'),
+    sessions = require('./session'),
+    redis = require('redis'),
+    redisClient = redis.createClient();//}}}
+redisClient.on("error", function(err){//{{{
+  console.log("Error: " + err); 
+});//}}}
 
+/* Load settings from external config file into var settings */
 eval(fs.readFileSync('./localdev.js', encoding="ascii"))
-
-redisClient.ltrim("chatlog", -1, 0);
-
 Mu.templateRoot = './templates'
-var jquery = fs.readFileSync("./static/jquery.js")
+redisClient.ltrim("chatlog", -1, 0);
 
 Array.prototype.remove = function(e) {//{{{
     for (var i = 0; i < this.length; i++) {
         if (e == this[i]) { return this.splice(i, 1); }
     }
 };//}}}
-
-function randomString(bits){
-  var chars,rand,i,ret;
-  chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-'
-  ret=''
-  while(bits > 0){
-      rand=Math.floor(Math.random()*0x100000000) // 32-bit integer
-      // base 64 means 6 bits per character, so we use the top 30 bits from rand to give 30/6=5 characters.
-      for(i=26; i>0 && bits>0; i-=6, bits-=6) ret+=chars[0x3F & rand >>> i]
-  }
-  return ret
-}
 
 var streamlisteners = [];
 var stream = new mp3.Mp3Stream();
@@ -184,11 +172,17 @@ socket.on('connection', function(client){
 function display_form(req, res) {//{{{
   res.statusCode=200
   //res.setHeader('Content-Type', 'text/html');
-  sys.puts(stream.currentFileName)
+  //sys.puts(stream.currentFileName)
+  sys.puts(util.inspect(stream.filePaths));
   redisClient.lrange("chatlog", 0, 99, function(err, reply){
-    sendTemplate(res, "simple.html", {username:req.session.name,value: 10000,taxed_value: function() { return 10; }, in_ca: true, msgs:reply, nowplaying:stream.currentFileName })
+    result = {
+               username:req.session.name,
+               msgs:reply,
+               nowplaying:stream.currentFileName,
+             }
+    if(stream.filePaths.length > 0 ) result.queue = stream.filePaths;
+    sendTemplate(res, "simple.html", result)
   })
-  
   //sendTemplate(res, "simple.html", {username:req.session.name,value: 10000,taxed_value: function() { return 10; }, in_ca: true })
 }//}}}
 

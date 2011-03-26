@@ -116,7 +116,7 @@ var readFrame = function(buf){
 }
 
 exports.Mp3Stream = function(){
-  var filePaths = [];
+  this.filePaths = [];
   var listeners = [];
   var accumulatedTime = 0;
   var frames = 0;
@@ -136,24 +136,21 @@ exports.Mp3Stream = function(){
     accumulatedTime = 0;
     syncTime = (new Date()).getTime();
     var that = this;
-    if( filePaths.length > 0 ){
-      var fileInfo = filePaths.shift();
-      var filePath = fileInfo[0]
-      var fileName = fileInfo[1]
-      var fileUploader = fileInfo[2]
-      sys.puts(filePath);
+    if( that.filePaths.length > 0 ){
+      var fileInfo = that.filePaths.shift();
+      sys.puts(fileInfo.path);
       var setupFile = function(err, fd){ // TODO - check for an error and handle it
         currentFile = fd;
-        currentFileUploader = fileUploader;
-        that.currentFileName = fileName;
+        currentFileUploader = fileInfo.who;
+        that.currentFileName = fileInfo.name;
         fd.pointer = 0;
         var tag = getId3Tag(fd);
         sys.puts(util.inspect(tag));
         fd.reset(0);
-        callback(fileName, fileUploader);
-        that.onFileStart(fileName, fileUploader);
+        callback(fileInfo.name, fileInfo.who);
+        that.onFileStart(fileInfo.name, fileInfo.who);
       }
-      fs.readFile(filePath, setupFile);
+      fs.readFile(fileInfo.path, setupFile);
     }
   }
 
@@ -182,8 +179,8 @@ exports.Mp3Stream = function(){
   }
 
   this.queuePath = function(path, name, who){
-    filePaths.push([path, name, who]);
-    if( filePaths.length == 1 && currentFile == null){
+    this.filePaths.push({path:path, name:name, who:who});
+    if( this.filePaths.length == 1 && currentFile == null){
       var callback = that.startStream;
       this.loadNext(callback);
     }

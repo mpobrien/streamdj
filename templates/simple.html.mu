@@ -2,6 +2,7 @@
     <head>
       <link href="/static/style.css" rel="stylesheet" />
         <script type="text/javascript" src="/static/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/jquery-ui-custom.js"></script>
         <script type="text/javascript" src="/static/socket.io.min.js"></script>
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
         <script type="text/javascript" src="/static/chat.js"></script>
@@ -27,6 +28,7 @@
                 newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + safefrom + ': </b>' +  linkify(safebody) + '</div>')
               }else if(message.type=='enq'){
                 newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
+                $('<li>' + safebody + '</li>').hide().appendTo('#queueList').show('slide').show('highlight', 3000);
               }else if(message.type=='join'){
                 newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> joined the room.</div>')
               }else if(message.type=='left'){
@@ -248,13 +250,9 @@
           </div>
           <div id="queue">
             <h3>comin up:</h3>
-            queue: {{queue.length}}
-            <ul>
+            <ul id="queueList">
               {{#queue}}
                 <li>{{name}}</li>
-              {{/queue}}
-              {{^queue}}
-                <li>nothin!</li>
               {{/queue}}
             </ul>
           </div>
