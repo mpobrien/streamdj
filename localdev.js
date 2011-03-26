@@ -1,4 +1,4 @@
 settings = {
   port:3000,
-  upload_directory: "/home/mike/uploaded"
+  upload_directory: "/home/mpobrien/uploaded"
 }

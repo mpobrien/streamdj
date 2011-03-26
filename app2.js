@@ -46,7 +46,11 @@ var stream = new mp3.Mp3Stream();
 var listeners = [];
 var writeFrame = function(frameData){
   streamlisteners.forEach(function(listener){
-    listener.write(frameData);
+    //try{
+      listener.write(frameData);
+      /*}catch(err){*/
+      /*sys.puts(err);*/
+      /*}*/
   })
 }
 stream.onFrameReady = writeFrame;
@@ -184,9 +188,9 @@ socket.on('connection', function(client){
 function display_form(req, res) {//{{{
   res.statusCode=200
   //res.setHeader('Content-Type', 'text/html');
-  sys.puts(stream.currentFileName)
+  //sys.puts(stream.currentFileName)
   redisClient.lrange("chatlog", 0, 99, function(err, reply){
-    sendTemplate(res, "simple.html", {username:req.session.name,value: 10000,taxed_value: function() { return 10; }, in_ca: true, msgs:reply, nowplaying:stream.currentFileName })
+    sendTemplate(res, "simple.html", {username:req.session.name,value: 10000,taxed_value: function() { return 10; }, in_ca: true, msgs:reply, nowplaying: stream.currentFileName != null ? stream.currentFileName : "" })
   })
   
   //sendTemplate(res, "simple.html", {username:req.session.name,value: 10000,taxed_value: function() { return 10; }, in_ca: true })
