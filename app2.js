@@ -182,7 +182,7 @@ function display_form(req, res) {//{{{
     result = {
                username:req.session.name,
                msgs:reply,
-               nowplaying:stream.currentFileName,
+               nowplaying: stream.currentFileName != null ? stream.currentFileName : ""
              }
     if(stream.filePaths.length > 0 ) result.queue = stream.filePaths;
     sendTemplate(res, "simple.html", result)
