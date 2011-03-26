@@ -9,13 +9,20 @@
             var msgs = [{{{msgs}}}]
             var username = '{{username}}'
             var socket = new io.Socket();
+            var newMessageCount = 0;
+            var countmsgs = false;
             socket.on("connect", function(){console.debug("connected.")});
+            window.onfocus = function(){
+              document.title = 'hey'
+              newMessageCount = 0;
+            }
+            window.onblur = function(){
+              countmsgs = true;
+            }
 
             function processMessage(message){
-              console.debug(message)
               var safefrom = $('<div/>').text(message["from"]).html(); 
               var safebody = $('<div/>').text(message["body"]).html();
-              console.debug(safebody)
               if( message.type=='chat'){
                 newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + safefrom + ': </b>' +  linkify(safebody) + '</div>')
               }else if(message.type=='enq'){
@@ -44,6 +51,10 @@
                         console.debug(message);
                         var newmsghtml;
                         processMessage(message);
+                        if( message.type == 'chat' && countmsgs){
+                          newMessageCount++;
+                          document.title = "(" + newMessageCount + ") hey";
+                        }
                         var objDiv = document.getElementById("chats");
                         objDiv.scrollTop = objDiv.scrollHeight;
                         console.debug("got some data:  ", data)
@@ -205,7 +216,7 @@
         </div>
         <div id="chatpanel">
           <div id="nowplaying">
-            <marquee id="nowplayingtext">Now playing: {{nowplaying}}</marquee>
+            <marquee>Now playing: <span id="nowplayingtext">{{nowplaying}}</span></marquee>
           </div>
           <div id="chats">
           </div>
@@ -237,9 +248,14 @@
           </div>
           <div id="queue">
             <h3>comin up:</h3>
+            queue: {{queue.length}}
             <ul>
-              <li>hey</li>
-              <li>hey2</li>
+              {{#queue}}
+                <li>{{name}}</li>
+              {{/queue}}
+              {{^queue}}
+                <li>nothin!</li>
+              {{/queue}}
             </ul>
           </div>
         </div>
