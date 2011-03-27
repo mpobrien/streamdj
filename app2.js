@@ -12,14 +12,21 @@ var mp3 = require('./mp3stream'),
     util = require('util'),
     Mu = require('Mu'),
     sessions = require('./session'),
-    redis = require('redis'),
-    redisClient = redis.createClient();//}}}
+    redis = require('redis');
+var OAuth = require('node-oauth').OAuth;
+var redisClient = redis.createClient();
+
+
+eval(fs.readFileSync('./localdev.js', encoding="ascii"))
+var oa = new OAuth(settings.REQUEST_TOKEN_URL, settings.ACCESS_TOKEN_URL,
+                   settings.key, settings.secret, 
+                   settings.OAUTH_VERSION, settings.CALLBACK_URL, settings.HASH_VERSION); 
+//}}}
 redisClient.on("error", function(err){//{{{
   console.log("Error: " + err); 
 });//}}}
 
 /* Load settings from external config file into var settings */
-eval(fs.readFileSync('./localdev.js', encoding="ascii"))
 Mu.templateRoot = './templates'
 redisClient.ltrim("chatlog", -1, 0);
 
@@ -58,8 +65,6 @@ stream.onFileStart = function(filename, whouploaded){
     broadcast({messages:[{"type":"started","id":msgId,'from':whouploaded,'body':filename}]})
 };
 
-//stream.queuePath('/home/mike/Music/shugo tokumaru - night piece - 2004/08 paparazzi.mp3');
-//stream.queuePath( '/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3');
 stream.loadNext( function(){ stream.startStream( writeFrame ); });
 
 var msgId = 0;
@@ -127,15 +132,54 @@ var server = http.createServer(function(req, res) {
     case '/upload':
       upload_file(req, res);
       break;
-    case '/a/message/new':
-      sendMessage(req, res);
+    case '/login':
+      oa.getOAuthRequestToken(
+          function(error, oauth_token, oauth_token_secret, results){
+            if(error) {
+              throw new Error(([error.statusCode, error.data].join(': ')));
+            } else { 
+              res.writeHead(302, { 'Location': 'https://twitter.com/oauth/authorize?oauth_token=' + oauth_token, });
+              res.end();
+              /*console.log('In your browser, log in to your twitter account.  Then visit:')*/
+              /*console.log(('https://twitter.com/oauth/authorize?oauth_token=' + oauth_token))*/
+              /*console.log('After logged in, you will be promoted with a pin number')*/
+              /*console.log('Enter the pin number here:');*/
+              /*var stdin = process.openStdin();*/
+              /*stdin.on('data', function(chunk) {*/
+              /*pin = chunk.toString().trim();*/
+              /*getAccessToken(oa, oauth_token, oauth_token_secret, pin);*/
+              /*});*/
+            }
+          }
+        );
       break;
-    case '/a/message/updates':
-      getUpdates(req, res);
+    case '/authdone':
+      var token = qs.query['oauth_token']
+      var verifier = qs.query['oauth_verifier']
+      oa.getOAuthAccessToken(token, verifier, 
+          function(error, oauth_access_token, oauth_access_token_secret, results2) {
+            //TODO check for errors!
+            //TODO try/catch this!!!!!!
+            sys.puts(results2.user_id);
+            sys.puts(results2.screen_name);
+            res.end();
+          })
       break;
-    case '/getfile':
-      upload_file(req, res)
+    case '/logout':
       break;
+    default:
+      res.end();
+      break;
+
+    //case '/a/message/new':
+      //sendMessage(req, res);
+      //break;
+    //case '/a/message/updates':
+      //getUpdates(req, res);
+      //break;
+    //case '/getfile':
+      //upload_file(req, res)
+      //break;
   }
 });
 server.listen(settings.port);

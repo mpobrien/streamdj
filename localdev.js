@@ -1,4 +1,11 @@
 settings = {
-  port:3000,
-  upload_directory: "/home/mpobrien/uploaded"
+  port:80,
+  upload_directory: "/home/mpobrien/uploaded",
+  key:'IplmVMSk2qr6uNG6Pw11hg',
+  secret:'zVrKkW8YMWS56WrpPxBjXY9HmpUnZe7AiRCytog8uI',
+  REQUEST_TOKEN_URL : 'http://api.twitter.com/oauth/request_token',
+  ACCESS_TOKEN_URL : 'http://api.twitter.com/oauth/access_token',
+  OAUTH_VERSION : '1.0',
+  HASH_VERSION : 'HMAC-SHA1',
+  CALLBACK_URL : 'http://localhost/authdone'
 }
