@@ -1,3 +1,6 @@
+var Mu = require('Mu')
+var fs = require('fs')
+var path = require('path')
 
 exports.randomString = function(bits){
   var chars,rand,i,ret;
@@ -10,3 +13,54 @@ exports.randomString = function(bits){
   }
   return ret
 }
+
+exports.extractCookie = function(cstring, c_name){
+  var i,x,y,ARRcookies=cstring.split(";");
+  for (i=0;i<ARRcookies.length;i++){
+    x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+    y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+    x=x.replace(/^\s+|\s+$/g,"");
+    if (x==c_name){
+      return unescape(y);
+    }
+  }
+}
+
+exports.pack = function(num) {//{{{
+  var result = '';
+  result += String.fromCharCode(num >> 24 & 0xFF);
+  result += String.fromCharCode(num >> 16 & 0xFF);
+  result += String.fromCharCode(num >> 8 & 0xFF);
+  result += String.fromCharCode(num & 0xFF);
+  return result;
+}//}}}
+
+exports.serveStaticFile = function(req, res, uri){//{{{
+  var filename = path.join(process.cwd(), uri);  
+  path.exists(filename, function(exists) {  
+    if(!exists) {  
+      res.write("404 Not Found\n");  
+      res.end();  
+      return;  
+    }  
+    fs.readFile(filename, "binary", function(err, file) {  
+      if(err) {  
+        res.write(err + "\n");  
+        res.end();  
+        return;  
+      }  
+      res.write(file, "binary");  
+      res.end();  
+    });  
+  });  
+}//}}}
+
+exports.sendTemplate = function(res, template, context){//{{{
+  Mu.render(template, context, {}, function(err, output){
+    if(err){
+      throw err;
+    }
+    output.addListener('data', function (c) {res.write(c)})
+          .addListener('end', function () { res.end() });
+  })
+}//}}}
