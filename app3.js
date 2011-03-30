@@ -1,4 +1,5 @@
 var fs = require('fs');
+var uploads = require('./fileupload');
 var http = require('http');
 var queue = require('./queue');
 var sys = require('sys')
@@ -7,14 +8,16 @@ var ws = require("websocket-server");
 var Cookies = require('cookies')
 Mu.templateRoot = './templates'
 var utilities = require('./utilities')
+var util= require('util')
 var OAuth = require('node-oauth').OAuth;
 var redis = require('redis');
 var redisClient = redis.createClient();
-var msgs = new require('./messages').MessageGenerator();
+var msgs = require('./messages')
+var msggen = new msgs.MessageGenerator();
 //var settings = JSON.parse(fs.readFileSync(process.argv[2]).toString("ascii"))
 var settings  =
 {
-  "uploadDirectory":"/home/mike/uploaded",
+  "uploadDirectory":"/home/mike/uploaded/",
   "port":80,
   "host":"streamdj.com",
   "key":'IplmVMSk2qr6uNG6Pw11hg',
@@ -26,12 +29,18 @@ var settings  =
   "CALLBACK_URL" : 'http://streamdj.com/authdone'
 }
 
+Array.prototype.remove = function(e) {//{{{
+    for (var i = 0; i < this.length; i++) {
+        if (e == this[i]) { return this.splice(i, 1); }
+    }
+};//}}}
+
 var streamlisteners = [];
 var queue = new queue.Mp3Queue();
 
 queue.stream.on("frameready", function(data,y,z){
   streamlisteners.forEach(function(listener){
-      listener.write(data);
+    listener.write(data);
   })
 });
 
@@ -49,6 +58,8 @@ server.addListener("request", function(req, res) {
   }
   switch (qs.pathname) {
     case '/listen':
+      sys.puts("new listener!");
+      req.connection.addListener("close", function(){ streamlisteners.remove(res); })
       streamlisteners.push(res); //TODO remove listeners when done
       break;
     case '/':
@@ -65,8 +76,35 @@ server.addListener("request", function(req, res) {
       }
       break;
     case '/upload':
-      var userinfo = {user_id:'mike', name:'mike'}
-      upload_file(req, res, userinfo);
+      var cookies = new Cookies(req, res);
+      var sessionId = cookies.get("session");
+      var filePath = utilities.randomString(64);
+      var fname = req.headers['x-file-name']
+      var userinfo = {name:'mike',user_id:1234}
+
+      var fileUpload = new uploads.FileUpload(settings.uploadDirectory + filePath + ".mp3", fname)
+      req.addListener("data", fileUpload.bufferData);
+
+      fileUpload.on("filesaved", function(uploaderInfo){
+        queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, uploaderInfo.name);
+        server.broadcast(JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname)]}))
+      });
+
+      redisClient.mget("session_"+sessionId+"_user_id",
+                       "session_"+sessionId+"_screen_name",
+        function(err, replies){ //TODO check for redis error!
+          userinfo = {user_id:replies[0], name:replies[1]}
+          fileUpload.okToWrite = true; //TODO validate it, if userinfo is bad, drop stream
+          fileUpload.uploaderInfo = userinfo;
+          fileUpload.writeToDisk();
+        })
+
+
+      req.addListener("end", function(){
+        fileUpload.doneBuffering = true;
+        sys.puts("end req!");
+        fileUpload.writeToDisk();
+      });
       break;
     case '/login':
       oa.getOAuthRequestToken(
@@ -105,7 +143,7 @@ server.addListener("request", function(req, res) {
           })
       break;
     default:
-      res.end();
+      //res.end();
       break;
   }
 })
@@ -161,12 +199,13 @@ function display_form(req, res, userinfo) {//{{{
 
 function upload_file(req, res, userinfo) {//{{{
   var fname = req.headers['x-file-name'] 
+  sys.puts(util.inspect(req.headers));
   var buf = []
-  var bufLen = 0;
+  var bufLen = 0;   
   req.addListener("data", function(data){
-       buf.push(data)
-       bufLen += data.length;
-     });
+    buf.push(data)
+    bufLen += data.length;
+  });
 
   req.addListener("end",
       function(){
@@ -177,12 +216,13 @@ function upload_file(req, res, userinfo) {//{{{
         }  
         var filePath = utilities.randomString(64);
         fs.open(settings.uploadDirectory + filePath + ".mp3", 'w',
-          function(err, fd){
+          function(err2, fd){
             fs.write(fd, finalbuf, 0, finalbuf.length, null, function(){
                 fs.close(fd);
                 res.end();
                 queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, userinfo.name);
-                //server.broadcast(JSON.stringify( {messages:[msgs.queued(userinfo.name, fname)]}))
+                sys.puts(settings.uploadDirectory + filePath + ".mp3");
+                server.broadcast(JSON.stringify( {messages:[msggen.queued(userinfo.name, fname)]}))
               //broadcast({messages:[{"type":"enq","id":msgId,'from':sess.name,'body':fname}]})
             });
           });

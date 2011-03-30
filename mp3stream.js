@@ -8,7 +8,9 @@ Buffer.prototype.getChunk =
     return this.slice(this.pointer, (this.pointer+=numbytes)); 
   }                 
 
-Buffer.prototype.reset = function(newpos){ this.pointer = newpos }
+Buffer.prototype.reset = function(newpos){ 
+  this.pointer = newpos
+}
 Buffer.prototype.rewind = function(numBytes){
     this.pointer -= numBytes;
     if( this.pointer < 0 ) this.pointer = 0;
@@ -78,6 +80,7 @@ var readFrame = function(buf){
     return -1;
   }else{
     var bm = new Bitmask(chunk)
+    var samplerate;
     var h = bm.get(0,31)
     var version = (h & 0x00180000) >> 19
     var isprotected = !(h & 0x00010000)
@@ -93,6 +96,7 @@ var readFrame = function(buf){
         samplerate = SAMPLERATE2[s]
     else if( version == 0)// V2.5
         samplerate = SAMPLERATE25[s]
+    sys.puts("version: " + version);
     nsamples = 1152
     if( samplerate <= 24000)
         nsamples = 576
@@ -102,15 +106,20 @@ var readFrame = function(buf){
     var copyright = (h & 8)>0
     var original = (h & 4)>0
     var emphasis = h & 3
-    if (version == 3)
+    if (version == 3){
+        //sys.puts("bitrate: " + bitrate);
+        //sys.puts("samplerate: " + samplerate);
+        //sys.puts("pad: " + pad);
         framesize = 144000 * bitrate / samplerate + pad
-    else
+    }else{
         framesize = 72000 * bitrate / samplerate + pad
+    }
     buf.rewind(4)
     var data = buf.getChunk(parseInt(framesize))
     if( data == null ) return null;
     if( data.length == 0 ) return null;
-    if( isNaN(framesize) ) return null;
+    //sys.puts("framesize: " + framesize);
+    //if( isNaN(framesize) ) return null;
     return [data, bitrate, framesize];
   }
 }
@@ -140,6 +149,7 @@ exports.Mp3Stream = function(){
       var fileInfo = that.filePaths.shift();
       sys.puts(fileInfo.path);
       var setupFile = function(err, fd){ // TODO - check for an error and handle it
+        sys.puts(fd.length);
         currentFile = fd;
         currentFileUploader = fileInfo.who;
         that.currentFileName = fileInfo.name;
@@ -147,9 +157,12 @@ exports.Mp3Stream = function(){
         var tag = getId3Tag(fd);
         sys.puts(util.inspect(tag));
         fd.reset(0);
+        sys.puts("pointer:" + fd.pointer);
+        sys.puts(fd.getChunk(3));
         callback(fileInfo.name, fileInfo.who);
         that.onFileStart(fileInfo.name, fileInfo.who);
       }
+      //sys.puts("heres the path: " + fileInfo.path);
       fs.readFile(fileInfo.path, setupFile);
     }
   }

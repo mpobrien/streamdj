@@ -5,7 +5,6 @@ Buffer.prototype.getChunk = function(numbytes){//{{{
     return this.slice(this.pointer, (this.pointer+=numbytes)); 
   }//}}}
 
-
 var BITRATE1 = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]
 var BITRATE2 = [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160]
 var SAMPLERATE1 = [44100, 48000, 32000]
@@ -59,7 +58,6 @@ exports.Mp3Stream = function Mp3Stream(){
     }else if(s[0] =='I'){
       buf.rewind(1)
       var version = buf.getChunk(2)
-      sys.puts("v1: " +version);
       if( version == null ) return null;
       var flags = buf.getChunk(1)
       if( flags == null ) return null;
@@ -74,7 +72,6 @@ exports.Mp3Stream = function Mp3Stream(){
       var samplerate;
       var h = bm.get(0,31)
       var version = (h & 0x00180000) >> 19
-      sys.puts("v2: " +version);
       var isprotected = !(h & 0x00010000)
       var b = (h & 0xf000) >> 12
       if(version == 3) //# V1
@@ -120,8 +117,9 @@ exports.Mp3Stream = function Mp3Stream(){
   this.processFrame = function processFrame(fd){//{{{
     var frames = 0;
     var frameInfo = readFrame(fd);
+    var syncTime = 0;
+    var accumulatedTime = 0;
     if(frameInfo == null){ //end of file!
-      sys.puts("end.");
       that.emit("stream-end");
       return;
     }
@@ -133,11 +131,14 @@ exports.Mp3Stream = function Mp3Stream(){
         syncTime = accumulatedTime;
       }
       accumulatedTime += frameInfo[2] * 8 / frameInfo[1];  
+      //sys.puts(syncTime);
       delay = accumulatedTime - (new Date()).getTime();
       delay = delay > 0 ? delay : 0; 
       that.emit("frameready", frameInfo[0], frameInfo[1],frameInfo[2]);
     }
-    that.timeoutId = setTimeout(function(){processFrame(fd)}, Math.floor(delay*.8)) 
+    that.timeoutId = setTimeout(function(){processFrame(fd)}, 0) 
+    sys.puts(parseInt(frameInfo[2]) + ", " + parseInt(frameInfo[1]));
+    //that.timeoutId = setTimeout(function(){processFrame(fd)}, parseInt(delay-1)) 
   }//}}}
 
 }

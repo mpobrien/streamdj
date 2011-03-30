@@ -80,7 +80,7 @@
         </script>
         <script type="text/javascript">
           soundManager.url = '/static/swf/';
-          soundManager.debugMode = false;
+          soundManager.debugMode = true;
           soundManager.flashVersion = 9;
           soundManager.useFlashBlock = false; 
           soundManager.onready(function() {
