@@ -58,7 +58,6 @@ server.addListener("request", function(req, res) {
   }
   switch (qs.pathname) {
     case '/listen':
-      sys.puts("new listener!");
       req.connection.addListener("close", function(){ streamlisteners.remove(res); })
       streamlisteners.push(res); //TODO remove listeners when done
       break;
@@ -102,7 +101,6 @@ server.addListener("request", function(req, res) {
 
       req.addListener("end", function(){
         fileUpload.doneBuffering = true;
-        sys.puts("end req!");
         fileUpload.writeToDisk();
       });
       break;

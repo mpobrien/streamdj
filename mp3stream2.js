@@ -41,6 +41,9 @@ Bitmask.prototype.get = function(from, to){//{{{
 
 exports.Mp3Stream = function Mp3Stream(){
   var that = this;
+  this.syncTime = 0;
+  this.accumulatedTime = 0;
+  var frames = 0;
   this.timeoutId = null;
 
   this.stopStream = function(){
@@ -115,10 +118,7 @@ exports.Mp3Stream = function Mp3Stream(){
   }//}}}
 
   this.processFrame = function processFrame(fd){//{{{
-    var frames = 0;
     var frameInfo = readFrame(fd);
-    var syncTime = 0;
-    var accumulatedTime = 0;
     if(frameInfo == null){ //end of file!
       that.emit("stream-end");
       return;
@@ -127,18 +127,19 @@ exports.Mp3Stream = function Mp3Stream(){
     if( frameInfo != -1 ){
       frames = (frames + 1) % 128;
       if(frames == 1) { //we reached a sync point. reset the timer to the sync time.
-        accumulatedTime = (new Date()).getTime();
-        syncTime = accumulatedTime;
+        that.accumulatedTime = (new Date()).getTime();
+        that.syncTime = that.accumulatedTime;
       }
-      accumulatedTime += frameInfo[2] * 8 / frameInfo[1];  
+      that.accumulatedTime += frameInfo[2] * 8 / frameInfo[1];  
       //sys.puts(syncTime);
-      delay = accumulatedTime - (new Date()).getTime();
+      delay = that.accumulatedTime - (new Date()).getTime();
       delay = delay > 0 ? delay : 0; 
       that.emit("frameready", frameInfo[0], frameInfo[1],frameInfo[2]);
     }
-    that.timeoutId = setTimeout(function(){processFrame(fd)}, 0) 
-    sys.puts(parseInt(frameInfo[2]) + ", " + parseInt(frameInfo[1]));
-    //that.timeoutId = setTimeout(function(){processFrame(fd)}, parseInt(delay-1)) 
+    //that.timeoutId = setTimeout(function(){processFrame(fd)}, 0) 
+
+    //sys.puts(parseInt(frameInfo[2]) + ", " + parseInt(frameInfo[1]));
+    that.timeoutId = setTimeout(function(){processFrame(fd)}, parseInt(delay-1)) 
   }//}}}
 
 }

@@ -19,32 +19,19 @@ exports.FileUpload = function FileUpload(outputPath, filename){
   //req.addListener("data", function(data){ // collect the data in a buffer });
 
   this.writeToDisk = function(callback){
-    sys.puts("that.okToWrite: " + that.okToWrite);
-    if(written){
-      sys.puts("already written");
-      return;
-    }
-    if(!that.okToWrite){
-      sys.puts("not ok to write yet.");
-      return;
-    }
-    if(!that.doneBuffering){
-      sys.puts("not ok to write yet.");
+    if(written || !that.okToWrite || !that.doneBuffering){
       return;
     }
     written = true;
-    sys.puts("ok writing! " + bufLen);
     var finalbuf = new Buffer(bufLen);
     for (var i=0,len=buf.length,pos=0; i<len; i++) {
       buf[i].copy(finalbuf, pos);
       pos += buf[i].length;
     }  
 
-    sys.puts("writing to " + outputPath);
     fs.open(outputPath, 'w', function(err2, fd){
       fs.write(fd, finalbuf, 0, finalbuf.length, null,
         function(){
-          sys.puts("done");
           fs.close(fd);
           that.emit("filesaved", that.uploaderInfo);
         });
