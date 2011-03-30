@@ -119,7 +119,8 @@ var server = http.createServer(function(req, res) {
       req.connection.addListener("close", function(){ streamlisteners.remove(res); })
       break;
     case '/':
-      display_form(req, res);
+      sendTemplate(res, "splash.html", {})
+      //display_form(req, res);
       break;
     case '/changename/':
       changename(req, res, qs)
