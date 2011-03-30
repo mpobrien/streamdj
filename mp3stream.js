@@ -175,6 +175,7 @@ exports.Mp3Stream = function(){
       delay = delay > 0 ? delay : 0; 
       that.onFrameReady(d[0]);
     }
+    sys.puts(parseInt(delay))
     setTimeout(startStreaming, parseInt(delay)) 
   }
 
