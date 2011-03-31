@@ -18,13 +18,13 @@ exports.Mp3Queue = function Mp3Queue(){
     return queue;
   }
 
-  this.enqueue = function(path, name, uploader){//{{{
+  this.enqueue = function(path, name, uploader, songId){//{{{
     queue.push({ path:     path,
                  name:     name,
-                 uploader: uploader })
+                 uploader: uploader,
+                 songId:   songId})
                  
     if(that.nowPlaying == null && queue.length == 1){ // A file was just added to an empty queue.
-      sys.puts("here");
       that.playNextFile();
     }
   }//}}}
@@ -35,7 +35,6 @@ exports.Mp3Queue = function Mp3Queue(){
       that.emit("file-start", nextFileInfo);
       fs.readFile(nextFileInfo.path,
         function(err, fd){
-          sys.puts("here2");
           that.nowPlaying = nextFileInfo;
           that.stream.streamFile(fd)
         }

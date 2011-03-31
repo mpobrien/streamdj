@@ -74,10 +74,12 @@ server.addListener("request", function(req, res) {
       req.addListener("data", fileUpload.bufferData);
 
       fileUpload.once("filesaved", function(uploaderInfo){
-        queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, uploaderInfo.name);
-        var message = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname)]})
-        sys.puts(message);
-        server.broadcast(message)
+        redisClient.incr("maxsongid", function(err, newMaxId){
+          queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, uploaderInfo.name, newMaxId);
+          var message = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId)]})
+          sys.puts(message);
+          server.broadcast(message)
+        });
       });
 
       redisClient.mget("session_"+sessionId+"_user_id",
@@ -143,12 +145,12 @@ server.addListener("request", function(req, res) {
 var msgId = 0;
 
 queue.on("file-end", function(nowplaying){
-  var message = JSON.stringify( {messages:[msggen.stopped(nowplaying.uploader, nowplaying.name)]})
+  var message = JSON.stringify( {messages:[msggen.stopped(nowplaying.uploader, nowplaying.name, nowplaying.songId)]})
   server.broadcast(message);
 });
 
 queue.on("file-start", function(nowplaying){
-  var message = JSON.stringify( {messages:[msggen.started(nowplaying.uploader, nowplaying.name)]})
+  var message = JSON.stringify( {messages:[msggen.started(nowplaying.uploader, nowplaying.name, nowplaying.songId)]})
   server.broadcast(message);
 });
 
@@ -168,7 +170,7 @@ server.addListener("connection", function(connection){
               redisClient.sadd("listeners", userinfo.name, function(err, reply){
                 msgId++
                 if( reply == 1 ){
-                  var message = JSON.stringify( {messages:[msggen.join(uploaderInfo.name)]})
+                  var message = JSON.stringify( {messages:[msggen.join(connection.name)]})
                   connection.broadcast(message);
                 }else{} // already inside
               })
@@ -179,12 +181,22 @@ server.addListener("connection", function(connection){
           connection.send("1");
       }else{
           //TODO validate the message first?
-          var chat = JSON.stringify({messages:[{"type":"chat","id":msgId,'from':connection.name,'body':msg}]})
+          var message = JSON.stringify( {messages:[msggen.chat(connection.name, msg)]})
           sys.puts(connection.name + ": " + msg);
+          server.broadcast(message);
+          redisClient.lpush("chatlog", message, 
+            function(){ redisClient.ltrim("chatlog", 100, function(){}) });
       }
     }
-    connection.broadcast(chat);
   });
+  connection.addListener("close", function(){
+    redisClient.srem("listeners", connection.name, function(err, reply){
+      if(reply==1){
+        var message = JSON.stringify( {messages:[msggen.left(connection.name)]})
+        connection.broadcast(message);
+      }
+    })
+  })
 });
 
 
@@ -197,12 +209,35 @@ server.addListener("connection", function(connection){
 server.listen(settings.port);
 
 function display_form(req, res, userinfo) {//{{{
-  res.statusCode=200
+  res.statusCode = 200
   var result = { username:userinfo.name,
-                 msgs:[],
-                 nowplaying: "" }
-  result.queue = []
-  utilities.sendTemplate(res, "simple.html", result)
+                 msgs:[]
+               }
+  if( queue.nowPlaying ){ 
+    result.nowPlaying = queue.nowPlaying;
+  }else{
+    result.nowPlaying = '';
+  }
+  if( queue.getQueue().length > 0 ){
+    result.queue = queue.getQueue()
+  }else{
+    result.queue = []
+  }
+  redisClient.smembers("listeners", function(err, reply){
+    if(reply == null) reply = [];
+    var listeners = [];
+    for(var i in reply){
+      if(typeof(reply[i]) == "string"){
+        listeners.push({name:reply[i]});
+      }
+    }
+    result.listeners = listeners
+    redisClient.lrange("chatlog", 0, 99, function(err, reply2){
+      if(reply2 == null )result.msgs = []
+      else result.msgs = reply2;
+      utilities.sendTemplate(res, "simple.html", result)
+    });
+  });
 }//}}}
 
 //fs.readFile('/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3', function(err, fd){

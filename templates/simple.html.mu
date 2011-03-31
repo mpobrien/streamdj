@@ -21,27 +21,42 @@
               countmsgs = true;
             }
 
+            function pad(number, length) {
+              var str = '' + number;
+              while (str.length < length) {
+                str = '0' + str;
+              }
+              return str;
+            }
+
             function processMessage(message){
+              if(message=='1') return;
               var safefrom = $('<div/>').text(message["from"]).html(); 
               var safebody = $('<div/>').text(message["body"]).html();
+              var msgTime = message['time']
+              var timestamp = new Date(msgTime);
+              var timestampHtml = '<span class="timestamp">[' + pad(timestamp.getHours(),2) + ":" + pad(timestamp.getMinutes(),2) + "]</span>";
               if( message.type=='chat'){
-                newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + safefrom + ': </b>' +  linkify(safebody) + '</div>')
+                newmsghtml = $('<div class="message" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ': </b>' +  linkify(safebody) + '</div>')
               }else if(message.type=='enq'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
-                $('<li>' + safebody + '</li>').hide().appendTo('#queueList').show('slide').show('highlight', 3000);
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
+                var songId = message["songId"]
+                $('<li id="song_' + songId +'">' + safebody + '</li>').hide().appendTo('#queueList').show('slide').show('highlight', 3000);
               }else if(message.type=='join'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> joined the room.</div>')
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> joined the room.</div>')
               }else if(message.type=='left'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> left the room.</div>')
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> left the room.</div>')
               }else if(message.type=='stopped'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> finished playing.</div>')
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> finished playing.</div>')
                 $('#nowplayingtext').text('');
               }else if(message.type=='started'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> started playing.</div>')
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> started playing.</div>')
                 $('#nowplayingtext').text(safebody);
-              }else if(message.type=='namechange'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"> changed their username to <b>' + safebody + '</b></div>')
-              }
+                var songId = message["songId"]
+                $('#song_' + songId).hide('slide');
+              }/*else if(message.type=='namechange'){
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + ' changed their username to <b>' + safebody + '</b></div>')
+              }*/
               newmsghtml.appendTo('#chats')
             }
 
@@ -72,7 +87,7 @@
                 msgtext = $('<div/>').text(msgtext).html();
                 var mynewmsghtml = $('<div class="message" id="mymsgs' + ( mymsgs++ ) + '"><b>' + username + ': </b>' + linkify(msgtext) + '</div>')
                 ws.send(msgtext);
-                mynewmsghtml.appendTo('#chats')
+                //mynewmsghtml.appendTo('#chats')
                 var objDiv = document.getElementById("chats");
                 objDiv.scrollTop = objDiv.scrollHeight;
                 $('#newchat').val('');
@@ -251,7 +266,7 @@
         </div>
         <div id="chatpanel">
           <div id="nowplaying">
-            <marquee>Now playing: <span id="nowplayingtext">{{nowplaying}}</span></marquee>
+            <marquee>Now playing: {{#nowPlaying}}<span id="nowplayingtext">{{name}}</span> uploaded by <span id="whouploaded">{{uploader}}</span>{{/nowPlaying}}</marquee>
           </div>
           <div id="chats">
           </div>
@@ -275,7 +290,7 @@
             <h3>Listeners</h3>
             <ul>
                 {{#listeners}}
-                <li>{{name}}</li>
+                  <li>{{name}}</li>
                 {{/listeners}}
             </ul>
           </div>
@@ -287,7 +302,7 @@
             <h3>comin up:</h3>
             <ul id="queueList">
               {{#queue}}
-                <li>{{name}}</li>
+                <li id="song_{{songId}}">{{name}}</li>
               {{/queue}}
             </ul>
           </div>

@@ -9,9 +9,9 @@ exports.MessageGenerator = function MessageGenerator(){
   }
 
 
-  this.queued = function(from, filename){
+  this.queued = function(from, filename, id){
     msgId++;
-    return {"type":"enq", "id":msgId,'from':from,'body':filename, 'time':new Date().getTime()}
+    return {"type":"enq", "id":msgId,'from':from,'body':filename, 'songId':id, 'time':new Date().getTime()}
   }
 
   this.join = function(who){
@@ -19,14 +19,14 @@ exports.MessageGenerator = function MessageGenerator(){
     return {"type":"join","id":msgId,'from':who,'body':'', 'time':new Date().getTime()}
   }
 
-  this.stopped = function(who, filename){
+  this.stopped = function(who, filename, id){
     msgId++;
-    return {"type":"stopped","id":msgId,'from':who,'body':'', 'time':new Date().getTime()}
+    return {"type":"stopped","id":msgId,'from':who,'body':filename, 'songId':id, 'time':new Date().getTime()}
   }
 
-  this.started = function(who, filename){
+  this.started = function(who, filename, id){
     msgId++;
-    return {"type":"started","id":msgId,'from':who,'body':filename, 'time':new Date().getTime()}
+    return {"type":"started","id":msgId,'from':who,'body':filename, 'songId':id, 'time':new Date().getTime()}
   }
 
   this.left = function(who){
