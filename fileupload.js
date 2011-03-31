@@ -1,7 +1,7 @@
 var fs = require('fs')
 var sys = require('sys')
 
-exports.FileUpload = function FileUpload(outputPath, filename){
+exports.FileUpload = function FileUpload(outputPath, filename, res){
   this.fileName = filename;
   this.okToWrite = false;
   this.uploaderInfo = null;
@@ -10,7 +10,8 @@ exports.FileUpload = function FileUpload(outputPath, filename){
   var bufLen = 0;
   var finalbuf = new Buffer(bufLen);
   var that = this;
-  var written = false;
+  this.written = false;
+  this.uploadid = -1;
 
   this.bufferData = function(data){
     buf.push(data)
@@ -19,10 +20,11 @@ exports.FileUpload = function FileUpload(outputPath, filename){
   //req.addListener("data", function(data){ // collect the data in a buffer });
 
   this.writeToDisk = function(callback){
-    if(written || !that.okToWrite || !that.doneBuffering){
-      return;
+    if( that.written ) return;
+    if(!that.okToWrite || !that.doneBuffering){
+        return;
     }
-    written = true;
+    that.written = true;
     var finalbuf = new Buffer(bufLen);
     for (var i=0,len=buf.length,pos=0; i<len; i++) {
       buf[i].copy(finalbuf, pos);

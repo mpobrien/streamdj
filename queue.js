@@ -7,12 +7,12 @@ exports.Mp3Queue = function Mp3Queue(){
   var queue = [];
   this.nowPlaying = null;
   this.stream = new mp3.Mp3Stream();
-  /*this.stream.on("stream-end", 
+  this.stream.on("stream-end", 
     function(){
       that.emit("file-end", that.nowPlaying);
       that.playNextFile();
     } 
-  );*/
+  );
 
   this.getQueue = function(){
     return queue;

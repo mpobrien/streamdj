@@ -9,25 +9,14 @@ var Cookies = require('cookies')
 Mu.templateRoot = './templates'
 var utilities = require('./utilities')
 var util= require('util')
-var OAuth = require('node-oauth').OAuth;
+var OAuth = require('oauth').OAuth;
 var redis = require('redis');
 var redisClient = redis.createClient();
 var msgs = require('./messages')
 var msggen = new msgs.MessageGenerator();
 //var settings = JSON.parse(fs.readFileSync(process.argv[2]).toString("ascii"))
-var settings  =
-{
-  "uploadDirectory":"/home/mike/uploaded/",
-  "port":80,
-  "host":"streamdj.com",
-  "key":'IplmVMSk2qr6uNG6Pw11hg',
-  "secret":'zVrKkW8YMWS56WrpPxBjXY9HmpUnZe7AiRCytog8uI',
-  "REQUEST_TOKEN_URL" : 'http://api.twitter.com/oauth/request_token',
-  "ACCESS_TOKEN_URL" : 'http://api.twitter.com/oauth/access_token',
-  "OAUTH_VERSION" : '1.0',
-  "HASH_VERSION" : 'HMAC-SHA1',
-  "CALLBACK_URL" : 'http://streamdj.com/authdone'
-}
+var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
+var uploadIds = 0;
 
 Array.prototype.remove = function(e) {//{{{
     for (var i = 0; i < this.length; i++) {
@@ -56,6 +45,7 @@ server.addListener("request", function(req, res) {
     utilities.serveStaticFile(req, res, uri);
     return;
   }
+  sys.puts("request at " + qs.pathname);
   switch (qs.pathname) {
     case '/listen':
       req.connection.addListener("close", function(){ streamlisteners.remove(res); })
@@ -79,29 +69,30 @@ server.addListener("request", function(req, res) {
       var sessionId = cookies.get("session");
       var filePath = utilities.randomString(64);
       var fname = req.headers['x-file-name']
-      var userinfo = {name:'mike',user_id:1234}
-
       var fileUpload = new uploads.FileUpload(settings.uploadDirectory + filePath + ".mp3", fname)
+      fileUpload.uploadid = ++uploadIds;
       req.addListener("data", fileUpload.bufferData);
 
-      fileUpload.on("filesaved", function(uploaderInfo){
+      fileUpload.once("filesaved", function(uploaderInfo){
         queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, uploaderInfo.name);
-        server.broadcast(JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname)]}))
+        var message = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname)]})
+        sys.puts(message);
+        server.broadcast(message)
       });
 
       redisClient.mget("session_"+sessionId+"_user_id",
                        "session_"+sessionId+"_screen_name",
         function(err, replies){ //TODO check for redis error!
-          userinfo = {user_id:replies[0], name:replies[1]}
+          var userinfo = {user_id:replies[0], name:replies[1]}
           fileUpload.okToWrite = true; //TODO validate it, if userinfo is bad, drop stream
           fileUpload.uploaderInfo = userinfo;
           fileUpload.writeToDisk();
         })
 
-
-      req.addListener("end", function(){
+      req.once("end", function(){
         fileUpload.doneBuffering = true;
         fileUpload.writeToDisk();
+        res.end();
       });
       break;
     case '/login':
@@ -120,8 +111,8 @@ server.addListener("request", function(req, res) {
       var cookies = new Cookies(req, res)
       var sessionId = cookies.get("session");
       redisClient.del("session_"+sessionId+"_user_id", function(){
-        cookies.set("session", null, {domain:"streamdj.com", httpOnly:false});
-        res.writeHead(302, { 'Location': 'http://streamdj.com/' });
+        cookies.set("session", null, {domain:"outloud.fm", httpOnly:false});
+        res.writeHead(302, { 'Location': 'http://outloud.fm:3000/' });
         res.end()
       })
       break;
@@ -132,12 +123,16 @@ server.addListener("request", function(req, res) {
       oa.getOAuthAccessToken(token, verifier, 
           function(error, oauth_access_token, oauth_access_token_secret, results2) {
             var session_id = utilities.randomString(128);
-            redisClient.mset("session_"+session_id+"_user_id", results2.user_id, "session_"+session_id+"_screen_name", results2.screen_name,
-                             function(){
-                               cookies.set("session", session_id, {domain:"streamdj.com", httpOnly:false});
-                               res.writeHead(302, { 'Location': 'http://streamdj.com/', });
-                               res.end();
-                             })
+            try{
+                redisClient.mset("session_"+session_id+"_user_id", results2.user_id, "session_"+session_id+"_screen_name", results2.screen_name,
+                                 function(){
+                                   cookies.set("session", session_id, {domain:"outloud.fm", httpOnly:false});
+                                   res.writeHead(302, { 'Location': 'http://outloud.fm:3000/', });
+                                   res.end();
+                                 })
+            }catch(e){
+              res.end("something went wrong, please tell mikey?");
+            }
           })
       break;
     default:
@@ -146,6 +141,16 @@ server.addListener("request", function(req, res) {
   }
 })
 var msgId = 0;
+
+queue.on("file-end", function(nowplaying){
+  var message = JSON.stringify( {messages:[msggen.stopped(nowplaying.uploader, nowplaying.name)]})
+  server.broadcast(message);
+});
+
+queue.on("file-start", function(nowplaying){
+  var message = JSON.stringify( {messages:[msggen.started(nowplaying.uploader, nowplaying.name)]})
+  server.broadcast(message);
+});
 
 server.addListener("connection", function(connection){
   connection.authorized = false;
@@ -157,22 +162,27 @@ server.addListener("connection", function(connection){
         redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name",
             function(err, replies){
               //TODO check for err.
-              userinfo = {user_id:replies[0], name:replies[1]}
+              var userinfo = {user_id:replies[0], name:replies[1]}
               connection.name = userinfo.name
               connection.authorized = true;
               redisClient.sadd("listeners", userinfo.name, function(err, reply){
                 msgId++
                 if( reply == 1 ){
-                  var message = JSON.stringify({messages:[{"type":"join","id":msgId,'from':userinfo.name,'body':''}]})
+                  var message = JSON.stringify( {messages:[msggen.join(uploaderInfo.name)]})
                   connection.broadcast(message);
                 }else{} // already inside
               })
             })
       }
     }else{
-      var chat = JSON.stringify({messages:[{"type":"chat","id":msgId,'from':connection.name,'body':msg}]})
+      if(msg=='0'){ //ping!
+          connection.send("1");
+      }else{
+          //TODO validate the message first?
+          var chat = JSON.stringify({messages:[{"type":"chat","id":msgId,'from':connection.name,'body':msg}]})
+          sys.puts(connection.name + ": " + msg);
+      }
     }
-    //TODO validate the message first?
     connection.broadcast(chat);
   });
 });
@@ -193,38 +203,6 @@ function display_form(req, res, userinfo) {//{{{
                  nowplaying: "" }
   result.queue = []
   utilities.sendTemplate(res, "simple.html", result)
-}//}}}
-
-function upload_file(req, res, userinfo) {//{{{
-  var fname = req.headers['x-file-name'] 
-  sys.puts(util.inspect(req.headers));
-  var buf = []
-  var bufLen = 0;   
-  req.addListener("data", function(data){
-    buf.push(data)
-    bufLen += data.length;
-  });
-
-  req.addListener("end",
-      function(){
-        var finalbuf = new Buffer(bufLen);
-        for (var i=0,len=buf.length,pos=0; i<len; i++) {
-          buf[i].copy(finalbuf, pos);
-          pos += buf[i].length;
-        }  
-        var filePath = utilities.randomString(64);
-        fs.open(settings.uploadDirectory + filePath + ".mp3", 'w',
-          function(err2, fd){
-            fs.write(fd, finalbuf, 0, finalbuf.length, null, function(){
-                fs.close(fd);
-                res.end();
-                queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, userinfo.name);
-                sys.puts(settings.uploadDirectory + filePath + ".mp3");
-                server.broadcast(JSON.stringify( {messages:[msggen.queued(userinfo.name, fname)]}))
-              //broadcast({messages:[{"type":"enq","id":msgId,'from':sess.name,'body':fname}]})
-            });
-          });
-      });
 }//}}}
 
 //fs.readFile('/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3', function(err, fd){

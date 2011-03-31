@@ -24,7 +24,7 @@ exports.MessageGenerator = function MessageGenerator(){
     return {"type":"stopped","id":msgId,'from':who,'body':'', 'time':new Date().getTime()}
   }
 
-  this.stopped = function(who, filename){
+  this.started = function(who, filename){
     msgId++;
     return {"type":"started","id":msgId,'from':who,'body':filename, 'time':new Date().getTime()}
   }

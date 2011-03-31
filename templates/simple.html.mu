@@ -86,7 +86,7 @@
           soundManager.onready(function() {
               soundManager.createSound({
                   id: 'mySound',
-                  url: 'http://streamdj.com/listen',
+                  url: 'http://outloud.fm:3000/listen',
                   autoPlay: true,
                   stream: true
               });
@@ -99,13 +99,23 @@
             var muted = false;
             $(document).ready(
                 function(){
-                    ws = new WebSocket("ws://streamdj.com");
+                    ws = new WebSocket("ws://outloud.fm:3000");
                     ws.onopen = function(){
                       console.debug("hey");
                       ws.send("auth:" + document.cookie);
+                      setInterval(function(){
+                          console.debug("ping?");
+                          ws.send("0")
+                      }, 45000);
                     }
                     ws.onmessage = function(message){
+                        if(message.data=='1'){
+                            console.debug("pong.");
+                            return;
+                        }
+                        console.debug("got message!", message)
                         var msgs = $.parseJSON(message.data);
+                        console.debug("received", msgs)
                         for( var i in msgs.messages){
                             var message = msgs.messages[i]
                             var newmsghtml;
