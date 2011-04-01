@@ -1,6 +1,6 @@
 var fs = require('fs')
 var sys = require('sys')
-var mp3 = require('./mp3stream2.js')
+var mp3 = require('./mp3stream.js')
 
 exports.Mp3Queue = function Mp3Queue(){
   var that = this;
