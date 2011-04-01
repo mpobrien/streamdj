@@ -49,6 +49,7 @@
               }else if(message.type=='stopped'){
                 newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> finished playing.</div>')
                 $('#nowplayingtext').text('');
+                $('#song_' + songId).hide('slide');
               }else if(message.type=='started'){
                 newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> started playing.</div>')
                 $('#nowplayingtext').text(safebody);
