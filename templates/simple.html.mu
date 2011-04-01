@@ -6,6 +6,7 @@
         <!--script type="text/javascript" src="/static/socket.io.min.js"></script-->
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
         <script type="text/javascript" src="/static/chat.js"></script>
+        <script type="text/javascript" src="/static/jqwheel.js"></script>
         <script type="text/javascript">
 
             var msgs = [{{{msgs}}}]
@@ -224,21 +225,30 @@
                     dropbox.addEventListener("dragexit", cancel, false);
                     dropbox.addEventListener("dragover", cancel, false);
                     dropbox.addEventListener("drop", drophandler, false);
-                    //window.addEventListener("dragenter", cancel, false);
-                    //window.addEventListener("dragexit", cancel, false);
-                    //window.addEventListener("dragover", cancel, false);
-                    //window.addEventListener("drop", cancel, false);
+                    window.addEventListener("dragenter", cancel, false);
+                    window.addEventListener("dragexit", cancel, false);
+                    window.addEventListener("dragover", cancel, false);
+                    window.addEventListener("drop", cancel, false);
 
-                    var currentVolume = 90;
+                    currentVolume = 90;
+                    function setVol(v){
+                      soundManager.setVolume('mySound', v);
+                      $('#volinside').css('width', v + '%')
+                    }
                     $('#volcontrol').click(
-                        function(e){
+                      function(e){
                             var x = e.pageX - $(this).offset().left;
                             var pct = parseInt((x * 100) / 140)
                             currentVolume = pct;
-                            soundManager.setVolume('mySound', pct);
-                            $('#volinside').css('width', pct + '%')
-                        }
-                    );
+                            setVol(pct);
+                      }
+                    ).mousewheel(function(e,delta){
+                      var newvolume = currentVolume + delta;
+                      if( newvolume >= 100 ) newvolume = 100;
+                      if( newvolume <= 0 ) newvolume = 0;
+                      currentVolume = newvolume;
+                      setVol(newvolume);
+                    });
                     $('#volicon').click(function(){
                             muted = !muted;
                             soundManager.setVolume('mySound', muted ? 0 : currentVolume);
