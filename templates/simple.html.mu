@@ -3,16 +3,16 @@
       <link href="/static/style.css" rel="stylesheet" />
         <script type="text/javascript" src="/static/jquery.min.js"></script>
         <script type="text/javascript" src="/static/jquery-ui-custom.js"></script>
-        <script type="text/javascript" src="/static/socket.io.min.js"></script>
+        <!--script type="text/javascript" src="/static/socket.io.min.js"></script-->
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
         <script type="text/javascript" src="/static/chat.js"></script>
         <script type="text/javascript">
+
             var msgs = [{{{msgs}}}]
             var username = '{{username}}'
-            var socket = new io.Socket();
             var newMessageCount = 0;
             var countmsgs = false;
-            socket.on("connect", function(){console.debug("connected.")});
+            //socket.on("connect", function(){console.debug("connected.")});
             window.onfocus = function(){
               document.title = 'hey'
               newMessageCount = 0;
@@ -21,31 +21,47 @@
               countmsgs = true;
             }
 
+            function pad(number, length) {
+              var str = '' + number;
+              while (str.length < length) {
+                str = '0' + str;
+              }
+              return str;
+            }
+
             function processMessage(message){
+              if(message=='1') return;
               var safefrom = $('<div/>').text(message["from"]).html(); 
               var safebody = $('<div/>').text(message["body"]).html();
+              var msgTime = message['time']
+              var timestamp = new Date(msgTime);
+              var timestampHtml = '<span class="timestamp">[' + pad(timestamp.getHours(),2) + ":" + pad(timestamp.getMinutes(),2) + "]</span>";
               if( message.type=='chat'){
-                newmsghtml = $('<div class="message" id="' + message["id"] + '"><b>' + safefrom + ': </b>' +  linkify(safebody) + '</div>')
+                newmsghtml = $('<div class="message" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ': </b>' +  linkify(safebody) + '</div>')
               }else if(message.type=='enq'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
-                $('<li>' + safebody + '</li>').hide().appendTo('#queueList').show('slide').show('highlight', 3000);
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
+                var songId = message["songId"]
+                $('<li id="song_' + songId +'">' + safebody + '</li>').hide().appendTo('#queueList').show('slide').show('highlight', 3000);
               }else if(message.type=='join'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> joined the room.</div>')
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> joined the room.</div>')
               }else if(message.type=='left'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safefrom + ' </b> left the room.</div>')
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> left the room.</div>')
               }else if(message.type=='stopped'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> finished playing.</div>')
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> finished playing.</div>')
                 $('#nowplayingtext').text('');
               }else if(message.type=='started'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"><b>' + safebody + ' </b> started playing.</div>')
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> started playing.</div>')
                 $('#nowplayingtext').text(safebody);
-              }else if(message.type=='namechange'){
-                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '"> changed their username to <b>' + safebody + '</b></div>')
-              }
+                var songId = message["songId"]
+                $('#song_' + songId).hide('slide');
+              }/*else if(message.type=='namechange'){
+                newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + ' changed their username to <b>' + safebody + '</b></div>')
+              }*/
               newmsghtml.appendTo('#chats')
             }
 
-            socket.on("message", 
+            //socket.on("message", 
+/*
                 function(data){
                     var msgs = $.parseJSON(data);
                     for( var i in msgs.messages){
@@ -63,15 +79,15 @@
                     }
                 } );
             socket.on('disconnect', function(m){ console.debug("disconnect!")});
-            socket.connect();
+            socket.connect();*/
 
             var mymsgs =1;
             var sendMessage = function(){
                 var msgtext = $('#newchat').val()
                 msgtext = $('<div/>').text(msgtext).html();
                 var mynewmsghtml = $('<div class="message" id="mymsgs' + ( mymsgs++ ) + '"><b>' + username + ': </b>' + linkify(msgtext) + '</div>')
-                socket.send(msgtext);
-                mynewmsghtml.appendTo('#chats')
+                ws.send(msgtext);
+                //mynewmsghtml.appendTo('#chats')
                 var objDiv = document.getElementById("chats");
                 objDiv.scrollTop = objDiv.scrollHeight;
                 $('#newchat').val('');
@@ -85,16 +101,48 @@
           soundManager.onready(function() {
               soundManager.createSound({
                   id: 'mySound',
-                  url: '/listen',
+                  url: 'http://outloud.fm:3000/listen',
                   autoPlay: true,
                   stream: true
               });
-          });
+          });                
+          soundManager.onbufferchange = function(){
+            console.debug("change");
+          }
         </script>
         <script type="text/javascript">
             var muted = false;
             $(document).ready(
                 function(){
+                    ws = new WebSocket("ws://outloud.fm:3000");
+                    ws.onopen = function(){
+                      console.debug("hey");
+                      ws.send("auth:" + document.cookie);
+                      setInterval(function(){
+                          console.debug("ping?");
+                          ws.send("0")
+                      }, 45000);
+                    }
+                    ws.onmessage = function(message){
+                        if(message.data=='1'){
+                            console.debug("pong.");
+                            return;
+                        }
+                        console.debug("got message!", message)
+                        var msgs = $.parseJSON(message.data);
+                        console.debug("received", msgs)
+                        for( var i in msgs.messages){
+                            var message = msgs.messages[i]
+                            var newmsghtml;
+                            processMessage(message);
+                            if( message.type == 'chat' && countmsgs){
+                              newMessageCount++;
+                              document.title = "(" + newMessageCount + ") hey";
+                            }
+                            var objDiv = document.getElementById("chats");
+                            objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    };
                     //setTimeout(fetchMessages, 10);
                     $('#changename').click(
                       function(){
@@ -125,7 +173,7 @@
                         $(this).text(muted ? "Unmute" : "Mute");
                       })
 
-                    var handleFiles =function(files){
+                    var handleFiles = function(files){
                         for( var fn in files ){
                             var file = files[fn];
                             if( !file.fileSize ) continue;
@@ -150,7 +198,7 @@
                                 }else{ inner.animate({'width':pct + '%'}, 100, function(){console.debug("not done");}) }
                                 console.debug("progress", e);
                             }
-                            qxhr.open("POST","/getfile", true);
+                            qxhr.open("POST","/upload", true);
                             qxhr.setRequestHeader('Content-Type', 'multipart/form-data');
                             qxhr.setRequestHeader("X-File-Name", file.fileName);
                             qxhr.send(file);
@@ -175,10 +223,10 @@
                     dropbox.addEventListener("dragexit", cancel, false);
                     dropbox.addEventListener("dragover", cancel, false);
                     dropbox.addEventListener("drop", drophandler, false);
-                    window.addEventListener("dragenter", cancel, false);
-                    window.addEventListener("dragexit", cancel, false);
-                    window.addEventListener("dragover", cancel, false);
-                    window.addEventListener("drop", cancel, false);
+                    //window.addEventListener("dragenter", cancel, false);
+                    //window.addEventListener("dragexit", cancel, false);
+                    //window.addEventListener("dragover", cancel, false);
+                    //window.addEventListener("drop", cancel, false);
 
                     var currentVolume = 90;
                     $('#volcontrol').click(
@@ -218,7 +266,7 @@
         </div>
         <div id="chatpanel">
           <div id="nowplaying">
-            <marquee>Now playing: <span id="nowplayingtext">{{nowplaying}}</span></marquee>
+            <marquee>Now playing: {{#nowPlaying}}<span id="nowplayingtext">{{name}}</span> uploaded by <span id="whouploaded">{{uploader}}</span>{{/nowPlaying}}</marquee>
           </div>
           <div id="chats">
           </div>
@@ -228,6 +276,9 @@
         </div>
 
         <div id="rightPanel">
+            <div id="links">
+              <a href="/logout">logout</a>
+            </div>
             <div id="volwrapper">
                 <div id="volicon">
                 </div>
@@ -238,10 +289,9 @@
           <div id="whosInRoom">
             <h3>Listeners</h3>
             <ul>
-              <li><span id="myname">{{username}}</span><a id="changename" href="javascript:void(0)">change</a></li>
-              <li>mike</li>
-              <li>steven</li>
-              <li>person</li>
+                {{#listeners}}
+                  <li>{{name}}</li>
+                {{/listeners}}
             </ul>
           </div>
           <div id="uploadArea">
@@ -252,7 +302,7 @@
             <h3>comin up:</h3>
             <ul id="queueList">
               {{#queue}}
-                <li>{{name}}</li>
+                <li id="song_{{songId}}">{{name}}</li>
               {{/queue}}
             </ul>
           </div>
