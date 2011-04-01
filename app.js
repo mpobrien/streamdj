@@ -75,10 +75,10 @@ server.addListener("request", function(req, res) {
 
       fileUpload.once("filesaved", function(uploaderInfo){
         redisClient.incr("maxsongid", function(err, newMaxId){
-          queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, uploaderInfo.name, newMaxId);
           var message = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId)]})
           sys.puts(message);
           server.broadcast(message)
+          queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, uploaderInfo.name, newMaxId);
         });
       });
 
