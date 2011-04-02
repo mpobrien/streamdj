@@ -33,6 +33,8 @@ queue.stream.on("frameready", function(data,y,z){
   })
 });
 
+sys.puts(util.inspect(settings))
+
 var oa = new OAuth(settings.REQUEST_TOKEN_URL, settings.ACCESS_TOKEN_URL,
                    settings.key, settings.secret, 
                    settings.OAUTH_VERSION, settings.CALLBACK_URL, settings.HASH_VERSION); 
@@ -113,8 +115,8 @@ server.addListener("request", function(req, res) {
       var cookies = new Cookies(req, res)
       var sessionId = cookies.get("session");
       redisClient.del("session_"+sessionId+"_user_id", function(){
-        cookies.set("session", null, {domain:"outloud.fm", httpOnly:false});
-        res.writeHead(302, { 'Location': 'http://outloud.fm:3000/' });
+        cookies.set("session", null, {domain:settings.domain, httpOnly:false});
+        res.writeHead(302, { 'Location': 'http://' + settings.domain + ':' + settings.port + '/' });
         res.end()
       })
       break;
@@ -125,11 +127,12 @@ server.addListener("request", function(req, res) {
       oa.getOAuthAccessToken(token, verifier, 
           function(error, oauth_access_token, oauth_access_token_secret, results2) {
             var session_id = utilities.randomString(128);
+            sys.puts(util.inspect(results2))
             try{
                 redisClient.mset("session_"+session_id+"_user_id", results2.user_id, "session_"+session_id+"_screen_name", results2.screen_name,
                                  function(){
-                                   cookies.set("session", session_id, {domain:"outloud.fm", httpOnly:false});
-                                   res.writeHead(302, { 'Location': 'http://outloud.fm:3000/', });
+                                   cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});
+                                   res.writeHead(302, { 'Location': 'http://' + settings.domain + ':' + settings.port + '/'  });
                                    res.end();
                                  })
             }catch(e){
@@ -138,7 +141,7 @@ server.addListener("request", function(req, res) {
           })
       break;
     default:
-      //res.end();
+      res.end();
       break;
   }
 })
@@ -211,18 +214,12 @@ server.listen(settings.port);
 function display_form(req, res, userinfo) {//{{{
   res.statusCode = 200
   var result = { username:userinfo.name,
-                 msgs:[]
+                 msgs:[],
+                 wsurl: "ws://" + settings.domain + ":" + settings.port,
+                 listenurl: "http://" + settings.domain + ":" + settings.port + "/listen",
                }
-  if( queue.nowPlaying ){ 
-    result.nowPlaying = queue.nowPlaying;
-  }else{
-    result.nowPlaying = '';
-  }
-  if( queue.getQueue().length > 0 ){
-    result.queue = queue.getQueue()
-  }else{
-    result.queue = []
-  }
+  result.nowPlaying = queue.nowPlaying ? queue.nowPlaying : '';
+  result.queue = queue.getQueue().length > 0 ? queue.getQueue() : [];
   redisClient.smembers("listeners", function(err, reply){
     if(reply == null) reply = [];
     var listeners = [];
@@ -235,6 +232,7 @@ function display_form(req, res, userinfo) {//{{{
     redisClient.lrange("chatlog", 0, 99, function(err, reply2){
       if(reply2 == null )result.msgs = []
       else result.msgs = reply2;
+      sys.puts(util.inspect(result));
       utilities.sendTemplate(res, "simple.html", result)
     });
   });

@@ -103,7 +103,7 @@
           soundManager.onready(function() {
               soundManager.createSound({
                   id: 'mySound',
-                  url: 'http://outloud.fm:3000/listen',
+                  url: '{{listenurl}}',
                   autoPlay: true,
                   stream: true
               });
@@ -116,7 +116,7 @@
             var muted = false;
             $(document).ready(
                 function(){
-                    ws = new WebSocket("ws://outloud.fm:3000");
+                    ws = new WebSocket("{{wsurl}}");
                     ws.onopen = function(){
                       console.debug("hey");
                       ws.send("auth:" + document.cookie);
