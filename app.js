@@ -74,13 +74,14 @@ server.addListener("request", function(req, res) {
       var fileUpload = new uploads.FileUpload(settings.uploadDirectory + filePath + ".mp3", fname)
       fileUpload.uploadid = ++uploadIds;
       req.addListener("data", fileUpload.bufferData);
+      var metadata = {};
 
       fileUpload.once("filesaved", function(uploaderInfo){
         redisClient.incr("maxsongid", function(err, newMaxId){
-          var message = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId)]})
+          var message = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
           sys.puts(message);
           server.broadcast(message)
-          queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, uploaderInfo.name, newMaxId);
+          queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, uploaderInfo.name, newMaxId, metadata);
         });
       });
 
@@ -95,6 +96,8 @@ server.addListener("request", function(req, res) {
 
       req.once("end", function(){
         fileUpload.doneBuffering = true;
+        fileUpload.prepareBuffer();
+        metadata = fileUpload.getMetaData();
         fileUpload.writeToDisk();
         res.end();
       });
@@ -148,12 +151,12 @@ server.addListener("request", function(req, res) {
 var msgId = 0;
 
 queue.on("file-end", function(nowplaying){
-  var message = JSON.stringify( {messages:[msggen.stopped(nowplaying.uploader, nowplaying.name, nowplaying.songId)]})
+  var message = JSON.stringify( {messages:[msggen.stopped(nowplaying.uploader, nowplaying.name, nowplaying.songId, nowplaying.meta)]})
   server.broadcast(message);
 });
 
 queue.on("file-start", function(nowplaying){
-  var message = JSON.stringify( {messages:[msggen.started(nowplaying.uploader, nowplaying.name, nowplaying.songId)]})
+  var message = JSON.stringify( {messages:[msggen.started(nowplaying.uploader, nowplaying.name, nowplaying.songId, nowplaying.meta)]})
   server.broadcast(message);
 });
 

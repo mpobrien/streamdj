@@ -313,25 +313,18 @@
             <h3>comin up:</h3>
             <ul id="queueList">
               {{#queue}}
-                <li id="song_{{songId}}">{{name}}</li>
+                <li id="song_{{songId}}">
+                  {{#meta}}{{Title}} by {{Artist}}{{/meta}}
+                  {{^meta}}{{name}}{{/meta}}
+                   uploaded by: {{uploader}}
+                </li>
               {{/queue}}
             </ul>
           </div>
         </div>
-
-
-
-
-
-
-
-
-
-
-
         <!--<form method="post" enctype="multipart/form-data" action="/getfile">
             <input type="file" name="somename"/>
             <input type="submit"/>
-          </form>-->
+        </form>-->
     </body>
 </html>

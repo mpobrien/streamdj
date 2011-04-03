@@ -18,11 +18,12 @@ exports.Mp3Queue = function Mp3Queue(){
     return queue;
   }
 
-  this.enqueue = function(path, name, uploader, songId){//{{{
+  this.enqueue = function(path, name, uploader, songId, meta){//{{{
     queue.push({ path:     path,
                  name:     name,
                  uploader: uploader,
-                 songId:   songId})
+                 songId:   songId, 
+                 meta: meta })
                  
     if(that.nowPlaying == null && queue.length == 1){ // A file was just added to an empty queue.
       that.playNextFile();
