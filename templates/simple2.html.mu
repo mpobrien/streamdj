@@ -4,20 +4,22 @@
     <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="/static/jquery.min.js"></script>
     <script type="text/javascript" src="/static/jquery-ui-custom.js"></script>
+    <script type="text/javascript" src="/static/simplemodal.js"></script>
     <script type="text/javascript" src="/static/soundmanager2.js"></script>
     <script type="text/javascript">
+      var startStream = function(){
+        soundManager.createSound({
+          id: 'mySound',
+          url: '{{listenurl}}',
+          autoPlay: true,
+          stream: true
+        });
+      }
       soundManager.url = '/static/swf/';
       soundManager.debugMode = false;
       soundManager.flashVersion = 9;
       soundManager.useFlashBlock = false; 
-      soundManager.onready(function() {
-          soundManager.createSound({
-              id: 'mySound',
-              url: '{{listenurl}}',
-              autoPlay: true,
-              stream: true
-          });
-      });                
+      soundManager.onready(startStream);
     </script>
     <script type="text/javascript">
        var wsurl = '{{wsurl}}'
@@ -44,6 +46,22 @@
          }
          return str;
        }
+       $(document).ready(function(){
+         $('#options').click(function(){
+           $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
+         });
+         $('#restartaudio').click(function(){
+           soundManager.destroySound('mySound');
+           startStream();
+         });
+         $('#restartaudio').click(function(){
+           soundManager.destroySound('mySound');
+           startStream();
+         });
+         $('#clearchat').click(function(){
+           $('#chat').html('');
+         });
+       })
     </script>
   </head>
   <body>
@@ -57,7 +75,7 @@
           </div>
       </div>
       <div id="links">
-        <span class="link"><a href="/settings">settings</a></span>
+        <span class="link"><a href="#" id="options">options</a></span>
         <span class="link"><a href="/logout">logout</a></span>
       </div>
     </div>
@@ -115,8 +133,12 @@
         </div>
       </div>
     </div>
-    <div id="droptarget">
-    BLAHBLAH
+    <div id="optionsmodal">
+      <div class="heading">Options</div>
+      <ul>
+        <li><button id="clearchat">Clear chat history</button></li>
+        <li><button id="restartaudio">Restart Audio Stream</button></li>
+      </ul>
     </div>
   </body>
 </html>
