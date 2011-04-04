@@ -56,13 +56,13 @@ server.addListener("request", function(req, res) {
     case '/':
       var cookies = new Cookies(req, res);
       if( !cookies.get("session") ){ // user is not logged in.
-        utilities.sendTemplate(res, "login.html", {})
+        utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
       }else{ // user is logged in.
         var sessionId = cookies.get("session");
         redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", function(err, replies){
           if(replies[0] == null || replies[1] == null){
             sys.puts(util.inspect(replies));
-            utilities.sendTemplate(res, "login.html", {})
+            utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
             return;
           }
           //TODO check for err.
@@ -240,7 +240,7 @@ function display_form(req, res, userinfo) {//{{{
     redisClient.lrange("chatlog", 0, 99, function(err, reply2){
       if(reply2 == null )result.msgs = []
       else result.msgs = reply2;
-      utilities.sendTemplate(res, "simple2.html", result)
+      utilities.sendTemplate(res, "simple2.html", result, settings.devtemplates)
     });
   });
 }//}}}

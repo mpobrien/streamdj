@@ -1,5 +1,7 @@
 var Mu = require('Mu')
 var fs = require('fs')
+var sys = require('sys')
+var util = require('util')
 var path = require('path')
 
 exports.randomString = function(bits){
@@ -55,8 +57,12 @@ exports.serveStaticFile = function(req, res, uri){//{{{
   });  
 }//}}}
 
-exports.sendTemplate = function(res, template, context){//{{{
-  Mu.render(template, context, {}, function(err, output){
+exports.sendTemplate = function(res, template, context, devmode){//{{{
+  var options = {}
+  if( devmode ){
+    options['cached'] = false;
+  }
+  Mu.render(template, context, options, function(err, output){
     if(err){
       throw err;
     }
