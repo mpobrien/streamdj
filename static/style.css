@@ -1,105 +1,148 @@
-body{
-    font-family:Verdana, sans-serif;
-}
+/* style.scss */
+body {
+  margin: 0px; }
 
-#header{
-    height:80px;
-}
+.notshown {
+  display: none; }
 
-.progressContainer{
-  width:300px; height:10px;border:1px solid black;
-}
+.org {
+  color: #e06441; }
 
-.message{
-  padding-left:5px;
-  margin-top:4px;
-}
+#note {
+  color: #efffd3; }
 
-.enqueued{
-  padding-left:5px;
-  margin-top:4px;
-  color:#666;
-}
-.filename{
-  font-style:italic;
-}
+#navbar a:link, a:hover, a:visited, a:active {
+  color: #efffd3;
+  text-decoration: none; }
 
-.progressBar{
-  width:0%;
- height:10px; background-color:black;
-}
+#navbar .link {
+  margin-left: 20px;
+  margin-right: 20px; }
 
-#chatpanel{
-  border:1px solid black;
-  top:95px;
-  height:415px;
-  width:500px;
-}
+#navbar {
+  padding-top: 15px;
+  font-family: Kreon, Georgia, serif;
+  width: 100%;
+  position: absolute;
+  height: 45px;
+  left: 0px;
+  background-color: #18485c;
+  color: #efffd3; }
+  #navbar #branding {
+    float: left;
+    margin-left: 20px;
+    font-size: 25px; }
+  #navbar #volwrapper {
+    top: 20px;
+    float: right;
+    height: 40px;
+    margin-right: 30px; }
+  #navbar #links {
+    margin-top: 20px;
+    margin-right: 50px;
+    float: left; }
+  #navbar #volicon {
+    background: url("/static/volumeorg.png");
+    height: 20px;
+    width: 20px;
+    float: left;
+    top: 20px;
+    margin-top: 5px;
+    margin-right: 5px; }
+  #navbar #volcontrol {
+    width: 140px;
+    border: 1px solid #efffd3;
+    height: 14px;
+    float: left;
+    margin-top: 8px;
+    margin-bottom: 13px; }
+  #navbar #volinside {
+    width: 90%;
+    background-color: #e06441;
+    height: 100%;
+    padding: 0px;
+    margin: 0px; }
 
-#chats{
-  overflow-y:scroll;
-  height:400px;
-}
+#maincontent {
+  position: absolute;
+  top: 60px;
+  margin-top: 10px;
+  margin-left: 35px;
+  width: 95%; }
+  #maincontent #chatwrapper {
+    width: 70%; }
+    #maincontent #chatwrapper #chat {
+      overflow-y: scroll;
+      height: 400px;
+      background-color: #f8f8f8;
+      font-family: 'Verdana',sans-serif; }
+    #maincontent #chatwrapper #sender input {
+      width: 100%; }
+  #maincontent #rightbar {
+    position: absolute;
+    top: 0px;
+    left: 70%; }
+  #maincontent .desc {
+    font-style: italic;
+    color: #ab9a85; }
+  #maincontent #currentfile {
+    padding-top: 10px;
+    font-family: Georgia,serif; }
+    #maincontent #currentfile #by, #maincontent #currentfile #from {
+      color: #958168;
+      font-size: .8em;
+      padding-right: 10px; }
+    #maincontent #currentfile #np_title {
+      font-size: 20px; }
+  #maincontent .section {
+    font-family: Kreon;
+    color: #3b3329;
+    text-align: right;
+    width: 300px;
+    margin-bottom: 20px; }
+    #maincontent .section .heading {
+      font-weight: bold;
+      font-size: 24px;
+      padding: 0px;
+      margin: 0px;
+      border-bottom: 1px dashed #bfb3a4; }
+    #maincontent .section ul {
+      margin-top: 10px; }
+      #maincontent .section ul li {
+        list-style: none;
+        margin: 3px;
+        font-family: Georgia,serif;
+        text-style: italic; }
+  #maincontent .timestamp {
+    font-size: .8em;
+    padding-right: 5px;
+    color: #aaa; }
 
-#messagesender{
-  position:absolute;
-  top:515px;
-  width:700px;
-}
+#droptarget {
+  border--radius: 15px;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  font-family: Kreon, Georgia;
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border: 1px solid black;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  top: 20%;
+  left: 40%;
+  z-index: 1000;
+  line-height: 300px;
+  background-color: rgba(24, 72, 92, 0.3);
+  display: none; }
 
-#rightPanel{
-  position:absolute;
-  left:500px;
-  margin-left:10px;
-  top:0px;
-  width:200px;
-}
+.progressBar {
+  width: 0%;
+  height: 10px;
+  background-color: black; }
 
-#rightPanel > div{
-  border:1px solid black;
-}
-#whosInRoom{ }
-#uploadArea{ }
-#queue{ }
-
-#volwrapper{ height:40px; }
-#volcontrol{ width:140px; border:1px solid black; height:14px; float:left; margin-top:13px; margin-bottom:13px; }
-#volinside{ width:90%; background-color: black; height:100%; padding:0px; margin:0px; }
-#volicon{ background:url('volume.png'); height:40px; width:40px; float:left; }
-
-.awesome{
-    background: #ccc url(/static/alert-overlay.png) repeat-x;
-    display: inline-block;
-    padding: 5px 10px 6px;
-    color: #000;
-    text-decoration: none;
-    font-weight: bold;
-    line-height: 1;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-box-shadow: 0 1px 3px #111;
-    -webkit-box-shadow: 0 1px 3px #111;
-    text-shadow: 0 -1px 1px #222;
-    border-bottom: 1px solid #222;
-    position: relative;
-    cursor: pointer;
-}
-
-#nowplaying{
-    height:15px;
-}
-
-#messagesender{
-  line-height:20px;
-}
-#send{
-  font-size:18px;
-}
-#newchat{
-  line-height:30px;
-  font-size:20px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-box-shadow: 0 1px 3px #999;
-    -webkit-box-shadow: 0 1px 3px #999;
-}
+.progressContainer {
+  width: 300px;
+  height: 10px;
+  border: 1px solid black; }

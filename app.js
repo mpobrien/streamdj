@@ -60,6 +60,11 @@ server.addListener("request", function(req, res) {
       }else{ // user is logged in.
         var sessionId = cookies.get("session");
         redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", function(err, replies){
+          if(replies[0] == null || replies[1] == null){
+            sys.puts(util.inspect(replies));
+            utilities.sendTemplate(res, "login.html", {})
+            return;
+          }
           //TODO check for err.
           userinfo = {user_id:replies[0], name:replies[1]}
           display_form(req, res, userinfo);
@@ -133,11 +138,11 @@ server.addListener("request", function(req, res) {
             sys.puts(util.inspect(results2))
             try{
                 redisClient.mset("session_"+session_id+"_user_id", results2.user_id, "session_"+session_id+"_screen_name", results2.screen_name,
-                                 function(){
-                                   cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});
-                                   res.writeHead(302, { 'Location': 'http://' + settings.domain + ':' + settings.port + '/'  });
-                                   res.end();
-                                 })
+                  function(){
+                    cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});
+                    res.writeHead(302, { 'Location': 'http://' + settings.domain + ':' + settings.port + '/'  });
+                    res.end();
+                  })
             }catch(e){
               res.end("something went wrong, please tell mikey?");
             }
@@ -235,8 +240,7 @@ function display_form(req, res, userinfo) {//{{{
     redisClient.lrange("chatlog", 0, 99, function(err, reply2){
       if(reply2 == null )result.msgs = []
       else result.msgs = reply2;
-      sys.puts(util.inspect(result));
-      utilities.sendTemplate(res, "simple.html", result)
+      utilities.sendTemplate(res, "simple2.html", result)
     });
   });
 }//}}}

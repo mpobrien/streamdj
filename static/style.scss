@@ -1,0 +1,190 @@
+/* style.scss */
+
+$basecolor: #18485c;
+$lightblue: #96dac1;
+$cream: #efffd3;
+$orange: #e06441;
+$coffee: #3b3329;
+$navheight: 45px;
+
+@mixin rounded($radius: 10px) {
+  border--radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+}
+
+body{
+  margin:0px;
+}
+
+.notshown{
+  display:none;
+}
+
+.org{
+  color:$orange;
+}
+#note{
+  color:$cream;
+}
+
+#navbar a:link, a:hover, a:visited, a:active{
+  color:$cream;
+  text-decoration:none;
+}
+
+#navbar .link{
+margin-left:20px;
+margin-right:20px;
+
+}
+
+#navbar { 
+  padding-top:15px;
+  font-family:Kreon, Georgia, serif;
+  width:100%;
+  position:absolute;
+  height:$navheight;
+  left:0px;
+  background-color:$basecolor;
+  color: $cream;
+  #branding{
+    float:left;
+    margin-left:20px;
+    font-size:25px;
+  }
+  #volwrapper{
+    top:20px;
+    float:right;
+    height:40px; 
+    margin-right:30px;
+   }  
+   #links{
+     margin-top:20px;
+     margin-right:50px;
+     float:left;
+   }
+
+   #volicon{
+     background: url('/static/volumeorg.png') ;
+     height:20px;
+     width:20px; 
+     float:left;
+     top:20px;
+     margin-top:5px;
+     margin-right:5px;
+   }
+   
+   #volcontrol{
+     width:140px; border:1px solid $cream; height:14px; float:left; margin-top:8px; margin-bottom:13px; }
+   #volinside{ 
+     width:90%; background-color: $orange; height:100%; padding:0px; margin:0px; }
+}
+
+#maincontent{
+  position:absolute;
+  top:$navheight + 15px;
+  margin-top:10px;
+  margin-left:35px;
+  width:95%;
+
+  #chatwrapper{
+    width:70%;
+
+    #chat{
+      overflow-y:scroll;
+      height:400px;
+      background-color:#f8f8f8;
+      font-family: 'Verdana',sans-serif;
+    }
+
+    #sender input{
+      width:100%;
+    }
+
+  }
+
+#rightbar{
+  position:absolute;
+  top: 0px;
+  left: 70%;
+}
+
+.desc{
+  font-style:italic;
+  color: lighten($coffee, 40%);
+}
+
+#currentfile{
+  padding-top:10px;
+  font-family:Georgia,serif;
+  #by, #from{
+    color:lighten($coffee, 30%);
+    font-size:.8em;
+    padding-right: 10px;
+  }
+  #np_title{
+    font-size:20px;
+  }
+}
+
+  .section{
+    font-family:Kreon;
+    color:$coffee;
+    text-align:right;
+    width:300px;
+    margin-bottom:20px;
+    .heading{
+      font-weight:bold;
+      font-size:24px;
+      padding:0px;
+      margin:0px;
+      border-bottom:1px dashed lighten($coffee, 50%);
+    }
+    ul{
+      margin-top:10px;
+      li{ 
+        list-style:none;
+        margin:3px;
+        font-family:Georgia,serif;
+        text-style:italic;
+      }
+    }
+
+
+  }
+
+  .timestamp{
+    font-size:.8em;
+    padding-right:5px;
+    color: #aaa;
+  }
+
+}
+
+#droptarget{
+  @include rounded(15px);
+  font-family: Kreon, Georgia;
+  position:absolute;
+  width:300px;
+  height:300px;
+  border:1px solid black;
+  text-align:center;
+  margin-left:auto;
+  margin-right:auto;
+  top:20%;
+  left:40%;
+  z-index: 1000;
+  line-height:300px;
+  background-color: transparentize($basecolor, 0.7);
+  display:none;
+}
+
+.progressBar{
+  width:0%;
+  height:10px; background-color:black;
+}
+.progressContainer{
+  width:300px; height:10px;border:1px solid black;
+}
+
