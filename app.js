@@ -231,12 +231,17 @@ function display_form(req, res, userinfo) {//{{{
   redisClient.smembers("listeners", function(err, reply){
     if(reply == null) reply = [];
     var listeners = [];
+    var appendself = true;
     for(var i in reply){
       if(typeof(reply[i]) == "string"){
+        if(reply[i] == userinfo.name) appendself = false;
         listeners.push({name:reply[i]});
       }
     }
     result.listeners = listeners
+    if( appendself ){
+      listeners.unshift({name:userinfo.name});
+    }
     redisClient.lrange("chatlog", 0, 99, function(err, reply2){
       if(reply2 == null )result.msgs = []
       else result.msgs = reply2;
