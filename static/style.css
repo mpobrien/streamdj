@@ -5,6 +5,10 @@ body {
 .notshown {
   display: none; }
 
+.message {
+  padding-top: 1px;
+  padding-bottom: 2px; }
+
 .org {
   color: #e06441; }
 
@@ -83,8 +87,12 @@ body {
     top: 0px;
     left: 70%; }
   #maincontent .desc {
+    padding-top: 10px;
     font-style: italic;
     color: #ab9a85; }
+  #maincontent .by, #maincontent .from {
+    color: #958168;
+    font-size: .8em; }
   #maincontent #currentfile {
     padding-top: 10px;
     font-family: Georgia,serif; }
@@ -101,6 +109,7 @@ body {
     width: 300px;
     margin-bottom: 20px; }
     #maincontent .section .heading {
+      text-shadow: #bfb3a4 3px 3px;
       font-weight: bold;
       font-size: 24px;
       padding: 0px;

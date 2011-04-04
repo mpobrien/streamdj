@@ -21,6 +21,11 @@ body{
   display:none;
 }
 
+.message{
+  padding-top:1px;
+  padding-bottom:2px;
+}
+
 .org{
   color:$orange;
 }
@@ -111,8 +116,14 @@ margin-right:20px;
 }
 
 .desc{
+  padding-top:10px;
   font-style:italic;
   color: lighten($coffee, 40%);
+}
+
+.by, .from{
+  color:lighten($coffee, 30%);
+  font-size:.8em;
 }
 
 #currentfile{
@@ -135,6 +146,7 @@ margin-right:20px;
     width:300px;
     margin-bottom:20px;
     .heading{
+      text-shadow: lighten($coffee, 50%) 3px 3px; 
       font-weight:bold;
       font-size:24px;
       padding:0px;

@@ -106,7 +106,7 @@
           <ul id="queueList">
             {{#queue}}
               <li id="song_{{songId}}">
-                {{#meta}}{{Title}} by {{Artist}}{{/meta}}
+                {{#meta}}{{Title}} <span class="by">by</span> {{Artist}}{{/meta}}
                 {{^meta}}{{name}}{{/meta}}
                  uploaded by: {{uploader}}
               </li>
