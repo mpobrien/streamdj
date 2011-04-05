@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path')
 var uploads = require('./fileupload');
 var http = require('http');
 var queue = require('./queue');
@@ -17,6 +18,7 @@ var msggen = new msgs.MessageGenerator();
 //var settings = JSON.parse(fs.readFileSync(process.argv[2]).toString("ascii"))
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
 var uploadIds = 0;
+var error404path = path.join(process.cwd(), "/static/404.html");   
 
 Array.prototype.remove = function(e) {//{{{
     for (var i = 0; i < this.length; i++) {
@@ -46,7 +48,7 @@ server.addListener("request", function(req, res) {
   var qs = require('url').parse(req.url, true)
   if( qs.pathname.indexOf('/static/') === 0 ){
     var uri = qs.pathname
-    utilities.serveStaticFile(req, res, uri);
+    utilities.serveFromStaticDir(req, res, uri);
     return;
   }
   sys.puts("request at " + qs.pathname);
@@ -151,7 +153,7 @@ server.addListener("request", function(req, res) {
           })
       break;
     default:
-      res.end();
+      utilities.serveStaticFile(req, res, error404path);
       break;
   }
 })

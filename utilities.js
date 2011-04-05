@@ -37,7 +37,21 @@ exports.pack = function(num) {//{{{
   return result;
 }//}}}
 
-exports.serveStaticFile = function(req, res, uri){//{{{
+var serveStaticFile = function(req, res, filename){//{{{
+  fs.readFile(filename, "binary", function(err, file) {  
+    if(err) {  
+      res.write(err + "\n");  
+      res.end();  
+      return;  
+    }  
+    res.write(file, "binary");  
+    res.end();  
+  });  
+}//}}}
+
+exports.serveStaticFile  = serveStaticFile;
+
+exports.serveFromStaticDir = function(req,res,uri){
   var filename = path.join(process.cwd(), uri);  
   path.exists(filename, function(exists) {  
     if(!exists) {  
@@ -45,17 +59,9 @@ exports.serveStaticFile = function(req, res, uri){//{{{
       res.end();  
       return;  
     }  
-    fs.readFile(filename, "binary", function(err, file) {  
-      if(err) {  
-        res.write(err + "\n");  
-        res.end();  
-        return;  
-      }  
-      res.write(file, "binary");  
-      res.end();  
-    });  
-  });  
-}//}}}
+    serveStaticFile(req, res, filename);
+  });
+}
 
 exports.sendTemplate = function(res, template, context, devmode){//{{{
   var options = {}
