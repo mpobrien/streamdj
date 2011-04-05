@@ -29,7 +29,9 @@ var queue = new queue.Mp3Queue();
 
 queue.stream.on("frameready", function(data,y,z){
   streamlisteners.forEach(function(listener){
-    listener.write(data);
+    try{
+      listener.write(data);
+    }catch(e){}
   })
 });
 
