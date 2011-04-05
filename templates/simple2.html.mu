@@ -3,6 +3,7 @@
     <link href="/static/style.css" rel="stylesheet" />
     <link rel="icon" type="image/gif" href="/static/favicon.gif" />
     <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
+    <title> outloud.fm </title>
     <script type="text/javascript" src="/static/jquery.min.js"></script>
     <script type="text/javascript" src="/static/jquery-ui-custom.js"></script>
     <script type="text/javascript" src="/static/simplemodal.js"></script>
@@ -34,7 +35,7 @@
        var newMessageCount = 0;
        var countmsgs = false;
        window.onfocus = function(){
-         document.title = 'hey'
+         document.title = 'outloud.fm'
          newMessageCount = 0;
        }
        window.onblur = function(){
