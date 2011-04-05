@@ -1,6 +1,7 @@
 <html>
   <head>
     <link href="/static/style.css" rel="stylesheet" />
+    <link rel="icon" type="image/gif" href="/static/favicon.gif" />
     <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="/static/jquery.min.js"></script>
     <script type="text/javascript" src="/static/jquery-ui-custom.js"></script>
