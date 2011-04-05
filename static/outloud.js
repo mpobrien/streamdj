@@ -168,7 +168,7 @@ $(document).ready(
         processMessage(message);
         if( message.type == 'chat' && countmsgs){
           newMessageCount++;
-          document.title = "(" + newMessageCount + ") hey";
+          document.title = "(" + newMessageCount + ") outloud.fm";
         }
         var objDiv = document.getElementById("chat");
         objDiv.scrollTop = objDiv.scrollHeight;
