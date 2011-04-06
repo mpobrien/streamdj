@@ -65,7 +65,6 @@ server.addListener("request", function(req, res) {
         var sessionId = cookies.get("session");
         redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", function(err, replies){
           if(replies[0] == null || replies[1] == null){
-            sys.puts(util.inspect(replies));
             utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
             return;
           }
@@ -136,21 +135,29 @@ server.addListener("request", function(req, res) {
       var token = qs.query['oauth_token']
       var verifier = qs.query['oauth_verifier']
       var cookies = new Cookies(req, res)
-      oa.getOAuthAccessToken(token, verifier, 
-          function(error, oauth_access_token, oauth_access_token_secret, results2) {
-            var session_id = utilities.randomString(128);
-            sys.puts(util.inspect(results2))
-            try{
-                redisClient.mset("session_"+session_id+"_user_id", results2.user_id, "session_"+session_id+"_screen_name", results2.screen_name,
-                  function(){
-                    cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});
-                    res.writeHead(302, { 'Location': 'http://' + settings.domain + ':' + settings.port + '/'  });
-                    res.end();
-                  })
-            }catch(e){
-              res.end("something went wrong, please tell mikey?");
-            }
-          })
+      oa.getOAuthAccessToken(token, verifier, function(error, oauth_access_token, oauth_access_token_secret, results2) {
+        sys.puts(util.inspect(results2))
+        if( !results2.user_id ){
+          res.end(); 
+          return;
+        }
+        oa.getProtectedResource("http://api.twitter.com/1/users/show.json?user_id=" + results2.user_id,
+                                "GET", oauth_access_token, oauth_access_token_secret, function (error, data, response) {
+
+          jsondata = JSON.parse(data);  //TODO check for an error here!
+          var profileImg = jsondata.default_profile_image ? null : jsondata.profile_image_url ;
+          //TODO use a hash here instead maybe?
+          var session_id = utilities.randomString(128);
+          redisClient.mset("session_"+session_id+"_user_id", results2.user_id,
+                           "session_"+session_id+"_screen_name", results2.screen_name,
+                           function(){ 
+                             //TODO check for error here.
+            cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});
+            res.writeHead(302, { 'Location': 'http://' + settings.domain + ':' + settings.port + '/'  });
+            res.end();
+          });
+        });
+      });
       break;
     default:
       utilities.serveStaticFile(req, res, error404path);
