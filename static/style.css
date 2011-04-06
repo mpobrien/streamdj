@@ -5,7 +5,7 @@ body {
 .notshown {
   display: none; }
 
-.message {
+.message, .join {
   padding-top: 1px;
   padding-bottom: 2px; }
 
@@ -15,8 +15,12 @@ body {
 #note {
   color: #efffd3; }
 
-#navbar a:link, a:hover, a:visited, a:active {
-  color: #540054;
+#navbar a:hover {
+  color: #efffd3;
+  text-decoration: underline; }
+
+#navbar a:link, a:visited, a:active {
+  color: #efffd3;
   text-decoration: none; }
 
 #navbar .link {
@@ -80,6 +84,25 @@ body {
       height: 400px;
       background-color: #f8f8f8;
       font-family: 'Verdana',sans-serif; }
+      #maincontent #chatwrapper #chat a:active {
+        color: blue; }
+      #maincontent #chatwrapper #chat a:visited {
+        color: #800080; }
+      #maincontent #chatwrapper #chat .timestamp {
+        font-size: .8em;
+        padding-right: 5px;
+        color: #aaa; }
+      #maincontent #chatwrapper #chat .from {
+        font-size: 14px;
+        font-weight: bold;
+        color: black; }
+      #maincontent #chatwrapper #chat .message, #maincontent #chatwrapper #chat .join {
+        padding-left: 8px;
+        font-size: 14px; }
+      #maincontent #chatwrapper #chat .message {
+        color: black; }
+      #maincontent #chatwrapper #chat .join {
+        color: #e9e5e0; }
     #maincontent #chatwrapper #sender input {
       width: 100%; }
   #maincontent #rightbar {
@@ -119,13 +142,20 @@ body {
       margin-top: 10px; }
       #maincontent .section ul li {
         list-style: none;
-        margin: 3px;
         font-family: Georgia,serif;
         text-style: italic; }
-  #maincontent .timestamp {
-    font-size: .8em;
-    padding-right: 5px;
-    color: #aaa; }
+
+#queue .by, #queue .title, #queue .artist, #queue .upby, #queue .uploader {
+  margin-left: 2px;
+  margin-right: 2px; }
+#queue .upby {
+  color: #958168;
+  font-size: .8em; }
+#queue .uploader {
+  font-size: .8em; }
+#queue li.queuedsong {
+  margin-top: 8px;
+  margin-bottom: 8px; }
 
 #optionsmodal {
   border--radius: 10px;

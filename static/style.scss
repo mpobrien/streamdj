@@ -21,7 +21,7 @@ body{
   display:none;
 }
 
-.message{
+.message, .join{
   padding-top:1px;
   padding-bottom:2px;
 }
@@ -33,15 +33,19 @@ body{
   color:$cream;
 }
 
-#navbar a:link, a:hover, a:visited, a:active{
+#navbar a:hover{
+  color:$cream;
+  text-decoration:underline;
+}
+
+#navbar a:link, a:visited, a:active{
   color:$cream;
   text-decoration:none;
 }
 
 #navbar .link{
-margin-left:20px;
-margin-right:20px;
-
+  margin-left:20px;
+  margin-right:20px;
 }
 
 #navbar { 
@@ -101,6 +105,34 @@ margin-right:20px;
       height:400px;
       background-color:#f8f8f8;
       font-family: 'Verdana',sans-serif;
+
+      a:active{
+        color:blue;
+      }
+      a:visited{
+        color:#800080;
+      }
+
+
+      .timestamp{
+        font-size:.8em;
+        padding-right:5px;
+        color: #aaa;
+      }
+
+      .from{
+        font-size:14px;
+        font-weight:bold;
+        color:black;
+      }
+
+      .message, .join{
+        padding-left:8px;
+        font-size:14px;
+      }
+      .message{ color:black; }
+      .join{ color:lighten($coffee, 70%); }
+
     }
 
     #sender input{
@@ -157,7 +189,6 @@ margin-right:20px;
       margin-top:10px;
       li{ 
         list-style:none;
-        margin:3px;
         font-family:Georgia,serif;
         text-style:italic;
       }
@@ -166,11 +197,28 @@ margin-right:20px;
 
   }
 
-  .timestamp{
-    font-size:.8em;
-    padding-right:5px;
-    color: #aaa;
+}
+
+#queue{
+
+  .by, .title, .artist, .upby, .uploader{
+    margin-left:2px;
+    margin-right:2px;
   }
+  .upby{
+    color:lighten($coffee, 30%);
+    font-size:.8em;
+  }
+  .uploader{
+    font-size:.8em;
+  }
+
+  li.queuedsong{
+    margin-top:8px;
+    margin-bottom:8px;
+  }
+
+
 
 }
 
@@ -215,3 +263,5 @@ margin-right:20px;
   background-color:#fff; border:4px solid #444; padding:12px;
   width:500px;
 }
+
+

@@ -7,6 +7,7 @@
     <script type="text/javascript" src="/static/jquery.min.js"></script>
     <script type="text/javascript" src="/static/jquery-ui-custom.js"></script>
     <script type="text/javascript" src="/static/simplemodal.js"></script>
+    <script type="text/javascript" src="/static/messaging.js"></script>
     <script type="text/javascript" src="/static/soundmanager2.js"></script>
     <script type="text/javascript">
       var startStream = function(){
@@ -108,6 +109,12 @@
                 <div id="np_name">{{name}}</div>
               {{/meta}}
             {{/nowPlaying}}
+            {{^nowPlaying}}
+              <div id="np_title" class="notshown"></div>
+              <div id="np_artist" class="notshown"><span id="by">by</span>{{Artist}}</div>
+              <div id="np_album" class="notshown"><span id="from">from</span> {{Album}}</div>
+              <div id="np_name">{{name}}</div>
+            {{/nowPlaying}}
           </div>
         </div>
         <div id="listeners" class="section">
@@ -125,10 +132,9 @@
           <div id="progress"></div>
           <ul id="queueList">
             {{#queue}}
-              <li id="song_{{songId}}">
-                {{#meta}}{{Title}} <span class="by">by</span> {{Artist}}{{/meta}}
-                {{^meta}}{{name}}{{/meta}}
-                 uploaded by: {{uploader}}
+              <li class="queuedsong" id="song_{{songId}}">
+                {{#meta}}<span class="title">{{Title}}</span><span class="by">by</span><span class="artist">{{Artist}}</span>{{/meta}}
+                {{^meta}}<span class="title">{{name}}</span>{{/meta}}<span class="upby">added&nbsp;by</span><span class="uploader">{{uploader}}</span>
               </li>
             {{/queue}}
           </ul>
