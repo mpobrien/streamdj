@@ -58,6 +58,27 @@ var MessageHandlers = {
     $('#song_' + songId).hide('slide');
   },
   "started": function(message){
+    var innerWrapper = $('<div></div>').attr("class","startplaywrapper")
+    var enqDiv = $('<div></div>')
+                   .attr("class","playstart")
+                   .attr("id",message["id"])
+                   .append( $('<div class="timestamp" style="float:left"></div>').text(makeTimestamp(message['time'])) )
+                   .append(innerWrapper);
+
+    if(message.meta && 'Title' in message.meta){
+      innerWrapper.append($('<span></span>').attr("class","title").text(message.meta['Title']))
+      if(message.meta && 'Artist' in message.meta){
+        innerWrapper.append($('<span></span>').attr("class","by").text("by"))
+        innerWrapper.append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
+      }
+    }else{
+      innerWrapper.append($('<span></span>').attr("class","title").text(message['body']))
+    }
+    innerWrapper.append($('<span></span>').attr('class','upby').html('added&nbsp;by'))
+    innerWrapper.append($('<span></span>').attr('class','uploader').text(message['from']))
+    innerWrapper.append($('<span></span>').attr('class','startedplaying').html("started playing"))
+    enqDiv.appendTo("#chat");
+                      
     ///newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> started playing.</div>')
     if(message.meta){
       if('Artist' in message.meta && 'Album'  in message.meta && 'Title' in message.meta){

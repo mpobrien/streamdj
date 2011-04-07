@@ -126,12 +126,34 @@ body{
         color:black;
       }
 
-      .message, .join{
+      .message, .join, .playstart{
         padding-left:8px;
         font-size:14px;
       }
       .message{ color:black; }
       .join{ color:lighten($coffee, 70%); }
+      .startplaywrapper{
+        text-align:center;
+      }
+      .playstart{
+        margin-top:3px;
+        margin-bottom:3px;
+        padding-top:4px;
+        padding-bottom:4px;
+        background-color: lighten($orange, 30%);
+
+        .by, .title, .artist, .upby, .uploader, .startedplaying{
+          margin-left:2px;
+          margin-right:2px;
+        }
+        .upby{
+          color:lighten($coffee, 30%);
+          font-size:.8em;
+        }
+        .uploader{
+          font-size:.8em;
+        }
+      }
 
     }
 

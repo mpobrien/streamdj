@@ -174,6 +174,8 @@ queue.on("file-end", function(nowplaying){
 queue.on("file-start", function(nowplaying){
   var message = JSON.stringify( {messages:[msggen.started(nowplaying.uploader, nowplaying.name, nowplaying.songId, nowplaying.meta)]})
   server.broadcast(message);
+  redisClient.lpush("chatlog", message, 
+    function(){ redisClient.ltrim("chatlog", 100, function(){}) });
 });
 
 server.addListener("connection", function(connection){

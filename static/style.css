@@ -96,13 +96,29 @@ body {
         font-size: 14px;
         font-weight: bold;
         color: black; }
-      #maincontent #chatwrapper #chat .message, #maincontent #chatwrapper #chat .join {
+      #maincontent #chatwrapper #chat .message, #maincontent #chatwrapper #chat .join, #maincontent #chatwrapper #chat .playstart {
         padding-left: 8px;
         font-size: 14px; }
       #maincontent #chatwrapper #chat .message {
         color: black; }
       #maincontent #chatwrapper #chat .join {
         color: #e9e5e0; }
+      #maincontent #chatwrapper #chat .startplaywrapper {
+        text-align: center; }
+      #maincontent #chatwrapper #chat .playstart {
+        margin-top: 3px;
+        margin-bottom: 3px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        background-color: #f5cfc5; }
+        #maincontent #chatwrapper #chat .playstart .by, #maincontent #chatwrapper #chat .playstart .title, #maincontent #chatwrapper #chat .playstart .artist, #maincontent #chatwrapper #chat .playstart .upby, #maincontent #chatwrapper #chat .playstart .uploader, #maincontent #chatwrapper #chat .playstart .startedplaying {
+          margin-left: 2px;
+          margin-right: 2px; }
+        #maincontent #chatwrapper #chat .playstart .upby {
+          color: #958168;
+          font-size: .8em; }
+        #maincontent #chatwrapper #chat .playstart .uploader {
+          font-size: .8em; }
     #maincontent #chatwrapper #sender input {
       width: 100%; }
   #maincontent #rightbar {
