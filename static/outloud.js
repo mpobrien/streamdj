@@ -63,11 +63,11 @@ var drophandler = function(evt){//{{{
 }//}}}
 
 /* Message handling */
-function processMessage(message){//{{{
+function processMessage(message, isStatic){//{{{
   var type = message.type;
   var handler = MessageHandlers[type]
   if(handler){
-    handler(message);
+    handler(message, isStatic);
   }
   /*
   console.debug(message);
@@ -140,7 +140,7 @@ $(document).ready(//{{{
     var y;
     while(y = msgs.pop()){
       for( var j in y.messages ){
-        processMessage(y.messages[j]);
+        processMessage(y.messages[j], true);
       }
     }
     var objDiv = document.getElementById("chat");
@@ -170,7 +170,7 @@ $(document).ready(//{{{
       for( var i in msgs.messages){
         var message = msgs.messages[i]
         var newmsghtml;
-        processMessage(message);
+        processMessage(message, false);
         if( message.type == 'chat' && countmsgs){
           newMessageCount++;
           document.title = "(" + newMessageCount + ") outloud.fm";

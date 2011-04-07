@@ -7,7 +7,7 @@ var makeTimestamp = function(rawtime){
 
 var MessageHandlers = {
 
-  "chat"   : function(message) {//{{{
+  "chat"   : function(message, isStatic) {//{{{
     var from = message['from']
     var body = message['body']
     var time = message['time']
@@ -18,7 +18,8 @@ var MessageHandlers = {
                           .appendTo("#chat");
   },//}}}
 
-  "enq"    : function(message){//{{{
+  "enq"    : function(message, isStatic){//{{{
+    //isStatic is ignored for now because server does not log these events
     var songId = message["songId"]
     //newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
     var songLi = $('<li></li>').attr("class","queuedsong").attr('id','song_' + songId)
@@ -37,27 +38,41 @@ var MessageHandlers = {
     songLi.hide().appendTo("#queueList").show("slide").show("highlight",3000);
   },//}}}
 
-  "join"   : function(message){
-    var newMessageHtml = $('<div class="join"></div>"').attr("id",message["id"])
-                          .append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )
-                          .append( $('<span class="from"></span>').text(message['from']) )
-                          .append( $('<span class="message"></span>').text("joined the room") )
-                          .appendTo("#chat");
-  },
+  "join"   : function(message, isStatic){//{{{
+    //isStatic is ignored for now because server does not log these events
+    var newMessageHtml = $('<div class="join"></div>"')
+    newMessageHtml.attr("id",message["id"]);
+    newMessageHtml.append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )
+    newMessageHtml.append( $('<span class="from"></span>').text(message['from']) )
+    newMessageHtml.append( $('<span class="message"></span>').text("joined the room") )
+    newMessageHtml.appendTo("#chat");
+    if($('#user_' + message['from']).length==0){
+      var newlistener = $('<li></li>');
+      newlistener.attr('id', 'user_' + message['from'])
+      newlistener.text(message['from'])
+      newlistener.appendTo("#listenerslist");
+    }
+  },//}}}
 
-  "left"   : function(message){
-    var newMessageHtml = $('<div class="join"></div>"').attr("id",message["id"])
-                          .append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )
-                          .append( $('<span class="from"></span>').text(message['from']) )
-                          .append( $('<span class="message"></span>').text("left the room") )
-                          .appendTo("#chat");
-  },
-  "stopped": function(message){
+  "left"   : function(message, isStatic){//{{{
+    //isStatic is ignored for now because server does not log these events
+    var newMessageHtml = $('<div class="join"></div>"');
+    newMessageHtml.attr("id",message["id"]);
+    newMessageHtml.append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )
+      .append( $('<span class="from"></span>').text(message['from']) )
+      .append( $('<span class="message"></span>').text("left the room") )
+      .appendTo("#chat");
+    $('#user_'+ message['from']).remove();//eadeOut(30, function(){$(this).remove()})
+  },//}}}
+
+  "stopped": function(message, isStatic){//{{{
+    //isStatic is ignored for now because server does not log these events
     var songId = message["songId"]
     $('#nowplayingtext').text('');
     $('#song_' + songId).hide('slide');
-  },
-  "started": function(message){
+  },//}}}
+
+  "started": function(message, isStatic){
     var innerWrapper = $('<div></div>').attr("class","startplaywrapper")
     var enqDiv = $('<div></div>')
                    .attr("class","playstart")
@@ -79,20 +94,22 @@ var MessageHandlers = {
     innerWrapper.append($('<span></span>').attr('class','startedplaying').html("started playing"))
     enqDiv.appendTo("#chat");
                       
-    ///newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> started playing.</div>')
-    if(message.meta){
-      if('Artist' in message.meta && 'Album'  in message.meta && 'Title' in message.meta){
-        $('#np_name').addClass("notshown");
-        $('#np_title').text(message.meta['Title']).removeClass('notshown')
-        $('#np_artist').text(message.meta['Artist']).removeClass('notshown')
-        $('#np_album').text(message.meta['Album']).removeClass('notshown') 
-      }else{
-        $('#np_title, #np_album,#np_artist').addClass("notshown");
+    if(!isStatic){
+      ///newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> started playing.</div>')
+      if(message.meta){
+        if('Artist' in message.meta && 'Album'  in message.meta && 'Title' in message.meta){
+          $('#np_name').addClass("notshown");
+          $('#np_title').text(message.meta['Title']).removeClass('notshown')
+          $('#np_artist').text(message.meta['Artist']).removeClass('notshown')
+          $('#np_album').text(message.meta['Album']).removeClass('notshown') 
+        }else{
+          $('#np_title, #np_album,#np_artist').addClass("notshown");
+        }
       }
+      $('#nowplayingtext').text(message['body']);
+      var songId = message["songId"]
+      $('#song_' + songId).hide('slide');
     }
-    $('#nowplayingtext').text(message['body']);
-    var songId = message["songId"]
-    $('#song_' + songId).hide('slide');
   }
 
 }

@@ -119,9 +119,9 @@
         </div>
         <div id="listeners" class="section">
           <div class="heading">listeners</div>
-          <ul>
+          <ul id="listenerslist">
             {{#listeners}}
-              <li>{{name}}</li>
+              <li id="user_{{name}}">{{name}}</li>
             {{/listeners}}
           </ul>
         </div>
