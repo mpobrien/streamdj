@@ -2,6 +2,11 @@
 body {
   margin: 0px; }
 
+.highlight{
+  background-color:#ffffa2;
+  border:1px dashed #000;
+}
+
 .notshown {
   display: none; }
 
