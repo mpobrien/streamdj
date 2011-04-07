@@ -36,11 +36,11 @@ var v2Mappings = {
 }
 
 var getInteger24At = function(buf, bigEndian) {//{{{
-  var byte1 = buf(0);
-	var	byte2 = buf(1);
-  var byte3 = buf(2);
+  var byte1 = buf[0];
+  var	byte2 = buf[1];
+  var byte3 = buf[2];
 
-	var intresult = bigEndian ? 
+  var intresult = bigEndian ? 
 			((((byte1 << 8) + byte2) << 8) + byte3)
 			: ((((byte3 << 8) + byte2) << 8) + byte1);
 		if (intresult < 0) intresult += 16777216;
