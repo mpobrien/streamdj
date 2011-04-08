@@ -18,7 +18,7 @@ body {
   color: #CE534D; }
 
 #note {
-  color: #efffd3; }
+  color: #46433A; }
 
 #navbar a:hover {
   color: #46433A;
@@ -64,7 +64,7 @@ body {
     margin-right: 5px; }
   #navbar #volcontrol {
     width: 140px;
-    border: 1px solid #efffd3;
+    border: 1px solid #46433A;
     height: 14px;
     float: left;
     margin-top: 8px;
