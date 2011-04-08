@@ -3,13 +3,13 @@
   <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
   <style>
   body{
-    background-color:#18485c;
-    color:#e06441;
+    background-color:#DED4B9;
+    color:#CE534D;
     font-family:Kreon;
   }
 
   a:link, a:hover, a:visited, a:active{
-    color:#efffd3;
+    color:#46433A;
     text-decoration:none;
   }
   #note{
@@ -20,18 +20,18 @@
     font-family:Kreon;
     text-align:center;
     font-size:24px;
-    color:#efffd3;
+    color:#46433A
   }
   img{
     border:none;
     vertical-align:middle;
+   
   }
   </style>
   </head>
   <body>
-    <div style="text-align:center; color:#efffd3; font-size:44px;">
-<br>
-      outloud<span style="color:#e06441">.fm</span>
+    <div style="text-align:center; color:#efffd3; font-size:44px; padding-top:2cm;">
+      outloud<span style="color:#CE534D">.fm</span>
     </div>
     <div id="note">
        &#x266c;

@@ -15,17 +15,17 @@ body {
   padding-bottom: 2px; }
 
 .org {
-  color: #e06441; }
+  color: #CE534D; }
 
 #note {
   color: #efffd3; }
 
 #navbar a:hover {
-  color: #efffd3;
+  color: #46433A;
   text-decoration: underline; }
 
 #navbar a:link, a:visited, a:active {
-  color: #efffd3;
+  color: #46433A;
   text-decoration: none; }
 
 #navbar .link {
@@ -39,8 +39,8 @@ body {
   position: absolute;
   height: 45px;
   left: 0px;
-  background-color: #18485c;
-  color: #efffd3; }
+  background-color: #DED4B9;
+  color: #46433A; }
   #navbar #branding {
     float: left;
     margin-left: 20px;
@@ -71,7 +71,7 @@ body {
     margin-bottom: 13px; }
   #navbar #volinside {
     width: 90%;
-    background-color: #e06441;
+    background-color: #CE534D;
     height: 100%;
     padding: 0px;
     margin: 0px; }
@@ -193,7 +193,7 @@ body {
   background-color: #fff;
   display: none; }
   #optionsmodal .heading {
-    color: #e06441;
+    color: #CE534D;
     padding-top: 10px;
     border-bottom: 1px solid black; }
 
