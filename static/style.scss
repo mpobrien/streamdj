@@ -1,10 +1,9 @@
 /* style.scss */
 
-$basecolor: #18485c;
-$lightblue: #96dac1;
+$basecolor: #DED4B9;
 $cream: #efffd3;
-$orange: #e06441;
-$coffee: #3b3329;
+$orange: #CE534D;
+$coffee: #46433A;
 $navheight: 45px;
 
 @mixin rounded($radius: 10px) {
@@ -40,7 +39,7 @@ body{
 }
 
 #navbar a:hover{
-  color:$cream;
+  color:$coffee;
   text-decoration:underline;
 }
 
@@ -62,7 +61,7 @@ body{
   height:$navheight;
   left:0px;
   background-color:$basecolor;
-  color: $cream;
+  color: $coffee;
   #branding{
     float:left;
     margin-left:20px;
@@ -91,7 +90,7 @@ body{
    }
    
    #volcontrol{
-     width:140px; border:1px solid $cream; height:14px; float:left; margin-top:8px; margin-bottom:13px; }
+     width:140px; border:1px solid $coffee; height:14px; float:left; margin-top:8px; margin-bottom:13px; }
    #volinside{ 
      width:90%; background-color: $orange; height:100%; padding:0px; margin:0px; }
 }
