@@ -10,18 +10,54 @@
     <script type="text/javascript" src="/static/messaging.js"></script>
     <script type="text/javascript" src="/static/soundmanager2.js"></script>
     <script type="text/javascript">
-      var startStream = function(){
-        soundManager.createSound({
-          id: 'mySound',
-          url: '{{listenurl}}',
-          autoPlay: true,
-          stream: true
-        });
+    var eqBarInterval = 32
+      var makeBar = function(x){
+        var s = '';
+        for(var i=0;i<=x;i++){
+          s += '|'
+        }
+        return s;
+      }
+      var whilePlaying = function(){
+        var eqBarValues = [0,0,0,0,0,0,0,0,0];
+        var eqValues16 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+        var bars =[];
+        var b1 = 0, b2 = 0, b3 = 0, b4 = 0;
+
+        for (var i=0;i<256;i++){
+          bars[i] = makeBar(parseInt(this.eqData[i] * 100));
+          if (i < 64){
+            b1 += this.eqData[i];
+          }else if (i < 128){
+            b2 += this.eqData[i];
+          }else if (i < 192){
+            b3 += this.eqData[i];
+          }else{
+            b4 += this.eqData[i];
+          }
+          eqBarValues[(i/eqBarInterval)>>0] += this.eqData[i];
+          eqValues16[(i/16)>>0] += this.eqData[i];
+        }
+        console.debug(bars.join("\\n"));
       }
       soundManager.url = '/static/swf/';
       soundManager.debugMode = false;
       soundManager.flashVersion = 9;
+      soundManager.flash9Options.useEQData = true;
+      soundManager.flash9Options.useWaveformData = true;
+      //soundManager.waitForWindowLoad = true;
       soundManager.useFlashBlock = false; 
+      var startStream = function(){
+        console.debug(whilePlaying);
+        soundManager.createSound({
+          id: 'mySound',
+          url: '{{listenurl}}',
+          autoPlay: true,
+          stream: true,
+          useEQData: true, 
+          whileplaying : whilePlaying
+        });
+      }
       soundManager.onready(startStream);
     </script>
     <script type="text/javascript">
@@ -93,6 +129,9 @@
       </div>
       <div id="rightbar">
         <div id="nowplaying" class="section">
+        <div id="soundviz">
+        
+        </div>
           <div class="heading">now playing</div>
           <div id="currentfile">
             {{#nowPlaying}}
@@ -143,10 +182,10 @@
     </div>
     <div id="optionsmodal">
       <div class="heading">Options</div>
-      <ul>
-        <li><button id="clearchat">Clear chat history</button></li>
-        <li><button id="restartaudio">Restart Audio Stream</button></li>
-      </ul>
+        <ul id="optionslist">
+          <li><button id="clearchat">Clear chat history</button></li>
+          <li><button id="restartaudio">Restart Audio Stream</button></li>
+        </ul>
     </div>
   </body>
 </html>
