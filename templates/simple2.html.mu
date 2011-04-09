@@ -18,27 +18,24 @@
         }
         return s;
       }
+      var numbars = 16;
       var whilePlaying = function(){
         var eqBarValues = [0,0,0,0,0,0,0,0,0];
         var eqValues16 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
         var bars =[];
         var b1 = 0, b2 = 0, b3 = 0, b4 = 0;
-
-        for (var i=0;i<256;i++){
-          bars[i] = makeBar(parseInt(this.eqData[i] * 100));
-          if (i < 64){
-            b1 += this.eqData[i];
-          }else if (i < 128){
-            b2 += this.eqData[i];
-          }else if (i < 192){
-            b3 += this.eqData[i];
-          }else{
-            b4 += this.eqData[i];
+        var numbars = 16;                                                        
+        for (var i=0;i<numbars;i++){
+          var start = i*(256/numbars);
+          var end = start + 16;
+          var barval =0;
+          for(var j=start;j<end;j++){
+            barval += parseFloat(this.eqData[i]);
           }
-          eqBarValues[(i/eqBarInterval)>>0] += this.eqData[i];
-          eqValues16[(i/16)>>0] += this.eqData[i];
+          if(barval > numbars) barval = numbars;
+          //bars.push(barval);
+          document.getElementById("bar_" + i).style.height=parseInt(barval + "px")
         }
-        console.debug(bars.join("\\n"));
       }
       soundManager.url = '/static/swf/';
       soundManager.debugMode = false;
@@ -132,6 +129,25 @@
         <div id="soundviz">
         
         </div>
+          <div id="visualization" style="width:160px">
+            <div id="bar_0" class="bar">&nbsp;</div>
+            <div id="bar_1" class="bar">&nbsp;</div>
+            <div id="bar_2" class="bar">&nbsp;</div>
+            <div id="bar_3" class="bar">&nbsp;</div>
+            <div id="bar_4" class="bar">&nbsp;</div>
+            <div id="bar_5" class="bar">&nbsp;</div>
+            <div id="bar_6" class="bar">&nbsp;</div>
+            <div id="bar_7" class="bar">&nbsp;</div>
+            <div id="bar_8" class="bar">&nbsp;</div>
+            <div id="bar_9" class="bar">&nbsp;</div>
+            <div id="bar_10" class="bar">&nbsp;</div>
+            <div id="bar_11" class="bar">&nbsp;</div>
+            <div id="bar_12" class="bar">&nbsp;</div>
+            <div id="bar_13" class="bar">&nbsp;</div>
+            <div id="bar_14" class="bar">&nbsp;</div>
+            <div id="bar_15" class="bar">&nbsp;</div>
+          </div>
+            <div id="bar_15"></div>
           <div class="heading">now playing</div>
           <div id="currentfile">
             {{#nowPlaying}}

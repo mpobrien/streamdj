@@ -1,11 +1,20 @@
 /* style.scss */
+.bar {
+  display: inline;
+  height: 1px;
+  width: 10px;
+  background-color: red;
+  float: left; }
+
+#visualization {
+  border-top: 1px solid black; }
+
+.highlight {
+  background-color: #ffffa2;
+  border: 1px dashed #000; }
+
 body {
   margin: 0px; }
-
-.highlight{
-  background-color:#ffffa2;
-  border:1px dashed #000;
-}
 
 .notshown {
   display: none; }
@@ -15,17 +24,17 @@ body {
   padding-bottom: 2px; }
 
 .org {
-  color: #CE534D; }
+  color: #ce534d; }
 
 #note {
-  color: #46433A; }
+  color: #efffd3; }
 
 #navbar a:hover {
-  color: #46433A;
+  color: #46433a;
   text-decoration: underline; }
 
 #navbar a:link, a:visited, a:active {
-  color: #46433A;
+  color: #efffd3;
   text-decoration: none; }
 
 #navbar .link {
@@ -39,8 +48,8 @@ body {
   position: absolute;
   height: 45px;
   left: 0px;
-  background-color: #DED4B9;
-  color: #46433A; }
+  background-color: #ded4b9;
+  color: #46433a; }
   #navbar #branding {
     float: left;
     margin-left: 20px;
@@ -64,14 +73,14 @@ body {
     margin-right: 5px; }
   #navbar #volcontrol {
     width: 140px;
-    border: 1px solid #46433A;
+    border: 1px solid #46433a;
     height: 14px;
     float: left;
     margin-top: 8px;
     margin-bottom: 13px; }
   #navbar #volinside {
     width: 90%;
-    background-color: #CE534D;
+    background-color: #ce534d;
     height: 100%;
     padding: 0px;
     margin: 0px; }
@@ -107,7 +116,7 @@ body {
       #maincontent #chatwrapper #chat .message {
         color: black; }
       #maincontent #chatwrapper #chat .join {
-        color: #e9e5e0; }
+        color: #f4f3f1; }
       #maincontent #chatwrapper #chat .startplaywrapper {
         text-align: center; }
       #maincontent #chatwrapper #chat .playstart {
@@ -115,12 +124,12 @@ body {
         margin-bottom: 3px;
         padding-top: 4px;
         padding-bottom: 4px;
-        background-color: #f5cfc5; }
+        background-color: #efc7c5; }
         #maincontent #chatwrapper #chat .playstart .by, #maincontent #chatwrapper #chat .playstart .title, #maincontent #chatwrapper #chat .playstart .artist, #maincontent #chatwrapper #chat .playstart .upby, #maincontent #chatwrapper #chat .playstart .uploader, #maincontent #chatwrapper #chat .playstart .startedplaying {
           margin-left: 2px;
           margin-right: 2px; }
         #maincontent #chatwrapper #chat .playstart .upby {
-          color: #958168;
+          color: #979282;
           font-size: .8em; }
         #maincontent #chatwrapper #chat .playstart .uploader {
           font-size: .8em; }
@@ -133,32 +142,32 @@ body {
   #maincontent .desc {
     padding-top: 10px;
     font-style: italic;
-    color: #ab9a85; }
+    color: #aeaa9e; }
   #maincontent .by, #maincontent .from {
-    color: #958168;
+    color: #979282;
     font-size: .8em; }
   #maincontent #currentfile {
     padding-top: 10px;
     font-family: Georgia,serif; }
     #maincontent #currentfile #by, #maincontent #currentfile #from {
-      color: #958168;
+      color: #979282;
       font-size: .8em;
       padding-right: 10px; }
     #maincontent #currentfile #np_title {
       font-size: 20px; }
   #maincontent .section {
     font-family: Kreon;
-    color: #3b3329;
+    color: #46433a;
     text-align: right;
     width: 300px;
     margin-bottom: 20px; }
     #maincontent .section .heading {
-      text-shadow: #bfb3a4 3px 3px;
+      text-shadow: #c5c2ba 3px 3px;
       font-weight: bold;
       font-size: 24px;
       padding: 0px;
       margin: 0px;
-      border-bottom: 1px dashed #bfb3a4; }
+      border-bottom: 1px dashed #c5c2ba; }
     #maincontent .section ul {
       margin-top: 10px; }
       #maincontent .section ul li {
@@ -170,7 +179,7 @@ body {
   margin-left: 2px;
   margin-right: 2px; }
 #queue .upby {
-  color: #958168;
+  color: #979282;
   font-size: .8em; }
 #queue .uploader {
   font-size: .8em; }
@@ -193,7 +202,7 @@ body {
   background-color: #fff;
   display: none; }
   #optionsmodal .heading {
-    color: #CE534D;
+    color: #ce534d;
     padding-top: 10px;
     border-bottom: 1px solid black; }
 

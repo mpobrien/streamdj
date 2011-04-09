@@ -6,6 +6,18 @@ $orange: #CE534D;
 $coffee: #46433A;
 $navheight: 45px;
 
+.bar{
+  display:inline;
+  height:1px;
+  width:10px;
+  background-color:red;
+  float:left;
+}
+
+#visualization{
+border-top:1px solid black;
+}
+
 @mixin rounded($radius: 10px) {
   border--radius: $radius;
   -moz-border-radius: $radius;
