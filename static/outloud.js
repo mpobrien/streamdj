@@ -133,7 +133,13 @@ $(document).ready(//{{{
     $('#volicon').click(function(){
       muted = !muted;
       soundManager.setVolume('mySound', muted ? 0 : currentVolume);
-      $('#volinside').css('width', muted ? '0%' : currentVolume + '%')
+      $('#volinside').css('width', muted ? '0%' : currentVolume + '%');
+      if (muted) {
+        this.style.backgroundImage = 'url("/static/volumeorgmute.png")';
+    }
+       else {
+        this.style.backgroundImage = 'url("/static/volumeorg.png")';
+   }
     });
 
     droptarget.addEventListener("drop", drop, false);
