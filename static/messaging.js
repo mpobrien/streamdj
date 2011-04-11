@@ -69,6 +69,7 @@ var MessageHandlers = {
     //isStatic is ignored for now because server does not log these events
     var songId = message["songId"]
     $('#nowplayingtext').text('');
+    $('#currentfile').html();
     $('#song_' + songId).hide('slide');
   },//}}}
 
@@ -79,6 +80,38 @@ var MessageHandlers = {
                    .attr("id",message["id"])
                    .append( $('<div class="timestamp" style="float:left"></div>').text(makeTimestamp(message['time'])) )
                    .append(innerWrapper);
+
+    $('#currentfile').html('');
+    var nowPlayingInfo;
+    if( message.meta ){
+      if( 'Title' in message.meta){
+        $('#currentfile').append($('<div></div>').attr("id","np_title").text(message.meta['Title']));
+      }else{
+        if( 'Artist' in message.meta){
+          $('#currentfile').append($('<div></div>').attr("id","np_title").text('(Unknown)'));
+        }else{
+          $('#currentfile').append($('<div></div>').attr("id","np_title").text(message['body']));
+        }
+      }
+      if( 'Artist' in message.meta){
+        var npartist = $('<div></div>')
+        npartist.attr("id","np_artist").append($('<span></span>').attr("class","by").text("by"))
+                .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
+        $('#currentfile').append(npartist)
+      }
+
+      if( 'Album' in message.meta){
+        var npalbum = $('<div></div>')
+        npalbum.attr("id","np_album").append($('<span></span>').attr("class","from").text("from"))
+                                     .append($('<span></span>').attr("class","album").text(message.meta['Album'])); 
+        $('#currentfile').append(npalbum)
+      }
+    }else{
+      $('#currentfile').append($('<div></div>').attr("id","np_title").text(message['body']));
+    }
+    $('#currentfile').append($('<div></div>').attr("id","uploaderinfo")
+                             .append($('<span></span>').attr('class','upby').html('added&nbsp;by'))
+                             .append($('<span></span>').attr('class','uploader').text(message['from'])))
 
     if(message.meta && 'Title' in message.meta){
       innerWrapper.append($('<span></span>').attr("class","title").text(message.meta['Title']))
@@ -95,17 +128,6 @@ var MessageHandlers = {
     enqDiv.appendTo("#chat");
                       
     if(!isStatic){
-      ///newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> started playing.</div>')
-      if(message.meta){
-        if('Artist' in message.meta && 'Album'  in message.meta && 'Title' in message.meta){
-          $('#np_name').addClass("notshown");
-          $('#np_title').text(message.meta['Title']).removeClass('notshown')
-          $('#np_artist').text(message.meta['Artist']).removeClass('notshown')
-          $('#np_album').text(message.meta['Album']).removeClass('notshown') 
-        }else{
-          $('#np_title, #np_album,#np_artist').addClass("notshown");
-        }
-      }
       $('#nowplayingtext').text(message['body']);
       var songId = message["songId"]
       $('#song_' + songId).hide('slide');

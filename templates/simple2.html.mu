@@ -10,18 +10,8 @@
     <script type="text/javascript" src="/static/messaging.js"></script>
     <script type="text/javascript" src="/static/soundmanager2.js"></script>
     <script type="text/javascript">
-    var eqBarInterval = 32
-      var makeBar = function(x){
-        var s = '';
-        for(var i=0;i<=x;i++){
-          s += '|'
-        }
-        return s;
-      }
       var numbars = 16;
       var whilePlaying = function(){
-        var eqBarValues = [0,0,0,0,0,0,0,0,0];
-        var eqValues16 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
         var bars =[];
         var b1 = 0, b2 = 0, b3 = 0, b4 = 0;
         var numbars = 16;                                                        
@@ -33,7 +23,6 @@
             barval += parseFloat(this.eqData[i]);
           }
           if(barval > numbars) barval = numbars;
-          //bars.push(barval);
           document.getElementById("bar_" + i).style.height=parseInt(barval + "px")
         }
       }
@@ -45,7 +34,6 @@
       //soundManager.waitForWindowLoad = true;
       soundManager.useFlashBlock = false; 
       var startStream = function(){
-        console.debug(whilePlaying);
         soundManager.createSound({
           id: 'mySound',
           url: '{{listenurl}}',
@@ -75,13 +63,6 @@
        window.onblur = function(){
          countmsgs = true;
        }
-       function pad(number, length) {
-         var str = '' + number;
-         while (str.length < length) {
-           str = '0' + str;
-         }
-         return str;
-       }
        $(document).ready(function(){
          $('#options').click(function(){
            $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
@@ -97,6 +78,9 @@
          $('#clearchat').click(function(){
            $('#chat').html('');
          });
+         {{^nowPlaying}}
+            $('#currentfile').html("<marquee>nothing's playing. :(  upload something!</marquee>");
+         {{/nowPlaying}}
        })
     </script>
   </head>

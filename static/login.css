@@ -1,0 +1,29 @@
+body {
+  background-color: #2a2c31;
+  color: #fffedf;
+  font-family: Kreon; }
+
+.dotfm {
+  color: #dfba69; }
+
+a:link, a:visited, a:active {
+  color: #DFBA69;
+  text-decoration: none; }
+
+a:hover {
+  color: #DFBA69;
+  text-decoration: underline; }
+
+#note {
+  text-align: center;
+  font-size: 200px; }
+
+#info {
+  font-family: Kreon;
+  text-align: center;
+  font-size: 24px;
+  color: #46433A; }
+
+img {
+  border: none;
+  vertical-align: middle; }

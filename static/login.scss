@@ -1,0 +1,50 @@
+$backgroundColor: #2a2c31;
+$textColor: #fffedf;
+$navbarLinkColor: #fffedf;
+$volumebarColor: #DFBA69;
+$volumebarBorderColor: lighten(#3e4147, 40%);
+$dotfmColor: #DFBA69; 
+$startPlayingMessageColor:#EFC7C5;
+$notecolor: #fffedf;
+$uploadedByColor: black;
+$dragDropFilesColor: black;
+$byfromcolor: #3E4147;
+$sectionHeadingColor: #3E4147; 
+$sectionHeadingShadow: lighten(#3E4147,50%);
+$sectionHeadingBorder: black;
+
+body{
+  background-color: $backgroundColor;
+  color:$textColor;
+  font-family:Kreon;
+}
+.dotfm{
+  color:$dotfmColor;
+}
+
+a:link, a:visited, a:active{
+  color:#DFBA69;
+  text-decoration:none;
+}
+
+a:hover{
+  color:#DFBA69;
+  text-decoration:underline;
+}
+
+
+  #note{
+      text-align:center;
+      font-size: 200px;
+  }
+  #info{
+    font-family:Kreon;
+    text-align:center;
+    font-size:24px;
+    color:#46433A
+  }
+  img{
+    border:none;
+    vertical-align:middle;
+   
+  }

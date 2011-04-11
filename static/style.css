@@ -24,17 +24,17 @@ body {
   padding-bottom: 2px; }
 
 .org {
-  color: #ce534d; }
+  color: #dfba69; }
 
 #note {
-  color: #efffd3; }
+  color: #fffedf; }
 
 #navbar a:hover {
-  color: #46433a;
+  color: #fffedf;
   text-decoration: underline; }
 
 #navbar a:link, a:visited, a:active {
-  color: #efffd3;
+  color: #fffedf;
   text-decoration: none; }
 
 #navbar .link {
@@ -48,12 +48,12 @@ body {
   position: absolute;
   height: 45px;
   left: 0px;
-  background-color: #ded4b9;
-  color: #46433a; }
+  background-color: #2a2c31;
+  color: #fffedf; }
   #navbar #branding {
     float: left;
     margin-left: 20px;
-    font-size: 25px; }
+    font-size: 30px; }
   #navbar #volwrapper {
     top: 20px;
     float: right;
@@ -73,14 +73,14 @@ body {
     margin-right: 5px; }
   #navbar #volcontrol {
     width: 140px;
-    border: 1px solid #46433a;
+    border: 1px solid #a3a7ae;
     height: 14px;
     float: left;
     margin-top: 8px;
     margin-bottom: 13px; }
   #navbar #volinside {
     width: 90%;
-    background-color: #ce534d;
+    background-color: #dfba69;
     height: 100%;
     padding: 0px;
     margin: 0px; }
@@ -115,8 +115,6 @@ body {
         font-size: 14px; }
       #maincontent #chatwrapper #chat .message {
         color: black; }
-      #maincontent #chatwrapper #chat .join {
-        color: #f4f3f1; }
       #maincontent #chatwrapper #chat .startplaywrapper {
         text-align: center; }
       #maincontent #chatwrapper #chat .playstart {
@@ -129,7 +127,7 @@ body {
           margin-left: 2px;
           margin-right: 2px; }
         #maincontent #chatwrapper #chat .playstart .upby {
-          color: #979282;
+          color: black;
           font-size: .8em; }
         #maincontent #chatwrapper #chat .playstart .uploader {
           font-size: .8em; }
@@ -142,32 +140,37 @@ body {
   #maincontent .desc {
     padding-top: 10px;
     font-style: italic;
-    color: #aeaa9e; }
+    color: black; }
   #maincontent .by, #maincontent .from {
-    color: #979282;
+    color: #878c97;
     font-size: .8em; }
   #maincontent #currentfile {
     padding-top: 10px;
     font-family: Georgia,serif; }
-    #maincontent #currentfile #by, #maincontent #currentfile #from {
-      color: #979282;
+    #maincontent #currentfile .uploader {
       font-size: .8em;
-      padding-right: 10px; }
+      margin-right: 5px;
+      margin-left: 5px; }
+    #maincontent #currentfile .by, #maincontent #currentfile .from, #maincontent #currentfile .upby {
+      color: #878c97;
+      font-size: .8em;
+      margin-right: 5px;
+      margin-left: 5px; }
     #maincontent #currentfile #np_title {
       font-size: 20px; }
   #maincontent .section {
     font-family: Kreon;
-    color: #46433a;
+    color: #3e4147;
     text-align: right;
     width: 300px;
     margin-bottom: 20px; }
     #maincontent .section .heading {
-      text-shadow: #c5c2ba 3px 3px;
+      text-shadow: #bec1c6 1px 2px;
       font-weight: bold;
       font-size: 24px;
       padding: 0px;
       margin: 0px;
-      border-bottom: 1px dashed #c5c2ba; }
+      border-bottom: 1px dashed black; }
     #maincontent .section ul {
       margin-top: 10px; }
       #maincontent .section ul li {
@@ -179,7 +182,7 @@ body {
   margin-left: 2px;
   margin-right: 2px; }
 #queue .upby {
-  color: #979282;
+  color: black;
   font-size: .8em; }
 #queue .uploader {
   font-size: .8em; }
@@ -202,7 +205,7 @@ body {
   background-color: #fff;
   display: none; }
   #optionsmodal .heading {
-    color: #ce534d;
+    color: black;
     padding-top: 10px;
     border-bottom: 1px solid black; }
 

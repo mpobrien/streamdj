@@ -1,10 +1,26 @@
 /* style.scss */
 
-$basecolor: #DED4B9;
-$cream: #efffd3;
-$orange: #CE534D;
-$coffee: #46433A;
+//$basecolor: #DED4B9;
+//$cream: #efffd3;
+//$orange: #CE534D;
+//$coffee: #46433A;
+
 $navheight: 45px;
+
+$navbarBgColor: #2a2c31;
+$navbarTextColor: #fffedf;
+$navbarLinkColor: #fffedf;
+$volumebarColor: #DFBA69;
+$volumebarBorderColor: lighten(#3e4147, 40%);
+$dotfmColor: #DFBA69; 
+$startPlayingMessageColor:#EFC7C5;
+$notecolor: #fffedf;
+$uploadedByColor: black;
+$dragDropFilesColor: black;
+$byfromcolor: #3E4147;
+$sectionHeadingColor: #3E4147; 
+$sectionHeadingShadow: lighten(#3E4147,50%);
+$sectionHeadingBorder: black;
 
 .bar{
   display:inline;
@@ -44,22 +60,20 @@ body{
 }
 
 .org{
-  color:$orange;
+  color:$dotfmColor;
 }
 #note{
-  color:$cream;
+  color:$notecolor;
 }
 
 #navbar a:hover{
-  color:$coffee;
+  color: $navbarLinkColor;
   text-decoration:underline;
 }
-
 #navbar a:link, a:visited, a:active{
-  color:$cream;
+  color: $navbarLinkColor;
   text-decoration:none;
 }
-
 #navbar .link{
   margin-left:20px;
   margin-right:20px;
@@ -72,12 +86,12 @@ body{
   position:absolute;
   height:$navheight;
   left:0px;
-  background-color:$basecolor;
-  color: $coffee;
+  background-color:$navbarBgColor;
+  color: $navbarTextColor;
   #branding{
     float:left;
     margin-left:20px;
-    font-size:25px;
+    font-size:30px;
   }
   #volwrapper{
     top:20px;
@@ -102,9 +116,9 @@ body{
    }
    
    #volcontrol{
-     width:140px; border:1px solid $coffee; height:14px; float:left; margin-top:8px; margin-bottom:13px; }
+     width:140px; border:1px solid $volumebarBorderColor; height:14px; float:left; margin-top:8px; margin-bottom:13px; }
    #volinside{ 
-     width:90%; background-color: $orange; height:100%; padding:0px; margin:0px; }
+     width:90%; background-color: $volumebarColor; height:100%; padding:0px; margin:0px; }
 }
 
 #maincontent{
@@ -148,7 +162,7 @@ body{
         font-size:14px;
       }
       .message{ color:black; }
-      .join{ color:lighten($coffee, 70%); }
+      //.join{ color:lighten($coffee, 70%); }
       .startplaywrapper{
         text-align:center;
       }
@@ -157,14 +171,14 @@ body{
         margin-bottom:3px;
         padding-top:4px;
         padding-bottom:4px;
-        background-color: lighten($orange, 30%);
+        background-color: $startPlayingMessageColor;
 
         .by, .title, .artist, .upby, .uploader, .startedplaying{
           margin-left:2px;
           margin-right:2px;
         }
         .upby{
-          color:lighten($coffee, 30%);
+          color:$uploadedByColor;
           font-size:.8em;
         }
         .uploader{
@@ -189,21 +203,27 @@ body{
 .desc{
   padding-top:10px;
   font-style:italic;
-  color: lighten($coffee, 40%);
+  color: $dragDropFilesColor;
 }
 
 .by, .from{
-  color:lighten($coffee, 30%);
+  color:lighten($byfromcolor, 30%);
   font-size:.8em;
 }
 
 #currentfile{
   padding-top:10px;
   font-family:Georgia,serif;
-  #by, #from{
-    color:lighten($coffee, 30%);
+  .uploader{
     font-size:.8em;
-    padding-right: 10px;
+    margin-right: 5px;
+    margin-left: 5px;
+  }
+  .by, .from, .upby{
+    color:lighten($byfromcolor, 30%);
+    font-size:.8em;
+    margin-right: 5px;
+    margin-left: 5px;
   }
   #np_title{
     font-size:20px;
@@ -212,17 +232,17 @@ body{
 
   .section{
     font-family:Kreon;
-    color:$coffee;
+    color:$sectionHeadingColor;
     text-align:right;
     width:300px;
     margin-bottom:20px;
     .heading{
-      text-shadow: lighten($coffee, 50%) 3px 3px; 
+      text-shadow: $sectionHeadingShadow 1px 2px; 
       font-weight:bold;
       font-size:24px;
       padding:0px;
       margin:0px;
-      border-bottom:1px dashed lighten($coffee, 50%);
+      border-bottom:1px dashed $sectionHeadingBorder;
     }
     ul{
       margin-top:10px;
@@ -245,7 +265,7 @@ body{
     margin-right:2px;
   }
   .upby{
-    color:lighten($coffee, 30%);
+    color:$uploadedByColor;
     font-size:.8em;
   }
   .uploader{
@@ -274,7 +294,7 @@ body{
   background-color: #fff;
   display:none;
   .heading{
-    color:$orange;
+    color:black;
     padding-top:10px;
     border-bottom:1px solid black;
   }

@@ -50,59 +50,6 @@ function processMessage(message, isStatic){//{{{
   if(handler){
     handler(message, isStatic);
   }
-  /*
-  console.debug(message);
-  if(message=='1') return;
-  var safefrom = $('<div/>').text(message["from"]).html(); 
-  var safebody = $('<div/>').text(message["body"]).html();
-  var msgTime = message['time']
-  var timestamp = new Date(msgTime);
-  var timestampHtml = '<span class="timestamp">' + pad(timestamp.getHours(),2) + ":" + pad(timestamp.getMinutes(),2) + "</span>";
-  if( message.type=='chat'){
-    newmsghtml = $('<div class="message" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ': </b>' +  linkify(safebody) + '</div>')
-  }else if(message.type=='enq'){
-    newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
-    var songId = message["songId"]
-    var songLi = $('<li id="song_' + songId +'"></li>');
-    if(message.meta){
-      if('Artist' in message.meta || 'Album' in message.meta || 'Title' in message.meta){
-        var a1 = $('<div class="title"></div>').text(message.meta['Title'])
-        var a2 = $('<div class="artist"></div>').text(message.meta['Artist'])
-        songLi.append(a1)
-        songLi.append(a2)
-      }else{
-        console.debug("nometa");
-        songLi.text(safebody);
-      }
-    }
-    songLi.hide().appendTo("#queueList").show("slide").show("highlight",3000);
-  }else if(message.type=='join'){
-    newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> joined the room.</div>')
-  }else if(message.type=='left'){
-    newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> left the room.</div>')
-  }else if(message.type=='stopped'){
-    newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> finished playing.</div>')
-    $('#nowplayingtext').text('');
-    $('#song_' + songId).hide('slide');
-  }else if(message.type=='started'){
-    newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safebody + ' </b> started playing.</div>')
-    if(message.meta){
-      if('Artist' in message.meta && 'Album'  in message.meta && 'Title' in message.meta){
-        $('#np_name').addClass("notshown");
-        $('#np_title').text(message.meta['Title'])
-        $('#np_artist').text(message.meta['Artist'])
-        $('#np_album').text(message.meta['Album'])
-      }else{
-        $('#np_title, #np_album,#np_artist').addClass("notshown");
-      }
-    }
-
-    $('#nowplayingtext').text(safebody);
-    var songId = message["songId"]
-    $('#song_' + songId).hide('slide');
-  }
-  newmsghtml.appendTo('#chat')
-  */
 }//}}}
 
 /* Message Receiving */
