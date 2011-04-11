@@ -17,7 +17,6 @@ Mu.templateRoot = './templates'
 var redisClient = redis.createClient();
 var msggen = new msgs.MessageGenerator();
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
-var uploadIds = 0;
 var error404path = path.join(process.cwd(), "/static/404.html");   
 
 Array.prototype.remove = function(e) {//{{{
@@ -80,7 +79,6 @@ server.addListener("request", function(req, res) {
       var filePath = utilities.randomString(64);
       var fname = req.headers['x-file-name']
       var fileUpload = new uploads.FileUpload(settings.uploadDirectory + filePath + ".mp3", fname)
-      fileUpload.uploadid = ++uploadIds;
       req.addListener("data", fileUpload.bufferData);
       var metadata = {};
 
