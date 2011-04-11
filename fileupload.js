@@ -12,7 +12,6 @@ exports.FileUpload = function FileUpload(outputPath, filename, res){
   var finalbuf
   var that = this;
   this.written = false;
-  this.uploadid = -1;
 
   this.bufferData = function(data){
     buf.push(data)
