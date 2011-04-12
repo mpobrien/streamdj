@@ -1,29 +1,29 @@
-var fs = require('fs');
-var path = require('path')
-var uploads = require('./fileupload');
-var http = require('http');
-var queue = require('./queue');
-var sys = require('sys')
-var Mu = require('Mu')
-var ws = require("websocket-server");
-var Cookies = require('cookies')
-Mu.templateRoot = './templates'
+var fs        = require('fs');
+var path      = require('path')
+var uploads   = require('./fileupload');
+var http      = require('http');
+var queue     = require('./queue');
+var sys       = require('sys')
+var Mu        = require('Mu')
+var ws        = require("websocket-server");
+var Cookies   = require('cookies')
 var utilities = require('./utilities')
-var util= require('util')
-var OAuth = require('oauth').OAuth;
-var redis = require('redis');
+var util      = require('util')
+var OAuth     = require('oauth').OAuth;
+var redis     = require('redis');
+var msgs      = require('./messages')
+
+Mu.templateRoot = './templates'
 var redisClient = redis.createClient();
-var msgs = require('./messages')
 var msggen = new msgs.MessageGenerator();
-//var settings = JSON.parse(fs.readFileSync(process.argv[2]).toString("ascii"))
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
 var uploadIds = 0;
 var error404path = path.join(process.cwd(), "/static/404.html");   
 
 Array.prototype.remove = function(e) {//{{{
-    for (var i = 0; i < this.length; i++) {
-        if (e == this[i]) { return this.splice(i, 1); }
-    }
+  for (var i = 0; i < this.length; i++) {
+    if (e == this[i]) { return this.splice(i, 1); }
+  }
 };//}}}
 
 var streamlisteners = [];
