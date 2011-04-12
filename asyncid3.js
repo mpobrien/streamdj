@@ -8,7 +8,6 @@ Buffer.prototype.getChunk = function(numbytes){//{{{
     if( this.pointer + numbytes >= this.length + 1 ) return null;
     return this.slice(this.pointer, (this.pointer+=numbytes)); 
   }//}}}
-
 var parseSize = function(data, version){//{{{
   if( data.length == 4 ){
     if( version > 3 ) {
@@ -46,8 +45,8 @@ var parseSize = function(data){//{{{
     return size
   }
 }//}}}
-
 */
+
 var v3Mappings = {//{{{
     "TPE1": "Artist",
     "TIT2": "Title",
@@ -66,8 +65,9 @@ var AsyncId3Parser = function(fd){
 
   var readId3Header = function(callback){
     var headerBuf = new Buffer(10);
-    fs.read(that.fd, headerBuf, 0, 10, null, 
-      function(){
+    fs.read(that.fd, headerBuf, 0, 10, 0, 
+      function(err, bytesRead, buffer){
+        filePosition += bytesRead;
         var headerCheck = headerBuf.getChunk(3);
         try{ if(headerCheck.toString() != 'ID3') return; }catch(e){ return; }
         var versionInfo = headerBuf.getChunk(2)
@@ -90,8 +90,9 @@ var AsyncId3Parser = function(fd){
     var frameHeaderSize = version == 2 ? 6 : 10;
     var frameHeaderBuf = new Buffer(frameHeaderSize);
     // read the header of the frame, by grabbing the correct number of bytes based on the version
-    fs.read(fd, frameHeaderBuf, 0, frameHeaderSize, null, function(err, bytesRead, data){//TODO check for size errors!
+    fs.read(fd, frameHeaderBuf, 0, frameHeaderSize, filePosition, function(err, bytesRead, data){//TODO check for size errors!
       frameBytesRead += bytesRead;
+      filePosition += bytesRead;
       var loadFlags = (version >= 3 );
       if(version == 2){
         frameID = frameHeaderBuf.getChunk(3);
@@ -113,8 +114,9 @@ var AsyncId3Parser = function(fd){
       var frameDataBuf = new Buffer(frameSize);
       console.log("bout to read:",frameSize);
       if( frameSize == 0 ){ that.emit("done"); callback(null, null, null, frameBytesRead, true); return; }
-      fs.read(fd, frameDataBuf, 0, frameSize, null, function(err2, bytesRead2, data2){//TODO check for size errors
+      fs.read(fd, frameDataBuf, 0, frameSize, filePosition, function(err2, bytesRead2, data2){//TODO check for size errors
         frameBytesRead += bytesRead2;
+        filePosition += bytesRead2;
         //if( majorVer >= 3 && !(frameID in v3Mappings) ) continue;
         //if( majorVer == 2 && !(frameID in v2Mappings) ) continue;
         if( frameID in v3Mappings || frameID in v2Mappings){
@@ -143,8 +145,6 @@ var AsyncId3Parser = function(fd){
   /*}*/
 
   this.processAllTags = function(){
-
-
     readId3Header( function(err, headerSize, version){
       console.log("headerSize:", headerSize);
       var totalRead = 0;
