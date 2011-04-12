@@ -58,6 +58,7 @@ var v2Mappings = {//{{{
     "TT2": "Title",
     "TAL": "Album"
 }//}}}
+
 var AsyncId3Parser = function(fd){
   var that = this;
   this.fd = fd
@@ -76,7 +77,6 @@ var AsyncId3Parser = function(fd){
         var headerSize = parseSize(headerBuf.getChunk(4), majorVer);
         var frameId, frameSize
         if(majorVer >= 2 && majorVer <=4 ){
-          console.log("ok got: " + headerSize + " version: " + majorVer);
           callback(null, headerSize, majorVer);
         }else{
           callback("No valid header", null, null);
@@ -169,18 +169,27 @@ var AsyncId3Parser = function(fd){
 }
 AsyncId3Parser.prototype = new process.EventEmitter()
 
+var debugTag = function(filePath){
+  fs.open(filePath, 'r', function(err, fd){
+    var asyncParse = new AsyncId3Parser(fd);
+    asyncParse.on("tag", function(id, data){
+      if( frameID in v3Mappings || frameID in v2Mappings){
+        console.log("got tag info:",id, ":", data);
+      }else{
+        console.log("got nontext tag info:",id);
+      }
+    });
+    asyncParse.on("done", function(){
+      console.log("done!");
+      process.exit(0);
+    });
+    asyncParse.processAllTags();
+  });
 
+}
+exports.debugTag = debugTag;
+debugTag("/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3", 'r'); 
 /* TESTING */
 
-//var f = fs.openSync("/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3", 'r');
-var f = fs.openSync(process.argv[2], 'r');
-var asyncParse = new AsyncId3Parser(f);
-asyncParse.on("tag", function(id, data){
-  if( frameID in v3Mappings || frameID in v2Mappings){
-    console.log("got tag info:",id, ":", data);
-  }else{
-    console.log("got nontext tag info:",id);
-  }
-});
 
-asyncParse.processAllTags();
+//var f = fs.openSync("/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3", 'r');
