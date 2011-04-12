@@ -141,41 +141,45 @@ $(document).ready(//{{{
       }
     });
 
-    droptarget.addEventListener("drop", drop, false);
-    droptarget.addEventListener("dragenter", dragEnter, false);
-    droptarget.addEventListener("dragleave", dragExit, false);
-    droptarget.addEventListener("dragover", dragOver, false);
-    window.addEventListener("drop", dragEnter, false);
-    window.addEventListener("dragenter", dragEnter, false);
-    window.addEventListener("dragleave", dragEnter, false);
-    window.addEventListener("dragover", dragEnter, false);
-
     function dragEnter(evt){
       evt.stopPropagation();
       evt.preventDefault();
+      return false;
     }
 
     function dragExit(evt){
-      evt.stopPropagation();
       evt.preventDefault();
+      evt.stopPropagation();
       $(droptarget).removeClass("highlight");
+      return false;
     }
 
     function dragOver(evt){
-      evt.stopPropagation();
       evt.preventDefault();
+      evt.stopPropagation();
       $(droptarget).addClass("highlight");
+      return false;
     }
 
     function drop(evt){
-      evt.stopPropagation();
       evt.preventDefault();
+      evt.stopPropagation();
       $(droptarget).removeClass("highlight");
       var files = evt.dataTransfer.files;
       var count = files.length;
       if( count == 0 ) return;
       handleFiles(files)
+      return false;
     }
+
+    document.addEventListener("drop", dragEnter, false);
+    document.addEventListener("dragenter", dragEnter, false);
+    document.addEventListener("dragleave", dragEnter, false);
+    document.addEventListener("dragover", dragEnter, false);
+    droptarget.addEventListener("drop", drop, false);
+    droptarget.addEventListener("dragenter", dragEnter, false);
+    droptarget.addEventListener("dragleave", dragExit, false);
+    droptarget.addEventListener("dragover", dragOver, false);
 
   }
   
