@@ -8,6 +8,7 @@ Buffer.prototype.getChunk = function(numbytes){//{{{
     if( this.pointer + numbytes >= this.length + 1 ) return null;
     return this.slice(this.pointer, (this.pointer+=numbytes)); 
   }//}}}
+
 var parseSize = function(data, version){//{{{
   if( data.length == 4 ){
     if( version > 3 ) {
@@ -45,8 +46,8 @@ var parseSize = function(data){//{{{
     return size
   }
 }//}}}
-*/
 
+*/
 var v3Mappings = {//{{{
     "TPE1": "Artist",
     "TIT2": "Title",
@@ -57,6 +58,7 @@ var v2Mappings = {//{{{
     "TT2": "Title",
     "TAL": "Album"
 }//}}}
+
 
 var AsyncId3Parser = function(fd){
   var that = this;
