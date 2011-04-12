@@ -88,7 +88,7 @@
     <div id="navbar">
       <div id="branding"><span id="note">&#x266c;</span>&nbsp;&nbsp;outloud<span class="org">.fm</span>  </div>
       <div id="volwrapper">
-          <div id="volicon">
+          <div id="volicon" class="notmuted">
           </div>
           <div id="volcontrol">
               <div id="volinside">&nbsp;</div>

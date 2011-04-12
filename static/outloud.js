@@ -135,11 +135,10 @@ $(document).ready(//{{{
       soundManager.setVolume('mySound', muted ? 0 : currentVolume);
       $('#volinside').css('width', muted ? '0%' : currentVolume + '%');
       if (muted) {
-        this.style.backgroundImage = 'url("/static/volumeorgmute.png")';
-    }
-       else {
-        this.style.backgroundImage = 'url("/static/volumeorg.png")';
-   }
+        $(this).addClass("muted").removeClass("notmuted");
+      } else {
+        $(this).addClass("notmuted").removeClass("muted");
+      }
     });
 
     droptarget.addEventListener("drop", drop, false);
