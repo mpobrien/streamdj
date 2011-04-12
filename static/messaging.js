@@ -69,11 +69,11 @@ var MessageHandlers = {
     //isStatic is ignored for now because server does not log these events
     var songId = message["songId"]
     $('#nowplayingtext').text('');
-    $('#currentfile').html();
+    $('#currentfile').html("<span>nothing's playing. :(  upload something!</span>");
     $('#song_' + songId).hide('slide');
   },//}}}
 
-  "started": function(message, isStatic){
+  "started": function(message, isStatic){//{{{
     var innerWrapper = $('<div></div>').attr("class","startplaywrapper")
     var enqDiv = $('<div></div>')
                    .attr("class","playstart")
@@ -132,6 +132,6 @@ var MessageHandlers = {
       var songId = message["songId"]
       $('#song_' + songId).hide('slide');
     }
-  }
+  }//}}}
 
 }
