@@ -10,7 +10,7 @@
       outloud<span class="dotfm">.fm</span>
     </div>
     <div style="padding-top:50px; padding-bottom:30px;">
-    <center> <img src="/static/note.png"> </center>
+    <center> <img src="/static/note.png"/> </center>
     </div>
     <div id="info">
       <a href="/login"><img src="/static/twitter.png"/></a>
