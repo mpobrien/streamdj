@@ -1,0 +1,13 @@
+user->webserver: User requests to create/join room
+note over webserver: put room in "rooms" key
+webserver->user: display room page
+user->streamserver: Listen Request
+note over streamserver: find roomname in "rooms" 
+
+note over streamserver: create serving queue if not existing
+user->webserver: uploads file
+note over webserver: PUSH new item info into room redis queue
+webserver->redis: PUBLISH new file on queue for roomname
+redis->streamserver: SUBSCRIBE'd server receives new queue item info
+note over streamserver: IF serving queue is idle, POP from redis queue and start serving.
+note over streamserver: ELSE ignore the message.

@@ -1,0 +1,21 @@
+body {
+  background-color: #2a2c31;
+  color: #fffedf;
+  font-family: Kreon; }
+
+.dotfm {
+  color: #dfba69; }
+
+#roomform {
+  padding-top: 50px;
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 30px; }
+
+#roomname {
+  font-size: 30px; }
+
+#go {
+  margin-top: 25px;
+  font-size: 30px; }

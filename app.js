@@ -55,6 +55,9 @@ server.addListener("request", function(req, res) {
   }
   sys.puts("request at " + qs.pathname);
   switch (qs.pathname) {
+    case '/room':
+      utilities.sendTemplate(res, "room.html", {}, true, settings.devtemplates)
+      break;
     case '/listen':
       req.connection.addListener("close", function(){ streamlisteners.remove(res); })
       streamlisteners.push(res); //TODO remove listeners when done

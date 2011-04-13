@@ -134,7 +134,7 @@ exports.Mp3Stream = function Mp3Stream(){
       //sys.puts(syncTime);
       delay = that.accumulatedTime - (new Date()).getTime();
       delay = delay > 0 ? delay : 0; 
-      that.emit("frameready", frameInfo[0], frameInfo[1],frameInfo[2]);
+      that.emit("frameready", frameInfo[0], frameInfo[1],frameInfo[2], that.id);
     }
     //that.timeoutId = setTimeout(function(){processFrame(fd)}, 0) 
 
