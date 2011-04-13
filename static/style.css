@@ -182,6 +182,11 @@ body {
         font-family: Georgia,serif;
         text-style: italic; }
 
+  .odd{
+    background-color:#f0f0f0;
+  }
+
+
 #queue .by, #queue .title, #queue .artist, #queue .upby, #queue .uploader {
   margin-left: 2px;
   margin-right: 2px; }
@@ -191,8 +196,8 @@ body {
 #queue .uploader {
   font-size: .8em; }
 #queue li.queuedsong {
-  margin-top: 8px;
-  margin-bottom: 8px; }
+  padding-top: 8px;
+  padding-bottom: 8px; }
 
 #optionsmodal {
   border--radius: 10px;

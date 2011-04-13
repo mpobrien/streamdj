@@ -70,7 +70,8 @@ var MessageHandlers = {
     var songId = message["songId"]
     $('#nowplayingtext').text('');
     $('#currentfile').html("<span>nothing's playing. :(  upload something!</span>");
-    $('#song_' + songId).hide('slide');
+    $('#song_' + songId).hide('slide', function(){$(this).remove()} );
+    oddify(); //TODO clean up
   },//}}}
 
   "started": function(message, isStatic){//{{{
@@ -130,7 +131,8 @@ var MessageHandlers = {
     if(!isStatic){
       $('#nowplayingtext').text(message['body']);
       var songId = message["songId"]
-      $('#song_' + songId).hide('slide');
+      $('#song_' + songId).hide('slide', function(){$(this).remove()});
+      oddify(); //TODO clean up
     }
   }//}}}
 

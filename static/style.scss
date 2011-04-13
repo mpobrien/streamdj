@@ -264,7 +264,13 @@ body{
 
   }
 
+
 }
+
+  .odd{
+    background-color:#f0f0f0;
+  }
+
 
 #queue{
 
@@ -281,8 +287,8 @@ body{
   }
 
   li.queuedsong{
-    margin-top:8px;
-    margin-bottom:8px;
+    padding-top:8px;
+    padding-bottom:8px;
   }
 
 

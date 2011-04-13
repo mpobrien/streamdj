@@ -62,6 +62,19 @@ var sendMessage = function(){//{{{
   $('#newchat').val('');
 }//}}}
 
+var oddify = function(){
+  var songs = $('.queuedsong');
+  console.debug(songs);
+  for( var i=0;i<songs.length;i++){
+    var song = songs[i]
+    if( i % 2 > 0 ){
+      $(songs[i]).removeClass("odd");
+    }else{
+      $(songs[i]).addClass("odd");
+    }
+  }
+}
+
 /* GUI hooks setup */
 $(document).ready(//{{{
   function(){
@@ -180,6 +193,8 @@ $(document).ready(//{{{
     droptarget.addEventListener("dragenter", dragEnter, false);
     droptarget.addEventListener("dragleave", dragExit, false);
     droptarget.addEventListener("dragover", dragOver, false);
+    
+    oddify();
 
   }
   
