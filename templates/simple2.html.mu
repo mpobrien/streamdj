@@ -86,7 +86,7 @@
   </head>
   <body>
     <div id="navbar">
-      <div id="branding"><span id="note"<img src="/static/notebrand.png"</span>&nbsp;&nbsp;outloud<span class="org">.fm</span>  </div>
+      <div id="branding"><span id="note"<img src="/static/notebrand.png"></span>&nbsp;&nbsp;outloud<span class="org">.fm</span>  </div>
       <div id="volwrapper">
           <div id="volicon" class="notmuted">
           </div>
