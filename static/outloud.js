@@ -9,14 +9,21 @@ var ProgressBar = function(){//{{{
   this.inner = $('<div class="progressBar">')
   this.inner.appendTo(this.outer)
   var that = this;
+  var done = false;
   this.update = function(pct){
     if( pct == 100 ){ 
       that.inner.animate({'width':pct + '%'}, 100, function(){
-      that.outer.fadeOut(function(){$(this).remove()});
-      })
+        that.finish();
+      });
     }else{
       that.inner.animate({'width':pct + '%'}, 100) 
     }
+  }
+  this.finish = function(){
+      if (!done){
+        done = true;
+        that.outer.fadeOut(function(){$(this).remove()});
+      }
   }
 }//}}}
 var handleFiles = function(files){//{{{
@@ -27,15 +34,17 @@ var handleFiles = function(files){//{{{
     var qxhr = new XMLHttpRequest();
     var progbar = new ProgressBar();
     $('#progress').append(progbar.outer)
-    qxhr.onreadystatechange = function(){ console.debug("readystate", this.readystate); }
+    qxhr.onreadystatechange = function(){}
     qxhr.upload.onerror = function(e){ console.debug("error", e); }
     qxhr.upload.onloadstart = function(e){ console.debug("loadstart", e); }
     qxhr.upload.onprogress = function makeupdater(bar){
         return function(e){
+          console.debug(e);
           var pct = parseInt((e.loaded / e.totalSize) * 100);
           bar.update(pct);
         }
     }(progbar);
+    qxhr.onload = progbar.finish;
     qxhr.open("POST","/upload", true);
     qxhr.setRequestHeader('Content-Type', 'multipart/form-data');
     qxhr.setRequestHeader("X-File-Name", file.fileName);
