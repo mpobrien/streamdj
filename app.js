@@ -12,6 +12,8 @@ var util      = require('util')
 var OAuth     = require('oauth').OAuth;
 var redis     = require('redis');
 var msgs      = require('./messages')
+var net = require("net"),
+domains = ["outloud.fm:3000"];
 
 Mu.templateRoot = './templates'
 var redisClient = redis.createClient();
@@ -225,12 +227,21 @@ server.addListener("connection", function(connection){
 
 
 
-
-
-
-
-
 server.listen(settings.port);
+
+net.createServer(
+  function(socket){
+    socket.write("<?xml version=\"1.0\"?>\n");
+    socket.write("<!DOCTYPE cross-domain-policy SYSTEM \"http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd\">\n");
+    socket.write("<cross-domain-policy>\n");
+    domains.forEach( function(domain) {
+      var parts = domain.split(':');
+      socket.write("<allow-access-from domain=\""+parts[0]+"\"to-ports=\""+(parts[1]||'80')+"\"/>\n");
+    });
+    socket.write("</cross-domain-policy>\n");
+    socket.end();   
+  }
+).listen(843);
 
 function display_form(req, res, userinfo) {//{{{
   res.statusCode = 200

@@ -4,12 +4,16 @@
     <link rel="icon" type="image/gif" href="/static/favicon.gif" />
     <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
     <title> outloud.fm </title>
+    <script type="text/javascript" src="/static/swfobject.js"></script>
+    <script type="text/javascript" src="/static/web_socket.js"></script>
     <script type="text/javascript" src="/static/jquery.min.js"></script>
     <script type="text/javascript" src="/static/jquery-ui-custom.js"></script>
     <script type="text/javascript" src="/static/simplemodal.js"></script>
     <script type="text/javascript" src="/static/messaging.js"></script>
     <script type="text/javascript" src="/static/soundmanager2.js"></script>
     <script type="text/javascript">
+      WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
+           WEB_SOCKET_DEBUG = true;
       var numbars = 16;
       var whilePlaying = function(){
         var bars =[];
