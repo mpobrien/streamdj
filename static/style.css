@@ -6,6 +6,11 @@
   background-color: red;
   float: left; }
 
+.right {
+  text-align: right;
+  font-style: italic;
+  padding-right: 20px; }
+
 #visualization {
   border-top: 1px solid black; }
 
@@ -182,10 +187,8 @@ body {
         font-family: Georgia,serif;
         text-style: italic; }
 
-  .odd{
-    background-color:#f0f0f0;
-  }
-
+.odd {
+  background-color: #f0f0f0; }
 
 #queue .by, #queue .title, #queue .artist, #queue .upby, #queue .uploader {
   margin-left: 2px;

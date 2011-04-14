@@ -69,7 +69,7 @@ var MessageHandlers = {
     //isStatic is ignored for now because server does not log these events
     var songId = message["songId"]
     $('#nowplayingtext').text('');
-    $('#currentfile').html("<span>nothing's playing. :(  upload something!</span>");
+    $('#currentfile').html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
     $('#song_' + songId).hide('slide', function(){$(this).remove()} );
     oddify(); //TODO clean up
   },//}}}

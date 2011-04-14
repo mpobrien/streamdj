@@ -83,7 +83,7 @@
            $('#chat').html('');
          });
          {{^nowPlaying}}
-            $('#currentfile').html("<span>nothing's playing. :(  upload something!</span>");
+         $('#currentfile').html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
          {{/nowPlaying}}
        })
     </script>
