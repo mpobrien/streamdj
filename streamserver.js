@@ -5,6 +5,7 @@ var util  = require('util')
 var sys   = require('sys')
 var URL_PREFIX = "/listen/"
 var fs    = require('fs')
+var streamRoom = require('./streamRoom')
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
 var rooms = {};
 
@@ -17,35 +18,17 @@ Array.prototype.remove = function(e) {//{{{
 var pubsubClient = redis.createClient();
 var redisClient2 = redis.createClient();
 
-pubsubClient.subscribe("queueEvents")
+pubsubClient.subscribe("newQueueReady")
 
-function createRoom(theroomname){
-  console.log("creating", theroomname);
-  var mp3Stream = new mp3.Mp3Stream();  //TODO add event listeners!
-  var streamWriterFunc = function(key){ // TODO this is confusing. clean it up!
-    return function(data, y, z, id){
-      rooms[key].listeners.forEach(function(listener){
-        try{
-          listener.write(data);
-        }catch(e){}
-      });
-    } }(theroomname) 
-  mp3Stream.on("frameready", streamWriterFunc);
-  return {listeners:[], stream: mp3Stream, key:theroomname};
-}
-
-function createStartStreamCommand(nameOfRoom, roominfo){
-  return function(){
-    redisClient2.lpop("roomqueue_" + nameOfRoom, function(err, reply){ //TODO catch errors.
-      if(!reply) return;
-      songInfo = JSON.parse(reply);  //TODO check for an error here!
-      fs.readFile(songInfo.path, function(err, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)
-        if(err) console.log("err:",err);
-        roominfo.stream.streamFile(data);
-      });
-    });
-  };
-}
+pubsubClient.on("message", function(channel, msg){
+  console.log("got message:", msg, "on channel", channel);
+  if(channel != "newQueueReady") return;
+  var roomName = msg;
+  var room = rooms[roomName];
+  if(room && !room.getNowPlaying()){
+    room.playNextFile();
+  } //TODO error if room not found.
+});
 
 function prepareStartup(){
   redisClient2.smembers("rooms", function(err, reply){
@@ -53,26 +36,26 @@ function prepareStartup(){
     for(var i in reply){
       var roomname = reply[i];                                                            
       if(typeof(roomname)!="string") continue;
-      var roominfo = createRoom(roomname);
+      var roominfo = new streamRoom.StreamRoom(roomname, redisClient2);
+      roominfo.on("file-end", fileEnd);
+      roominfo.on("file-change", fileChanged);
       rooms[roomname] = roominfo;
-      createStartStreamCommand(roomname, roominfo)();
-      /*redisClient2.lpop("roomqueue_" + roomname, function(err, reply){ //TODO catch errors.*/
-      /*console.log("roomname now:", x);*/
-      /*if(!reply) return;*/
-      /*songInfo = JSON.parse(reply);  //TODO check for an error here!*/
-      /*console.log(roomname, " is streaming: " , util.inspect(songInfo));*/
-      /*fs.readFile(songInfo.path, function(err, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)*/
-      /*if(err) console.log("err:",err);*/
-      /*roominfo.stream.streamFile(data);*/
-      /*roominfo.stream.id = roomname;*/
-      /*console.log("id",roomname);*/
-      /*roominfo.stream.path = songInfo.path;*/
-      /*});*/
-      /*});*/
+      roominfo.playNextFile();
     }
-    console.log("rooms : ", util.inspect(rooms));
+    console.log("rooms:", util.inspect(rooms));
   });
 }
+
+var fileEnd = function(roomName, fileinfo){
+  pubsubClient.publish("queueEvents", "fileend " + fileinfo);
+  console.log("on roomName", roomName, "file ended:", fileinfo);
+}
+
+var fileChanged = function(roomName, oldfile, newfile){
+  pubsubClient.publish("queueEvents", "filechanged " + oldfile + " " + newfile);
+  console.log("on roomName", roomName, "file ended:", oldfile, "file started:", newfile);
+}
+
 
 var streamingServer = http.createServer(
   function (req, res) {
@@ -86,10 +69,7 @@ var streamingServer = http.createServer(
     console.log("Got connection");
     
     if( roomName in rooms ){
-      rooms[roomName].listeners.push(res);
-      req.connection.addListener("close", 
-        function(key){ return function(){
-          rooms[key].listeners.remove(res); } }(roomName) );
+      rooms[roomName].addNewListener(req,res);
     }else{
       // make sure the room was actually created first?
       redisClient2.sismember("rooms", roomName, function(err, reply){ //TODO check for errors!
@@ -99,12 +79,12 @@ var streamingServer = http.createServer(
           return;
         }
         console.log("setting up new room");
-        var newroom = createRoom(roomName);
+        var newroom = new streamRoom.StreamRoom(roomName, redisClient2);
+        newroom.on("file-end", fileEnd);
+        newroom.on("file-change", fileChanged);
         rooms[roomName] = newroom;
-        rooms[roomName].listeners.push(res);
-        req.connection.addListener("close", 
-          function(key){ return function(){
-            rooms[key].listeners.remove(res); } }(roomName) );
+        newroom.addNewListener(req, res);
+        newroom.playNextFile();
       });
     }
     
@@ -121,7 +101,7 @@ var streamingServer = http.createServer(
 
 //***** TESTING HARNESS */
 redisClient2.lpush("roomqueue_testing2", JSON.stringify({path:"/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3"}), function(){
-  redisClient2.lpush("roomqueue_testing", JSON.stringify({path:"/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/02 - Pinch Of Peer.mp3"}), function(){
+  redisClient2.lpush("roomqueue_testing", JSON.stringify({path:"/home/mike/2.mp3"}), function(){
     prepareStartup();
     streamingServer.listen(settings.streamingport);
     console.log(rooms)
