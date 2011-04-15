@@ -186,10 +186,8 @@
     </div>
     <div id="optionsmodal">
       <div class="heading">Options</div>
-        <ul id="optionslist">
-          <li><button id="clearchat">Clear chat history</button></li>
-          <li><button id="restartaudio">Restart Audio Stream</button></li>
-        </ul>
+      <div class="optionrow"><button id="clearchat">Clear chat history</button></div>
+      <div class="optionrow"><button id="restartaudio">Restart Audio Stream</button></div>
     </div>
   </body>
 </html>

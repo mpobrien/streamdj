@@ -305,7 +305,7 @@ body{
   @include rounded(10px);
   font-family: Kreon, Georgia;
   position:absolute;
-  width:300px;
+  width:500px;
   height:300px;
   border:1px solid black;
   text-align:center;
@@ -318,6 +318,19 @@ body{
     padding-top:10px;
     border-bottom:1px solid black;
   }
+
+  .optionrow{
+    margin-top:10px;
+    margin-bottom:10px;
+    font-family: Georgia, serif;
+    font-size:14px;
+  }
+
+  .divider{
+    height:1px;
+    border-bottom: 1px dotted #cccccc;
+  }
+
 }
 
 .progressBar{
