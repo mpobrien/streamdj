@@ -116,7 +116,9 @@ server.addListener("request", function(req, res) {
       oa.getOAuthRequestToken(
           function(error, oauth_token, oauth_token_secret, results){
             if(error) {
-              throw new Error(([error.statusCode, error.data].join(': ')));
+              console.error("Could not fetch a request token! Network or twitter API down?");
+              res.writeHead(500);
+              res.end("Sorry, can't log you in right now! The twitter API did not respond. Try again later.");
             } else { 
               res.writeHead(302, { 'Location': 'https://twitter.com/oauth/authorize?oauth_token=' + oauth_token, });
               res.end();
@@ -145,7 +147,11 @@ server.addListener("request", function(req, res) {
         }
         oa.getProtectedResource("http://api.twitter.com/1/users/show.json?user_id=" + results2.user_id,
                                 "GET", oauth_access_token, oauth_access_token_secret, function (error, data, response) {
-
+          if(error){
+            console.log("Error accessing protected resource at twitter:" + error);
+            res.end();
+            return;
+          }
           jsondata = JSON.parse(data);  //TODO check for an error here!
           var profileImg = jsondata.default_profile_image ? null : jsondata.profile_image_url ;
           //TODO use a hash here instead maybe?
