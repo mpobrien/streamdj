@@ -13,6 +13,6 @@
 
   "streamingport" : 3001,
   "streamserver_domain": "stream.dev.outloud.fm"
-
+  "streamingport" : 3001
 
 }
