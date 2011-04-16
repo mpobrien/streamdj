@@ -13,7 +13,7 @@ var redis     = require('redis');
 var msgs      = require('./messages')
 var querystring = require('querystring')
 var net = require("net"),
-domains = ["outloud.fm:3000"];
+domains = ["outloud.fm:3000","dev.outloud.fm:3000","stream.dev.outloud.fm:3001"];
 var chatConnections = {};
 
 Mu.templateRoot = './templates'
@@ -25,6 +25,8 @@ var uploadIds = 0;
 var error404path = path.join(process.cwd(), "/static/404.html");   
 var urlRegEx = new RegExp('^/([a-zA-Z0-9]+)/?(upload?)?/?$');
 
+var msgId = 0;
+
 Array.prototype.remove = function(e) {//{{{
   for (var i = 0; i < this.length; i++) {
     if (e == this[i]) { return this.splice(i, 1); }
@@ -32,6 +34,26 @@ Array.prototype.remove = function(e) {//{{{
 };//}}}
 
 sys.puts(util.inspect(settings))
+
+pubsubClient.subscribe("file-ended");
+pubsubClient.subscribe("file-changed");
+pubsubClient.on("message", function(channel, msg){
+  console.log("received message on", channel, "room", msg.roomname)
+  console.log(msg);
+  if(channel == 'file-ended'){
+    var incomingMsg = JSON.parse(msg);
+    var outgoingMsg = JSON.stringify( { messages:[msggen.stopped(msg.songId)] } ) 
+    broadcastToRoom(msg.roomname, outgoingMsg);
+  }else if(channel == 'file-changed'){
+    var incomingMsg = JSON.parse(msg);
+    var messages = [];
+    if( incomingMsg.oldfile ) messages.push(msggen.stopped(incomingMsg.oldfile.songId));
+    if( incomingMsg.newfile) messages.push(msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta))
+    var outgoingMsg = JSON.stringify( {messages:messages }) 
+    console.log(outgoingMsg);
+    broadcastToRoom(incomingMsg.roomname, outgoingMsg);
+  }else{} //bogus message
+});
 
 function broadcastToRoom(roomname, message, exclude){
   var chatroom = chatConnections[roomname]
@@ -155,14 +177,9 @@ server.addListener("request", function(req, res) {
       });
       break;
     default:
-      console.log("request at", qs.pathname);
+      console.log("request at", qs.pathname)
       var matches = urlRegEx.exec(qs.pathname);
-      console.log(matches);
-      if( !matches ){ 
-        console.log("404");
-        res.end();
-        return;
-      }
+      if( !matches ){ res.end(); return; } //404
       var roomName = matches[1];
       if(!utilities.validateRoomName(roomName) ){ res.end(); return; }
       var isUpload = matches[2];
@@ -193,7 +210,6 @@ server.addListener("request", function(req, res) {
       /*break;*/
   }
 })
-var msgId = 0;
 
 //queue.on("file-end", function(nowplaying){
   //var message = JSON.stringify( {messages:[msggen.stopped(nowplaying.uploader, nowplaying.name, nowplaying.songId, nowplaying.meta)]})
@@ -298,10 +314,14 @@ function doUpload(req, res, roomname, sessionId){
 
   fileUpload.once("filesaved", function(uploaderInfo){
     redisClient.incr("maxsongid", function(err, newMaxId){
-      var message = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
-      //TODO figure out the whole {l,r}push/{l,r}pop thing.
-      redisClient.lpush("roomqueue_" + roomname, message, function(){
-        broadcastToRoom(roomname, message);
+      var chatmessage = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
+      var streamMessage = JSON.stringify( {path:settings.uploadDirectory + filePath + ".mp3",
+                                           name:fname,
+                                           uploader: uploaderInfo.name,
+                                           songId: newMaxId, 
+                                           meta: metadata});
+      redisClient.rpush("roomqueue_" + roomname, streamMessage, function(){
+        broadcastToRoom(roomname, chatmessage);
         redisClient.publish("newQueueReady",roomname);
       })
     });
@@ -329,7 +349,7 @@ function display_form(req, res, userinfo, roomname) {//{{{
   var result = { username:userinfo.name,
                  msgs:[],
                  wsurl: "ws://" + settings.domain + ":" + settings.port + "/" + roomname,
-                 listenurl: "http://" + settings.streamserver_domain + ":" + settings.streamingport + "/" + roomname + "/listen",
+                 listenurl: "http://" + settings.streamserver_domain + ":" + settings.streamingport + "/listen/" + roomname,
                  roomname: roomname
                }
   result.nowPlaying = [] //TODO

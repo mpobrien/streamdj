@@ -21,7 +21,7 @@ exports.MessageGenerator = function MessageGenerator(){
 
   this.stopped = function(who, filename, id, meta){
     msgId++;
-    return {"type":"stopped","id":msgId,'from':who,'body':filename, 'songId':id, 'time':new Date().getTime(), 'meta':meta}
+    return {"type":"stopped",'songId':id, 'time':new Date().getTime()}
   }
 
   this.started = function(who, filename, id, meta){

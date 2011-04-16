@@ -47,12 +47,14 @@ function prepareStartup(){
 }
 
 var fileEnd = function(roomName, fileinfo){
-  redisClient2.publish("queueEvents", "fileend " + fileinfo);
+  fileinfo.roomname = roomName;
+  redisClient2.publish("file-ended", JSON.stringify(fileinfo));
   console.log("on roomName", roomName, "file ended:", fileinfo);
 }
 
 var fileChanged = function(roomName, oldfile, newfile){
-  redisClient2.publish("queueEvents", "filechanged " + oldfile + " " + newfile);
+  var msg = {"oldfile":oldfile, "newfile":newfile, "roomname":roomName};
+  redisClient2.publish("file-changed", JSON.stringify(msg));
   console.log("on roomName", roomName, "file ended:", oldfile, "file started:", newfile);
 }
 
@@ -60,6 +62,14 @@ var fileChanged = function(roomName, oldfile, newfile){
 var streamingServer = http.createServer(
   function (req, res) {
     var url_parts = require('url').parse(req.url);
+    console.log(url_parts.pathname)
+
+    if(url_parts.pathname == '/crossdomain.xml'){
+      res.writeHead(200, {'Content-Type': 'application/xml'}); 
+      res.end('<?xml version="1.0"?><!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd"><cross-domain-policy><allow-access-from domain="outloud.fm"to-ports="3000"/><allow-access-from domain="dev.outloud.fm"to-ports="3000"/><allow-access-from domain="stream.dev.outloud.fm"to-ports="3001"/></cross-domain-policy>')
+      return;
+    }
+
     if( !url_parts.pathname.indexOf(URL_PREFIX) === 0 ){ // bogus url.
       res.writeHead(404, {'Content-Type': 'text/plain'});
       res.end();
@@ -74,6 +84,7 @@ var streamingServer = http.createServer(
       // make sure the room was actually created first?
       redisClient2.sismember("rooms", roomName, function(err, reply){ //TODO check for errors!
         if(reply==0){
+          console.log(roomName, "is a non existent room");
           res.writeHead(404, {'Content-Type': 'text/plain'});
           res.end();
           return;
@@ -99,13 +110,8 @@ var streamingServer = http.createServer(
   //res.end('Hello World\n');
 })
 
-//***** TESTING HARNESS */
-redisClient2.lpush("roomqueue_testing2", JSON.stringify({path:"/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3"}), function(){
-  redisClient2.lpush("roomqueue_testing", JSON.stringify({path:"/home/mike/2.mp3"}), function(){
-    prepareStartup();
-    streamingServer.listen(settings.streamingport);
-    console.log(rooms)
-  });
-})
+prepareStartup();
+streamingServer.listen(settings.streamingport);
+
 
 

@@ -34,13 +34,14 @@ var StreamRoom = function(roomName, redisClient){
       if(!reply){
         nowPlaying = null;
         if( endingFile ){
-          that.emit("file-end", roomName, endingFile);
+          that.emit("file-end", roomName, JSON.parse(endingFile));
         }
         console.log("queue was empty.");
         return; // Nothing on the queue.
       }
       songInfo = JSON.parse(reply);  //TODO check for an error here!
       nowPlaying = songInfo;
+      console.log("songinfo: ", songInfo);
       fs.readFile(songInfo.path, function(err, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)
         that.emit("file-change", roomName, endingFile, nowPlaying);
         if(err) console.log("err:",err);
