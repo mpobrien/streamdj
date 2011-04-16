@@ -45,7 +45,9 @@ var handleFiles = function(files){//{{{
         }
     }(progbar);
     qxhr.onload = progbar.finish;
-    qxhr.open("POST","/upload", true);
+    var url = "/" + roomname + "/upload"
+      console.debug("url",url)
+    qxhr.open("POST","/" + roomname + "/upload", true);
     qxhr.setRequestHeader('Content-Type', 'multipart/form-data');
     qxhr.setRequestHeader("X-File-Name", file.fileName);
     qxhr.send(file);

@@ -47,12 +47,12 @@ function prepareStartup(){
 }
 
 var fileEnd = function(roomName, fileinfo){
-  pubsubClient.publish("queueEvents", "fileend " + fileinfo);
+  redisClient2.publish("queueEvents", "fileend " + fileinfo);
   console.log("on roomName", roomName, "file ended:", fileinfo);
 }
 
 var fileChanged = function(roomName, oldfile, newfile){
-  pubsubClient.publish("queueEvents", "filechanged " + oldfile + " " + newfile);
+  redisClient2.publish("queueEvents", "filechanged " + oldfile + " " + newfile);
   console.log("on roomName", roomName, "file ended:", oldfile, "file started:", newfile);
 }
 

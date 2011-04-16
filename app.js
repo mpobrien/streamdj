@@ -2,7 +2,6 @@ var fs        = require('fs');
 var path      = require('path')
 var uploads   = require('./fileupload');
 var http      = require('http');
-var queue     = require('./queue');
 var sys       = require('sys')
 var Mu        = require('Mu')
 var ws        = require("websocket-server");
@@ -12,15 +11,19 @@ var util      = require('util')
 var OAuth     = require('oauth').OAuth;
 var redis     = require('redis');
 var msgs      = require('./messages')
+var querystring = require('querystring')
 var net = require("net"),
 domains = ["outloud.fm:3000"];
+var chatConnections = {};
 
 Mu.templateRoot = './templates'
 var redisClient = redis.createClient();
+var pubsubClient = redis.createClient();
 var msggen = new msgs.MessageGenerator();
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
 var uploadIds = 0;
 var error404path = path.join(process.cwd(), "/static/404.html");   
+var urlRegEx = new RegExp('^/([a-zA-Z0-9]+)/?(upload?)?/?$');
 
 Array.prototype.remove = function(e) {//{{{
   for (var i = 0; i < this.length; i++) {
@@ -28,18 +31,17 @@ Array.prototype.remove = function(e) {//{{{
   }
 };//}}}
 
-var streamlisteners = [];
-var queue = new queue.Mp3Queue();
-
-queue.stream.on("frameready", function(data,y,z){
-  streamlisteners.forEach(function(listener){
-    try{
-      listener.write(data);
-    }catch(e){}
-  })
-});
-
 sys.puts(util.inspect(settings))
+
+function broadcastToRoom(roomname, message, exclude){
+  var chatroom = chatConnections[roomname]
+  if(chatroom){
+    for(var i=0;i<chatroom.length;i++){
+      if(exclude && exclude == chatroom[i]) continue;
+      chatroom[i].send(message);
+    }
+  }//TODO error if chatroom isn't found
+}
 
 var oa = new OAuth(settings.REQUEST_TOKEN_URL, settings.ACCESS_TOKEN_URL,
                    settings.key, settings.secret, 
@@ -56,11 +58,26 @@ server.addListener("request", function(req, res) {
   sys.puts("request at " + qs.pathname);
   switch (qs.pathname) {
     case '/room':
-      utilities.sendTemplate(res, "room.html", {}, true, settings.devtemplates)
-      break;
-    case '/listen':
-      req.connection.addListener("close", function(){ streamlisteners.remove(res); })
-      streamlisteners.push(res); //TODO remove listeners when done
+      if(req.method == "POST"){
+        var postData = null;
+        req.addListener('data', function(chunk){
+          postData = querystring.parse(chunk.toString());
+        }).addListener('end', function(){
+          var roomName = postData.roomname;
+          if( utilities.validateRoomName(roomName) ){
+            redisClient.sadd("rooms", roomName, function(err, reply){
+              if(reply==1){ //room is newly created
+              }else{} // room already existed. whatevz
+              res.writeHead(302, { 'Location': '/' + roomName});
+              res.end()
+            })
+          }else{
+            utilities.sendTemplate(res, "room.html", {roomname:roomName, invalid:true}, true, settings.devtemplates)
+          }
+        });
+      }else{
+        utilities.sendTemplate(res, "room.html", { roomname:'' }, true, settings.devtemplates)
+      }
       break;
     case '/':
       var cookies = new Cookies(req, res);
@@ -80,46 +97,13 @@ server.addListener("request", function(req, res) {
       }
       break;
     case '/upload':
-      var cookies = new Cookies(req, res);
-      var sessionId = cookies.get("session");
-      var filePath = utilities.randomString(64);
-      var fname = req.headers['x-file-name']
-      var fileUpload = new uploads.FileUpload(settings.uploadDirectory + filePath + ".mp3", fname)
-      fileUpload.uploadid = ++uploadIds;
-      req.addListener("data", fileUpload.bufferData);
-      var metadata = {};
-
-      fileUpload.once("filesaved", function(uploaderInfo){
-        redisClient.incr("maxsongid", function(err, newMaxId){
-          var message = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
-          sys.puts(message);
-          server.broadcast(message)
-          queue.enqueue(settings.uploadDirectory + filePath + ".mp3", fname, uploaderInfo.name, newMaxId, metadata);
-        });
-      });
-
-      redisClient.mget("session_"+sessionId+"_user_id",
-                       "session_"+sessionId+"_screen_name",
-        function(err, replies){ //TODO check for redis error!
-          var userinfo = {user_id:replies[0], name:replies[1]}
-          fileUpload.okToWrite = true; //TODO validate it, if userinfo is bad, drop stream
-          fileUpload.uploaderInfo = userinfo;
-          fileUpload.writeToDisk();
-        })
-
-      req.once("end", function(){
-        fileUpload.doneBuffering = true;
-        fileUpload.prepareBuffer();
-        metadata = fileUpload.getMetaData();
-        fileUpload.writeToDisk();
-        res.end();
-      });
       break;
     case '/login':
       oa.getOAuthRequestToken(
           function(error, oauth_token, oauth_token_secret, results){
             if(error) {
               console.error("Could not fetch a request token! Network or twitter API down?");
+              console.error(error);
               res.writeHead(500);
               res.end("Sorry, can't log you in right now! The twitter API did not respond. Try again later.");
             } else { 
@@ -171,26 +155,66 @@ server.addListener("request", function(req, res) {
       });
       break;
     default:
-      utilities.serveStaticFile(req, res, error404path);
+      console.log("request at", qs.pathname);
+      var matches = urlRegEx.exec(qs.pathname);
+      console.log(matches);
+      if( !matches ){ 
+        console.log("404");
+        res.end();
+        return;
+      }
+      var roomName = matches[1];
+      if(!utilities.validateRoomName(roomName) ){ res.end(); return; }
+      var isUpload = matches[2];
+      console.log("roomname", roomName, "isUpload", isUpload);
+      var cookies = new Cookies(req, res);
+      if( !cookies.get("session") ){ // user is not logged in.
+        utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
+      }else{ // user is logged in.
+        var sessionId = cookies.get("session");
+        if( isUpload ){
+          doUpload(req, res, roomName, sessionId);
+        }else{
+          redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", function(err, replies){
+            //TODO check for err.
+            if(replies[0] == null || replies[1] == null){
+              utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
+              return;
+            }
+            userinfo = {user_id:replies[0], name:replies[1]}
+            display_form(req, res, userinfo, roomName);
+          })
+        }
+      }
       break;
+
+      //utilities.sendTemplate(res, "roomchat.html", {roomname: roomName}, settings.devtemplates)
+      /*utilities.serveStaticFile(req, res, error404path);*/
+      /*break;*/
   }
 })
 var msgId = 0;
 
-queue.on("file-end", function(nowplaying){
-  var message = JSON.stringify( {messages:[msggen.stopped(nowplaying.uploader, nowplaying.name, nowplaying.songId, nowplaying.meta)]})
-  server.broadcast(message);
-});
+//queue.on("file-end", function(nowplaying){
+  //var message = JSON.stringify( {messages:[msggen.stopped(nowplaying.uploader, nowplaying.name, nowplaying.songId, nowplaying.meta)]})
+  //server.broadcast(message);
+//});
 
-queue.on("file-start", function(nowplaying){
-  var message = JSON.stringify( {messages:[msggen.started(nowplaying.uploader, nowplaying.name, nowplaying.songId, nowplaying.meta)]})
-  server.broadcast(message);
-  redisClient.lpush("chatlog", message, 
-    function(){ redisClient.ltrim("chatlog", 100, function(){}) });
-});
+//queue.on("file-start", function(nowplaying){
+  //var message = JSON.stringify( {messages:[msggen.started(nowplaying.uploader, nowplaying.name, nowplaying.songId, nowplaying.meta)]})
+  //server.broadcast(message);
+  //redisClient.lpush("chatlog", message, 
+    //function(){ redisClient.ltrim("chatlog", 100, function(){}) });
+//});
 
 server.addListener("connection", function(connection){
+  var qs = require('url').parse(connection._req.url, true)
+  var roomname = qs.pathname;
+  //TODO make sure room exists?
+
+  roomname = roomname.substring(1); //TODO validate roomname
   connection.authorized = false;
+  connection.roomname = roomname;
   connection.addListener("message", function(msg){
     if( !connection.authorized ){
       if(msg.substr(0, 5)==="auth:"){
@@ -202,33 +226,45 @@ server.addListener("connection", function(connection){
               var userinfo = {user_id:replies[0], name:replies[1]}
               connection.name = userinfo.name
               connection.authorized = true;
+              if(roomname in chatConnections){
+                chatConnections[roomname].push(connection);
+              }else{
+                chatConnections[roomname] = [connection];
+              }
               redisClient.sadd("listeners", userinfo.name, function(err, reply){
                 msgId++
                 if( reply == 1 ){
                   var message = JSON.stringify( {messages:[msggen.join(connection.name)]})
-                  connection.broadcast(message);
+                  broadcastToRoom(connection.roomname, message, connection);
+                  //connection.broadcast(message);
                 }else{} // already inside
               })
             })
+      }else{ // tried to send message on an unauthorized connection - disconnect it
+        //TODO actually disconnect it. im not sure how right now.
+        //TODO remove it from the chat connections handler
       }
     }else{
-      if(msg=='0'){ //ping!
+      if(msg=='0'){ //ping! //TODO check timing of pings to prevent DOS
           connection.send("1");
       }else{
           //TODO validate the message first?
           var message = JSON.stringify( {messages:[msggen.chat(connection.name, msg)]})
-          sys.puts(connection.name + ": " + msg);
-          server.broadcast(message);
-          redisClient.lpush("chatlog", message, 
-            function(){ redisClient.ltrim("chatlog", 100, function(){}) });
+          sys.puts("[" + connection.roomname + "] " + connection.name + ": " + msg);
+          broadcastToRoom(connection.roomname, message);
+          //server.broadcast(message);
+          redisClient.lpush("chatlog_" + connection.roomname, message,  //TODO only trim after 10 over size, etc.
+            function(){ redisClient.ltrim("chatlog_" + connection.roomname, 100, function(){}) });
       }
     }
   });
   connection.addListener("close", function(){
+    var chatroom = chatConnections[roomname];
+    if( chatroom ) chatConnections[roomname].remove(connection);
     redisClient.srem("listeners", connection.name, function(err, reply){
       if(reply==1){
         var message = JSON.stringify( {messages:[msggen.left(connection.name)]})
-        connection.broadcast(message);
+        broadcastToRoom(connection.roomname, message);
       }
     })
   })
@@ -252,15 +288,54 @@ net.createServer(
   }
 ).listen(843);
 
-function display_form(req, res, userinfo) {//{{{
+function doUpload(req, res, roomname, sessionId){
+  var filePath = utilities.randomString(64);
+  var fname = req.headers['x-file-name']
+  var fileUpload = new uploads.FileUpload(settings.uploadDirectory + filePath + ".mp3", fname)
+  fileUpload.uploadid = ++uploadIds;
+  req.addListener("data", fileUpload.bufferData);
+  var metadata = {};
+
+  fileUpload.once("filesaved", function(uploaderInfo){
+    redisClient.incr("maxsongid", function(err, newMaxId){
+      var message = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
+      //TODO figure out the whole {l,r}push/{l,r}pop thing.
+      redisClient.lpush("roomqueue_" + roomname, message, function(){
+        broadcastToRoom(roomname, message);
+        redisClient.publish("newQueueReady",roomname);
+      })
+    });
+  });
+
+  redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name",
+    function(err, replies){ //TODO check for redis error!
+      var userinfo = {user_id:replies[0], name:replies[1]}
+      fileUpload.okToWrite = true; //TODO validate it, if userinfo is bad, drop stream
+      fileUpload.uploaderInfo = userinfo;
+      fileUpload.writeToDisk();
+    })
+
+  req.once("end", function(){
+    fileUpload.doneBuffering = true;
+    fileUpload.prepareBuffer();
+    metadata = fileUpload.getMetaData();
+    fileUpload.writeToDisk();
+    res.end();
+  });
+}
+
+function display_form(req, res, userinfo, roomname) {//{{{
   res.statusCode = 200
   var result = { username:userinfo.name,
                  msgs:[],
-                 wsurl: "ws://" + settings.domain + ":" + settings.port,
-                 listenurl: "http://" + settings.domain + ":" + settings.port + "/listen",
+                 wsurl: "ws://" + settings.domain + ":" + settings.port + "/" + roomname,
+                 listenurl: "http://" + settings.streamserver_domain + ":" + settings.streamingport + "/" + roomname + "/listen",
+                 roomname: roomname
                }
-  result.nowPlaying = queue.nowPlaying ? queue.nowPlaying : '';
-  result.queue = queue.getQueue().length > 0 ? queue.getQueue() : [];
+  result.nowPlaying = [] //TODO
+  result.queue = [] //TODO
+  //result.nowPlaying = queue.nowPlaying ? queue.nowPlaying : '';
+  //result.queue = queue.getQueue().length > 0 ? queue.getQueue() : [];
   redisClient.smembers("listeners", function(err, reply){
     if(reply == null) reply = [];
     var listeners = [];
@@ -275,10 +350,10 @@ function display_form(req, res, userinfo) {//{{{
     if( appendself ){
       listeners.unshift({name:userinfo.name});
     }
-    redisClient.lrange("chatlog", 0, 99, function(err, reply2){
+    redisClient.lrange("chatlog_" + roomname, 0, 99, function(err, reply2){
       if(reply2 == null )result.msgs = []
       else result.msgs = reply2;
-      utilities.sendTemplate(res, "simple2.html", result, settings.devtemplates)
+      utilities.sendTemplate(res, "roomchat.html", result, settings.devtemplates)
     });
   });
 }//}}}

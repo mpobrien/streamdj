@@ -4,6 +4,13 @@ var sys = require('sys')
 var util = require('util')
 var path = require('path')
 
+exports.validateRoomName = function(roomname){
+  if(roomname.length<6 || roomname.length>15) return false;
+  if( roomname == 'login' || roomname == 'upload' || roomname == 'logout' || roomname == 'authdone') return false;
+  if(roomname.match(/^[a-zA-Z0-9]+$/) ) return true;
+  else return false;
+}
+
 exports.randomString = function(bits){
   var chars,rand,i,ret;
   chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-'
