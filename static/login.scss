@@ -13,6 +13,60 @@ $sectionHeadingColor: #3E4147;
 $sectionHeadingShadow: lighten(#3E4147,50%);
 $sectionHeadingBorder: black;
 
+@mixin rounded($radius){
+  $radius: 10px;
+  border-radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+}
+
+h1{
+  font-weight:normal;
+  padding-bottom:10px;
+}
+
+#logout{
+  font-size:.8em;
+}
+
+.userinfo{
+  @include rounded(10px);
+  background-color:lighten($backgroundColor, 10%);
+  padding:10px;
+  margin-bottom:20px;
+}
+
+.username{
+  padding-left:10px;
+  font-weight:bold;
+}
+
+#profileImg{
+  padding-left:15px;
+}
+
+#container{
+  padding-top:100px;
+  width:700px;
+  margin-left:auto;
+  margin-right:auto;
+}
+#leftside{
+  font-size:44px;
+  float:left;  
+  text-align:center;
+}
+
+#rightside{  
+  padding-top:80px;
+  padding-left:100px;
+  float:left;  
+}
+
+.disclaimer{
+  color:#888
+}
+
 body{
   background-color: $backgroundColor;
   color:$textColor;
@@ -33,11 +87,6 @@ a:hover{
   text-decoration:underline;
 }
 
-
-#note{
-    text-align:center;
-    font-size: 200px;
-}
 
 #info{
   font-family:Kreon;

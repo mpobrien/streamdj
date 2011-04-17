@@ -25,13 +25,13 @@
           Pick something with only letters, numbers, and spaces that's between 6 and 15 characters long.
         </div>
       {{/invalid}}
-      <div style="width:100%; margin-left:auto; margin-right:auto">
-        <form action="/room" method="POST">
-          <label for="roomname">Room Name:</label>
-          <input type="text" name="roomname" id="roomname" placeholder="room name" value="{{roomname}}" />
-          <div style="width:200px;margin-left:auto;margin-right:auto">
-            <input type="submit" id="go" value="Go!"/>
-          </div>
+        <div style="width:100%; margin-left:auto; margin-right:auto">
+          <form action="/room" method="POST">
+            <label for="roomname">Room Name:</label>
+            <input type="text" name="roomname" id="roomname" placeholder="room name" value="{{roomname}}" />
+            <div style="width:200px;margin-left:auto;margin-right:auto">
+              <input type="submit" id="go" value="Go!"/>
+            </div>
         </form>
       </div>
     </div>

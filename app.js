@@ -55,6 +55,22 @@ pubsubClient.on("message", function(channel, msg){
   }else{} //bogus message
 });
 
+function getUserInfo(sessionId, callback){
+  redisClient.mget("session_"+sessionId+"_user_id",
+                   "session_"+sessionId+"_screen_name",
+                   "session_"+sessionId+"_profilepic",
+                   function(err, replies){
+    if(replies[0] == null || replies[1] == null){
+      callback("No user found", null);
+    }else{
+      userinfo = {user_id:replies[0], name:replies[1]}
+      if(replies[2]) userinfo.pic = replies[2];
+      callback(null, userinfo);
+    }
+  });
+}
+
+
 function broadcastToRoom(roomname, message, exclude){
   var chatroom = chatConnections[roomname]
   if(chatroom){
@@ -80,6 +96,9 @@ server.addListener("request", function(req, res) {
   sys.puts("request at " + qs.pathname);
   switch (qs.pathname) {
     case '/room':
+      var cookies = new Cookies(req, res);
+      var sessionId = cookies.get("session");
+      if( !sessionId ){ utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates); return; }
       if(req.method == "POST"){
         var postData = null;
         req.addListener('data', function(chunk){
@@ -87,35 +106,44 @@ server.addListener("request", function(req, res) {
         }).addListener('end', function(){
           var roomName = postData.roomname;
           if( utilities.validateRoomName(roomName) ){
-            redisClient.sadd("rooms", roomName, function(err, reply){
-              if(reply==1){ //room is newly created
-              }else{} // room already existed. whatevz
-              res.writeHead(302, { 'Location': '/' + roomName});
-              res.end()
-            })
+            getUserInfo(sessionId, function(err, userinfo){
+              if(err){  // user not found
+                utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
+                return;
+              }
+              redisClient.sadd("rooms", roomName, function(err, reply){
+                if(reply==1){ //room is newly created
+                }else{} // room already existed. whatevz
+                res.writeHead(302, { 'Location': '/' + roomName});
+                res.end()
+              })
+            });
           }else{
             utilities.sendTemplate(res, "room.html", {roomname:roomName, invalid:true}, true, settings.devtemplates)
+            return;
           }
         });
       }else{
         utilities.sendTemplate(res, "room.html", { roomname:'' }, true, settings.devtemplates)
+        return;
       }
       break;
     case '/':
       var cookies = new Cookies(req, res);
       if( !cookies.get("session") ){ // user is not logged in.
         utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
+        return;
       }else{ // user is logged in.
         var sessionId = cookies.get("session");
-        redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", function(err, replies){
-          if(replies[0] == null || replies[1] == null){
+        getUserInfo(sessionId, function(err, userinfo){
+          if(err){
             utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
             return;
+          }else{
+            utilities.sendTemplate(res, "login.html", {userinfo:userinfo}, settings.devtemplates)
+            display_form(req, res, userinfo);
           }
-          //TODO check for err.
-          userinfo = {user_id:replies[0], name:replies[1]}
-          display_form(req, res, userinfo);
-        })
+        });
       }
       break;
     case '/upload':
@@ -129,7 +157,7 @@ server.addListener("request", function(req, res) {
               res.writeHead(500);
               res.end("Sorry, can't log you in right now! The twitter API did not respond. Try again later.");
             } else { 
-              res.writeHead(302, { 'Location': 'https://twitter.com/oauth/authorize?oauth_token=' + oauth_token, });
+              res.writeHead(302, { 'Location': 'https://twitter.com/oauth/authorize?next=whatever&oauth_token=' + oauth_token, });
               res.end();
             }
           }
@@ -162,11 +190,12 @@ server.addListener("request", function(req, res) {
             return;
           }
           jsondata = JSON.parse(data);  //TODO check for an error here!
-          var profileImg = jsondata.default_profile_image ? null : jsondata.profile_image_url ;
+          var profileImg = jsondata.default_profile_image ? "" : jsondata.profile_image_url ;
           //TODO use a hash here instead maybe?
           var session_id = utilities.randomString(128);
           redisClient.mset("session_"+session_id+"_user_id", results2.user_id,
                            "session_"+session_id+"_screen_name", results2.screen_name,
+                           "session_"+session_id+"_profilepic", profileImg,
                            function(){ 
                              //TODO check for error here.
             cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});

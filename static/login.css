@@ -1,3 +1,44 @@
+h1 {
+  font-weight: normal;
+  padding-bottom: 10px; }
+
+#logout {
+  font-size: .8em; }
+
+.userinfo {
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  background-color: #42454c;
+  padding: 10px;
+  margin-bottom: 20px; }
+
+.username {
+  padding-left: 10px;
+  font-weight: bold; }
+
+#profileImg {
+  padding-left: 15px; }
+
+#container {
+  padding-top: 100px;
+  width: 700px;
+  margin-left: auto;
+  margin-right: auto; }
+
+#leftside {
+  font-size: 44px;
+  float: left;
+  text-align: center; }
+
+#rightside {
+  padding-top: 80px;
+  padding-left: 100px;
+  float: left; }
+
+.disclaimer {
+  color: #888; }
+
 body {
   background-color: #2a2c31;
   color: #fffedf;
@@ -13,10 +54,6 @@ a:link, a:visited, a:active {
 a:hover {
   color: #DFBA69;
   text-decoration: underline; }
-
-#note {
-  text-align: center;
-  font-size: 200px; }
 
 #info {
   font-family: Kreon;
