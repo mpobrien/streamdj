@@ -9,5 +9,7 @@
   "OAUTH_VERSION" : "1.0",
   "HASH_VERSION" : "HMAC-SHA1",
   "CALLBACK_URL" : "http://outloud.fm:3000/authdone",
-  "devtemplates" : true
+  "devtemplates" : true,
+  "streamingport" : 3001,
+  "streamserver_domain": "stream.outloud.fm"
 }
