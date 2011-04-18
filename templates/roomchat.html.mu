@@ -72,6 +72,9 @@
          $('#options').click(function(){
            $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
          });
+	$('#about').click(function(){
+          $('#aboutmodal').modal( {closeHtml:"", overlayClose:true});
+         }); 
          $('#restartaudio').click(function(){
            soundManager.destroySound('mySound');
            startStream();
@@ -190,5 +193,9 @@
       <div class="optionrow"><button id="clearchat">Clear chat history</button></div>
       <div class="optionrow"><button id="restartaudio">Restart Audio Stream</button></div>
     </div>
+<div id="aboutmodal">
+      <div style="color:#DFBA69;">What is this?<br><br></div>
+ <div style="color:#efffd3;">OUTLOUD.FM is an effing sweet and exciting way to play music for your friends; allowing songs to be uploaded and curated in a realtime collaborative playlist. <br><br>
+Bored and hungry? Simply send the URL of your OUTLOUD.FM room to your friends, and start uploading music! (OUTLOUD.FM will, however, do nothing for your hunger.)<br><br> We are based out of New York City, and would love to hear your comments, bug reports, and/or suggestions -- <a href="mailto:info@outloud.fm">info@outloud.fm</a> <br> </div>
   </body>
 </html>
