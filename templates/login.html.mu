@@ -2,6 +2,14 @@
   <head>
   <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'/>
   <link href='/static/login.css' rel='stylesheet' type='text/css'/>
+  <style>
+    .error{
+      font-size:12px;
+      color:red;
+      text-align:center;
+      padding:15px;
+    }
+  </style>
   </head>
   <body>
 
@@ -32,12 +40,19 @@
               </div>
             </form>
           </div>
+          {{#invalid}}
+            <div class="error">
+              The room name you chose is not valid.<br/><br/>
+              Pick something with only letters,<br/> numbers, and spaces, between </br>
+              6 and 15 characters long.
+            </div>
+          {{/invalid}}
         {{/userinfo}}
 
         {{^userinfo}}
           <div>
-            <a href="/login"><img src="/static/twitter.png"/></a>
-            <a href="/login" style="padding-left:10px">Log In via Twitter</a>
+            <a href="/login?r={{room}}"><img src="/static/twitter.png"/></a>
+            <a href="/login?r={{room}}" style="padding-left:10px">Log In via Twitter</a>
           </div>
           <br/>
           <span class="disclaimer">

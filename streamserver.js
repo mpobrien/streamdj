@@ -4,6 +4,7 @@ var redis = require('redis')
 var util  = require('util')
 var sys   = require('sys')
 var URL_PREFIX = "/listen/"
+var msgs      = require('./messages')
 var fs    = require('fs')
 var streamRoom = require('./streamRoom')
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
@@ -14,6 +15,8 @@ Array.prototype.remove = function(e) {//{{{
     if (e == this[i]) { return this.splice(i, 1); }
   }
 };//}}}
+
+var msggen = new msgs.MessageGenerator();
 
 var pubsubClient = redis.createClient();
 var redisClient2 = redis.createClient();
@@ -42,20 +45,21 @@ function prepareStartup(){
       rooms[roomname] = roominfo;
       roominfo.playNextFile();
     }
-    console.log("rooms:", util.inspect(rooms));
   });
 }
 
 var fileEnd = function(roomName, fileinfo){
   fileinfo.roomname = roomName;
   redisClient2.publish("file-ended", JSON.stringify(fileinfo));
-  console.log("on roomName", roomName, "file ended:", fileinfo);
+  redisClient2.del("nowplaying_" + roomName);
 }
 
 var fileChanged = function(roomName, oldfile, newfile){
   var msg = {"oldfile":oldfile, "newfile":newfile, "roomname":roomName};
   redisClient2.publish("file-changed", JSON.stringify(msg));
-  console.log("on roomName", roomName, "file ended:", oldfile, "file started:", newfile);
+  redisClient2.set("nowplaying_" + roomName, JSON.stringify(newfile));
+  var message = JSON.stringify( {messages:[msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta)]})
+  redisClient2.lpush("chatlog_" + roomName, message, function(){ redisClient2.ltrim("chatlog_"+ roomName, 100, function(){}) });
 }
 
 
@@ -76,8 +80,6 @@ var streamingServer = http.createServer(
     }
     var roomName = url_parts.pathname.substring(URL_PREFIX.length);
     //TODO validate room name, etc.
-    console.log("Got connection");
-    
     if( roomName in rooms ){
       rooms[roomName].addNewListener(req,res);
     }else{

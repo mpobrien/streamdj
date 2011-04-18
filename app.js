@@ -39,7 +39,6 @@ pubsubClient.subscribe("file-ended");
 pubsubClient.subscribe("file-changed");
 pubsubClient.on("message", function(channel, msg){
   console.log("received message on", channel, "room", msg.roomname)
-  console.log(msg);
   if(channel == 'file-ended'){
     var incomingMsg = JSON.parse(msg);
     var outgoingMsg = JSON.stringify( { messages:[msggen.stopped(msg.songId)] } ) 
@@ -50,7 +49,6 @@ pubsubClient.on("message", function(channel, msg){
     if( incomingMsg.oldfile ) messages.push(msggen.stopped(incomingMsg.oldfile.songId));
     if( incomingMsg.newfile) messages.push(msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta))
     var outgoingMsg = JSON.stringify( {messages:messages }) 
-    console.log(outgoingMsg);
     broadcastToRoom(incomingMsg.roomname, outgoingMsg);
   }else{} //bogus message
 });
@@ -105,26 +103,32 @@ server.addListener("request", function(req, res) {
           postData = querystring.parse(chunk.toString());
         }).addListener('end', function(){
           var roomName = postData.roomname;
-          if( utilities.validateRoomName(roomName) ){
-            getUserInfo(sessionId, function(err, userinfo){
-              if(err){  // user not found
-                utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
-                return;
-              }
+          getUserInfo(sessionId, function(err, userinfo){
+            if(err){  // user not found
+              utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
+              return;
+            }
+            if( utilities.validateRoomName(roomName) ){
               redisClient.sadd("rooms", roomName, function(err, reply){
                 if(reply==1){ //room is newly created
                 }else{} // room already existed. whatevz
                 res.writeHead(302, { 'Location': '/' + roomName});
                 res.end()
               })
-            });
-          }else{
-            utilities.sendTemplate(res, "room.html", {roomname:roomName, invalid:true}, true, settings.devtemplates)
-            return;
-          }
+            }else{
+              utilities.sendTemplate(res, "login.html", {userinfo:userinfo, roomname:roomName, invalid:true}, true, settings.devtemplates)
+              return;
+            }
+          });
         });
       }else{
-        utilities.sendTemplate(res, "room.html", { roomname:'' }, true, settings.devtemplates)
+        getUserInfo(sessionId, function(err, userinfo){
+          if(err){  // user not found
+            utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
+            return;
+          }
+          utilities.sendTemplate(res, "login.html", {userinfo:userinfo, roomname:roomName, invalid:true}, true, settings.devtemplates)
+        });
         return;
       }
       break;
@@ -149,7 +153,14 @@ server.addListener("request", function(req, res) {
     case '/upload':
       break;
     case '/login':
-      oa.getOAuthRequestToken(
+      var room = qs.query['r']
+      var callbackurl;
+      if( room && utilities.validateRoomName(room) ){
+        callbackurl = 'http://' + settings.domain + ':' + settings.port + '/authdone?r=' + escape(room);
+      }else{
+        callbackurl = settings.CALLBACK_URL;
+      }
+      oa.getOAuthRequestToken({oauth_callback:callbackurl},
           function(error, oauth_token, oauth_token_secret, results){
             if(error) {
               console.error("Could not fetch a request token! Network or twitter API down?");
@@ -157,7 +168,7 @@ server.addListener("request", function(req, res) {
               res.writeHead(500);
               res.end("Sorry, can't log you in right now! The twitter API did not respond. Try again later.");
             } else { 
-              res.writeHead(302, { 'Location': 'https://twitter.com/oauth/authorize?next=whatever&oauth_token=' + oauth_token, });
+              res.writeHead(302, { 'Location': 'https://twitter.com/oauth/authorize?oauth_token=' + oauth_token, });
               res.end();
             }
           }
@@ -175,6 +186,7 @@ server.addListener("request", function(req, res) {
     case '/authdone':
       var token = qs.query['oauth_token']
       var verifier = qs.query['oauth_verifier']
+      var roomname = qs.query['r']
       var cookies = new Cookies(req, res)
       oa.getOAuthAccessToken(token, verifier, function(error, oauth_access_token, oauth_access_token_secret, results2) {
         sys.puts(util.inspect(results2))
@@ -199,7 +211,9 @@ server.addListener("request", function(req, res) {
                            function(){ 
                              //TODO check for error here.
             cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});
-            res.writeHead(302, { 'Location': 'http://' + settings.domain + ':' + settings.port + '/'  });
+            var redirectUrl = 'http://' + settings.domain + ':' + settings.port + '/';
+            if( roomname && utilities.validateRoomName(roomname) ) redirectUrl += roomname;
+            res.writeHead(302, { 'Location': redirectUrl });
             res.end();
           });
         });
@@ -212,31 +226,37 @@ server.addListener("request", function(req, res) {
       var roomName = matches[1];
       if(!utilities.validateRoomName(roomName) ){ res.end(); return; }
       var isUpload = matches[2];
-      console.log("roomname", roomName, "isUpload", isUpload);
       var cookies = new Cookies(req, res);
       if( !cookies.get("session") ){ // user is not logged in.
-        utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
+        var ctx = {};
+        if( utilities.validateRoomName(roomName) ){
+          ctx.room = escape(roomName);
+        }
+        utilities.sendTemplate(res, "login.html", ctx, true, settings.devtemplates)
       }else{ // user is logged in.
         var sessionId = cookies.get("session");
         if( isUpload ){
           doUpload(req, res, roomName, sessionId);
         }else{
-          redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", function(err, replies){
-            //TODO check for err.
-            if(replies[0] == null || replies[1] == null){
-              utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
+          redisClient.sismember("rooms",roomName, function(err, reply){
+            if(reply==0){
+              res.end("room not found :(");
               return;
             }
-            userinfo = {user_id:replies[0], name:replies[1]}
-            display_form(req, res, userinfo, roomName);
-          })
+            redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", "nowplaying_" + roomName,  function(err, replies){
+              //TODO;check for err.
+              if(replies[0] == null || replies[1] == null){
+                utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
+                return;
+              }
+              userinfo = {user_id:replies[0], name:replies[1]}
+              var nowplaying = replies[2];
+              display_form(req, res, userinfo, roomName, nowplaying);
+            })
+          });
         }
       }
       break;
-
-      //utilities.sendTemplate(res, "roomchat.html", {roomname: roomName}, settings.devtemplates)
-      /*utilities.serveStaticFile(req, res, error404path);*/
-      /*break;*/
   }
 })
 
@@ -373,7 +393,7 @@ function doUpload(req, res, roomname, sessionId){
   });
 }
 
-function display_form(req, res, userinfo, roomname) {//{{{
+function display_form(req, res, userinfo, roomname, nowplaying) {//{{{
   res.statusCode = 200
   var result = { username:userinfo.name,
                  msgs:[],
@@ -402,7 +422,20 @@ function display_form(req, res, userinfo, roomname) {//{{{
     redisClient.lrange("chatlog_" + roomname, 0, 99, function(err, reply2){
       if(reply2 == null )result.msgs = []
       else result.msgs = reply2;
-      utilities.sendTemplate(res, "roomchat.html", result, settings.devtemplates)
+      redisClient.lrange("roomqueue_" + roomname, 0, 10, function(err, reply3){ //TODO check for err
+        if( reply3 ){
+          var queueinfo = [];
+          var i=0;
+          for(i=0;i<reply3.length;i++){
+            queueinfo.push(JSON.parse(reply3[i]));
+          }
+          result.queue = queueinfo;
+        }else{
+          result.queue = [];
+        }
+        result.nowPlaying = (nowplaying!=null) ? true : false;
+        utilities.sendTemplate(res, "roomchat.html", result, settings.devtemplates)
+      });
     });
   });
 }//}}}
