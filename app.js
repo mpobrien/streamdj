@@ -63,6 +63,7 @@ function getUserInfo(sessionId, callback){
     }else{
       userinfo = {user_id:replies[0], name:replies[1]}
       if(replies[2]) userinfo.pic = replies[2];
+      else userinfo.pic = "/static/person.png"
       callback(null, userinfo);
     }
   });
@@ -160,6 +161,7 @@ server.addListener("request", function(req, res) {
       }else{
         callbackurl = settings.CALLBACK_URL;
       }
+      console.log(callbackurl);
       oa.getOAuthRequestToken({oauth_callback:callbackurl},
           function(error, oauth_token, oauth_token_secret, results){
             if(error) {
