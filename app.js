@@ -298,7 +298,7 @@ server.addListener("connection", function(connection){
               }else{
                 chatConnections[roomname] = [connection];
               }
-              redisClient.sadd("listeners", userinfo.name, function(err, reply){
+              redisClient.sadd("listeners_" + roomname, userinfo.name, function(err, reply){
                 msgId++
                 if( reply == 1 ){
                   var message = JSON.stringify( {messages:[msggen.join(connection.name)]})
@@ -328,7 +328,7 @@ server.addListener("connection", function(connection){
   connection.addListener("close", function(){
     var chatroom = chatConnections[roomname];
     if( chatroom ) chatConnections[roomname].remove(connection);
-    redisClient.srem("listeners", connection.name, function(err, reply){
+    redisClient.srem("listeners_" + roomname, connection.name, function(err, reply){
       if(reply==1){
         var message = JSON.stringify( {messages:[msggen.left(connection.name)]})
         broadcastToRoom(connection.roomname, message);
@@ -407,7 +407,7 @@ function display_form(req, res, userinfo, roomname, nowplaying) {//{{{
   result.queue = [] //TODO
   //result.nowPlaying = queue.nowPlaying ? queue.nowPlaying : '';
   //result.queue = queue.getQueue().length > 0 ? queue.getQueue() : [];
-  redisClient.smembers("listeners", function(err, reply){
+  redisClient.smembers("listeners_" + roomname, function(err, reply){
     if(reply == null) reply = [];
     var listeners = [];
     var appendself = true;
