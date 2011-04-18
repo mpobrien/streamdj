@@ -208,16 +208,14 @@ body {
   -webkit-border-radius: 10px;
   font-family: Kreon, Georgia;
   position: absolute;
-  width: 500px;
+  width: 450px;
   height: 300px;
-  border: 1px solid black;
   text-align: center;
   margin-left: auto;
   margin-right: auto;
-  background-color: #fff;
   display: none; }
   #optionsmodal .heading {
-    color: black;
+    color: cream;
     padding-top: 10px;
     border-bottom: 1px solid black; }
   #optionsmodal .optionrow {
@@ -239,24 +237,40 @@ body {
   height: 10px;
   border: 1px solid black; }
 
-#modal {
-  display: none; }
-
-#simplemodal-overlay {
-  background-color: #000; }
-
+/* modal overlay */
 #basic-modal-content {
   display: none; }
 
-/* modal overlay */
+#aboutmodal {
+  display: none; }
+
 #simplemodal-overlay {
   background-color: #000; }
 
-#modal {
-  border--radius: 15px;
-  -moz-border-radius: 15px;
-  -webkit-border-radius: 15px;
-  background-color: #fff;
+#simplemodal-container {
+  height: 250px;
+  width: 500px;
+  color: #bbb;
+  background-color: #333;
   border: 4px solid #444;
-  padding: 12px;
-  width: 500px; }
+  padding: 12px; }
+
+#simplemodal-container .simplemodal-data {
+  padding: 8px; }
+
+#simplemodal-container a {
+  color: #ddd; }
+
+#simplemodal-container a.modalCloseImg {
+  background: url(/static/x.png) no-repeat;
+  width: 25px;
+  height: 29px;
+  display: inline;
+  z-index: 3200;
+  position: absolute;
+  top: -15px;
+  right: -16px;
+  cursor: pointer; }
+
+#simplemodal-container h3 {
+  color: #84b8d9; }

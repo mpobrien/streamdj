@@ -52,11 +52,11 @@
         {{^userinfo}}
           <div>
             <a href="/login?r={{room}}"><img src="/static/twitter.png"/></a>
-            <a href="/login?r={{room}}" style="padding-left:10px">Log In via Twitter</a>
+            <a href="/login?r={{room}}" style="padding-left:10px">Login with Twitter</a>
           </div>
           <br/>
           <span class="disclaimer">
-            We'll never publish anything<br/> without your explicit permission first.
+            We will  never publish anything<br/> without your explicit permission.
           </span>
         {{/userinfo}}
       </div>

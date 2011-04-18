@@ -305,16 +305,14 @@ body{
   @include rounded(10px);
   font-family: Kreon, Georgia;
   position:absolute;
-  width:500px;
+  width:450px;
   height:300px;
-  border:1px solid black;
   text-align:center;
   margin-left:auto;
   margin-right:auto;
-  background-color: #fff;
   display:none;
   .heading{
-    color:black;
+    color:cream;
     padding-top:10px;
     border-bottom:1px solid black;
   }
@@ -324,14 +322,19 @@ body{
     margin-bottom:10px;
     font-family: Georgia, serif;
     font-size:14px;
+
   }
 
   .divider{
     height:1px;
     border-bottom: 1px dotted #cccccc;
-  }
+}
+
+
+
 
 }
+
 
 .progressBar{
   width:0%;
@@ -342,18 +345,15 @@ body{
 }
 
 
-
-
-#modal{ display:none; }
-#simplemodal-overlay {background-color:#000;}
-#basic-modal-content {display:none;}
-
 /* modal overlay */
+#basic-modal-content {display:none;}
+#aboutmodal {display:none;}
 #simplemodal-overlay {background-color:#000;}
-#modal{
-  @include rounded(15px);
-  background-color:#fff; border:4px solid #444; padding:12px;
-  width:500px;
-}
+#simplemodal-container {height:250px; width:500px; color:#bbb; background-color:#333; border:4px solid #444; padding:12px;}
+#simplemodal-container .simplemodal-data {padding:8px;}
+#simplemodal-container a {color:#ddd;}
+#simplemodal-container a.modalCloseImg {background:url(/static/x.png) no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; right:-16px; cursor:pointer;}
+#simplemodal-container h3 {color:#84b8d9;}
+
 
 
