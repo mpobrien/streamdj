@@ -186,6 +186,9 @@ body {
         list-style: none;
         font-family: Georgia,serif;
         text-style: italic; }
+        #maincontent .section ul li img {
+          vertical-align: middle;
+          border: none; }
 
 .odd {
   background-color: #f0f0f0; }

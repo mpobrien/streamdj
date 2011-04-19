@@ -287,7 +287,7 @@ server.addListener("connection", function(connection){
       if(msg.substr(0, 5)==="auth:"){
         var authstring = msg.substr(5)
         var sessionId = utilities.extractCookie(authstring, "session") //TODO check if present/valid?
-        redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name",
+        redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", "session_"+sessionId+"_profilepic",
             function(err, replies){
               //TODO check for err.
               var userinfo = {user_id:replies[0], name:replies[1]}
@@ -298,7 +298,8 @@ server.addListener("connection", function(connection){
               }else{
                 chatConnections[roomname] = [connection];
               }
-              redisClient.sadd("listeners_" + roomname, userinfo.name, function(err, reply){
+              var profilepic = replies[2] ? replies[2] : "_";
+              redisClient.hset("listeners_" + roomname, userinfo.name, profilepic, function(err, reply){
                 msgId++
                 if( reply == 1 ){
                   var message = JSON.stringify( {messages:[msggen.join(connection.name)]})
@@ -328,7 +329,7 @@ server.addListener("connection", function(connection){
   connection.addListener("close", function(){
     var chatroom = chatConnections[roomname];
     if( chatroom ) chatConnections[roomname].remove(connection);
-    redisClient.srem("listeners_" + roomname, connection.name, function(err, reply){
+    redisClient.hdel("listeners_" + roomname, connection.name, function(err, reply){
       if(reply==1){
         var message = JSON.stringify( {messages:[msggen.left(connection.name)]})
         broadcastToRoom(connection.roomname, message);
@@ -407,19 +408,19 @@ function display_form(req, res, userinfo, roomname, nowplaying) {//{{{
   result.queue = [] //TODO
   //result.nowPlaying = queue.nowPlaying ? queue.nowPlaying : '';
   //result.queue = queue.getQueue().length > 0 ? queue.getQueue() : [];
-  redisClient.smembers("listeners_" + roomname, function(err, reply){
+  redisClient.hgetall("listeners_" + roomname, function(err, reply){
     if(reply == null) reply = [];
     var listeners = [];
     var appendself = true;
-    for(var i in reply){
-      if(typeof(reply[i]) == "string"){
-        if(reply[i] == userinfo.name) appendself = false;
-        listeners.push({name:reply[i]});
-      }
+    for(var name in reply){
+      if(typeof(name) != "string") continue;
+      if(name == userinfo.name) appendself = false;
+      var pic = reply[name] != "_" ? reply[name] : "/static/person_small.png";
+      listeners.push({name:name, pic:pic});
     }
     result.listeners = listeners
     if( appendself ){
-      listeners.unshift({name:userinfo.name});
+      listeners.unshift({name:userinfo.name, pic: "/static/person_small.png"});
     }
     redisClient.lrange("chatlog_" + roomname, 0, 99, function(err, reply2){
       if(reply2 == null )result.msgs = []
