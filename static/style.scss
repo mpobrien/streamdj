@@ -21,13 +21,17 @@ $byfromcolor: #3E4147;
 $sectionHeadingColor: #3E4147; 
 $sectionHeadingShadow: lighten(#3E4147,50%);
 $sectionHeadingBorder: black;
+$barborder:#59BA66;
+$barinner:lighten($barborder, 20%);
+//#A0B88D;
 
 .bar{
   display:inline;
   height:1px;
-  width:10px;
-  background-color:red;
+  width:8px;
+  background-color:$barinner;
   float:left;
+  border:1px solid $barborder;
 }
 
 .right{
@@ -143,7 +147,7 @@ body{
   width:95%;
 
   #chatwrapper{
-    width:70%;
+    width:75%;
 
     #chat{
       overflow-y:scroll;
@@ -211,7 +215,10 @@ body{
 #rightbar{
   position:absolute;
   top: 0px;
-  left: 70%;
+  width:25%;
+
+  right:10px;
+  //left: 70%;
 }
 
 .desc{
@@ -245,9 +252,10 @@ body{
 }
 
   .section{
+    padding-left:20px;
     font-family:Kreon;
     color:$sectionHeadingColor;
-    text-align:right;
+    text-align:left;
     width:300px;
     margin-bottom:20px;
     .heading{

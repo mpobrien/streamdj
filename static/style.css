@@ -2,9 +2,10 @@
 .bar {
   display: inline;
   height: 1px;
-  width: 10px;
-  background-color: red;
-  float: left; }
+  width: 8px;
+  background-color: #a1d8a8;
+  float: left;
+  border: 1px solid #59ba66; }
 
 .right {
   text-align: right;
@@ -101,7 +102,7 @@ body {
   margin-left: 35px;
   width: 95%; }
   #maincontent #chatwrapper {
-    width: 70%; }
+    width: 75%; }
     #maincontent #chatwrapper #chat {
       overflow-y: scroll;
       height: 400px;
@@ -145,7 +146,8 @@ body {
   #maincontent #rightbar {
     position: absolute;
     top: 0px;
-    left: 70%; }
+    width: 25%;
+    right: 10px; }
   #maincontent .desc {
     padding-top: 10px;
     font-style: italic;
@@ -168,9 +170,10 @@ body {
     #maincontent #currentfile #np_title {
       font-size: 20px; }
   #maincontent .section {
+    padding-left: 20px;
     font-family: Kreon;
     color: #3e4147;
-    text-align: right;
+    text-align: left;
     width: 300px;
     margin-bottom: 20px; }
     #maincontent .section .heading {
