@@ -40,6 +40,9 @@
               </div>
             </form>
           </div>
+          <span class="disclaimer" style="line-height:1.8em;">
+            For the friendless and the early adopters -<br/> join us in the <a href="/dirtybeaches">public room</a>!
+          </span>
           {{#invalid}}
             <div class="error">
               The room name you chose is not valid.<br/><br/>
