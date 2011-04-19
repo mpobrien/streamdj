@@ -139,7 +139,6 @@
             <div id="bar_14" class="bar">&nbsp;</div>
             <div id="bar_15" class="bar">&nbsp;</div>
           </div>
-            <div id="bar_15"></div>
           <div class="heading">now playing</div>
           <div id="currentfile">
             {{#nowPlaying}}
