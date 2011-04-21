@@ -96,6 +96,39 @@ server.addListener("request", function(req, res) {
   }
   sys.puts("request at " + qs.pathname);
   switch (qs.pathname) {
+    case '/favorites/': //TODO split this into a new section
+      var cookies = new Cookies(req, res);
+      var sessionId = cookies.get("session");
+      if( !sessionId ){ res.end(); return; }// not logged in
+      var faved = []
+      getUserInfo(sessionId, function(err, userinfo){
+        if(err){ res.end(); return; }
+        redisClient.zrevrange("fave_" + userinfo.name, 0, 10,function(err, data){
+          console.log("keys", data);
+          if(data){
+            var keys = []
+            for(var i=0;i<data.length;i++){
+              keys.push("s_" + data[i]);
+            }
+            redisClient.mget(keys, function(err2, data2){
+              if(data2){
+                for(var i=0;i<data2.length;i++){
+                  if(data2[i]){
+                    faved.push(JSON.parse(data2[i]));
+                  }
+                }
+                res.end(JSON.stringify({faves:faved}));
+              }else{
+                res.end("{\"faves\":[]}");
+              }
+            });
+          }else{
+            res.end("{\"faves\":[]}");
+          }
+        });
+      })
+      return;
+
     case '/room':
       var cookies = new Cookies(req, res);
       var sessionId = cookies.get("session");
@@ -148,7 +181,6 @@ server.addListener("request", function(req, res) {
             return;
           }else{
             utilities.sendTemplate(res, "login.html", {userinfo:userinfo}, settings.devtemplates)
-            display_form(req, res, userinfo);
           }
         });
       }
@@ -224,12 +256,36 @@ server.addListener("request", function(req, res) {
       });
       break;
     default:
+      var cookies = new Cookies(req, res);
+      if(qs.pathname.indexOf('/like/') == 0 || qs.pathname.indexOf("/unlike/") == 0){
+        if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
+        var sessionId = cookies.get("session");
+        var songId = qs.query['s']
+        console.log(songId)
+        res.end("{}");
+        if( isNaN(parseInt(songId)) ) return;
+        songId = parseInt(songId)
+        getUserInfo(sessionId, function(err, userinfo){
+          console.log(err, userinfo);
+          if(err) return; //TODO handle/log error
+          //TODO make sure user name is valid, + not empyy
+          var add = qs.pathname.indexOf("/like/") == 0
+          if( add ){
+            console.log("fave_" + userinfo.name);
+            redisClient.zadd("fave_" + userinfo.name, new Date().getTime(), songId ) //key, score, member 
+          }else{
+            console.log("un", "fave_" + userinfo.name);
+            redisClient.zrem("fave_" + userinfo.name, songId);
+          }
+          //TODO validate room, etc. how to deal with z score?
+        })
+        return;
+      }
       var matches = urlRegEx.exec(qs.pathname);
       if( !matches ){ res.end(); return; } //404
       var roomName = matches[1];
       if(!utilities.validateRoomName(roomName) ){ res.end(); return; }
       var isUpload = matches[2];
-      var cookies = new Cookies(req, res);
       if( !cookies.get("session") ){ // user is not logged in.
         var ctx = {};
         if( utilities.validateRoomName(roomName) ){
@@ -246,7 +302,7 @@ server.addListener("request", function(req, res) {
               res.end("room not found :(");
               return;
             }
-            redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", "nowplaying_" + roomName,  function(err, replies){
+            redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", "nowplayingid_" + roomName,  function(err2, replies){
               //TODO;check for err.
               if(replies[0] == null || replies[1] == null){
                 utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
@@ -254,7 +310,15 @@ server.addListener("request", function(req, res) {
               }
               userinfo = {user_id:replies[0], name:replies[1]}
               var nowplaying = replies[2];
-              display_form(req, res, userinfo, roomName, nowplaying);
+              console.log("nowplaying is", nowplaying);
+              if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
+                redisClient.zscore("fave_" + userinfo.name, nowplaying, function(err3, reply){
+                  console.log("here:", reply)
+                  display_form(req, res, userinfo, roomName, nowplaying, reply);
+                });
+              }else{
+                display_form(req, res, userinfo, roomName, nowplaying);
+              }
             })
           });
         }
@@ -437,7 +501,7 @@ function doUpload(req, res, roomname, sessionId){
   /*});*/
 }
 
-function display_form(req, res, userinfo, roomname, nowplaying) {//{{{
+function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
   res.statusCode = 200
   var result = { username:userinfo.name,
                  msgs:[],
@@ -445,10 +509,6 @@ function display_form(req, res, userinfo, roomname, nowplaying) {//{{{
                  listenurl: "http://" + settings.streamserver_domain + ":" + settings.streamingport + "/listen/" + roomname,
                  roomname: roomname
                }
-  result.nowPlaying = [] //TODO
-  result.queue = [] //TODO
-  //result.nowPlaying = queue.nowPlaying ? queue.nowPlaying : '';
-  //result.queue = queue.getQueue().length > 0 ? queue.getQueue() : [];
   redisClient.hgetall("listeners_" + roomname, function(err, reply){
     if(reply == null) reply = [];
     var listeners = [];
@@ -477,7 +537,10 @@ function display_form(req, res, userinfo, roomname, nowplaying) {//{{{
         }else{
           result.queue = [];
         }
+        console.log("nowplaying:", nowplaying);
+        console.log("liked:", liked);
         result.nowPlaying = (nowplaying!=null) ? true : false;
+        if( liked ) result.liked = true;
         utilities.sendTemplate(res, "roomchat.html", result, settings.devtemplates)
       });
     });

@@ -1,4 +1,5 @@
 /* Utility function for padding zeros into numeric strings. */
+var nowplayingId = null;
 var makeTimestamp = function(rawtime){
   var timestamp = new Date(rawtime);
   var pad = function(num, length){ var str = '' + num; while (str.length < length) str = '0' + str; return str; }
@@ -69,12 +70,14 @@ var MessageHandlers = {
     //isStatic is ignored for now because server does not log these events
     var songId = message["songId"]
     $('#nowplayingtext').text('');
-    $('#currentfile').html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
+    $('#currentfile').removeClass("playing").html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
     $('#song_' + songId).hide('slide', function(){$(this).remove()} );
+    nowplayingId = null;
     oddify(); //TODO clean up
   },//}}}
 
   "started": function(message, isStatic){//{{{
+    $('#heartimg').attr("src", "/static/heart_deactive.png")
     var innerWrapper = $('<div></div>').attr("class","startplaywrapper")
     var enqDiv = $('<div></div>')
                    .attr("class","playstart")
@@ -82,7 +85,7 @@ var MessageHandlers = {
                    .append( $('<div class="timestamp" style="float:left"></div>').text(makeTimestamp(message['time'])) )
                    .append(innerWrapper);
 
-    $('#currentfile').html('');
+    $('#currentfile').html('')
     var nowPlayingInfo;
     if( message.meta ){
       if( 'Title' in message.meta){
@@ -127,10 +130,13 @@ var MessageHandlers = {
     innerWrapper.append($('<span></span>').attr('class','uploader').text(message['from']))
     innerWrapper.append($('<span></span>').attr('class','startedplaying').html("started playing"))
     enqDiv.appendTo("#chat");
+    var songId = message["songId"]
+    nowplayingId = songId
+
                       
     if(!isStatic){
+      $('#currentfile').addClass("playing");
       $('#nowplayingtext').text(message['body']);
-      var songId = message["songId"]
       $('#song_' + songId).hide('slide', function(){$(this).remove()});
       oddify(); //TODO clean up
     }

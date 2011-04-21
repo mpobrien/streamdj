@@ -155,9 +155,12 @@ body {
   #maincontent .by, #maincontent .from {
     color: #878c97;
     font-size: .8em; }
-  #maincontent #currentfile {
+  #maincontent #likebox {
     padding-top: 10px;
-    font-family: Georgia,serif; }
+    width: 24px; }
+  #maincontent #currentfile {
+    font-family: Georgia,serif;
+    padding-top: 10px; }
     #maincontent #currentfile .uploader {
       font-size: .8em;
       margin-right: 5px;
@@ -169,6 +172,10 @@ body {
       margin-left: 5px; }
     #maincontent #currentfile #np_title {
       font-size: 20px; }
+  #maincontent #currentfile.playing {
+    position: relative;
+    left: 32px;
+    top: -38px; }
   #maincontent .section {
     padding-left: 20px;
     font-family: Kreon;
@@ -248,6 +255,9 @@ body {
   display: none; }
 
 #aboutmodal {
+  display: none; }
+
+#favorites {
   display: none; }
 
 #simplemodal-overlay {

@@ -52,12 +52,14 @@ var fileEnd = function(roomName, fileinfo){
   fileinfo.roomname = roomName;
   redisClient2.publish("file-ended", JSON.stringify(fileinfo));
   redisClient2.del("nowplaying_" + roomName);
+  redisClient2.del("nowplayingid_" + roomName);
 }
 
 var fileChanged = function(roomName, oldfile, newfile){
   var msg = {"oldfile":oldfile, "newfile":newfile, "roomname":roomName};
   redisClient2.publish("file-changed", JSON.stringify(msg));
   redisClient2.set("nowplaying_" + roomName, JSON.stringify(newfile));
+  redisClient2.set("nowplayingid_" + roomName, newfile.songId);
   var message = JSON.stringify( {messages:[msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta)]})
   redisClient2.lpush("chatlog_" + roomName, message, function(){ redisClient2.ltrim("chatlog_"+ roomName, 100, function(){}) });
 }
