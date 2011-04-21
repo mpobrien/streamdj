@@ -11,13 +11,27 @@ exports.FileUpload = function FileUpload(outputPath, filename, res){
   var bufLen = 0;
   var finalbuf
   var that = this;
+  var outputstream = null;
   this.written = false;
-  this.uploadid = -1;
 
-  this.bufferData = function(data){
-    buf.push(data)
-    bufLen += data.length;
+  this.prepare = function(){
+    outputstream = fs.createWriteStream(outputPath);
   }
+
+
+  this.writeData = function(data){
+    bufLen += data.length;
+    outputstream.write(data);
+  }
+
+  this.finishFile = function(){
+    outputstream.destroySoon();
+  }
+
+  /*this.bufferData = function(data){*/
+  /*buf.push(data)*/
+  /*bufLen += data.length;*/
+  /*}*/
   //req.addListener("data", function(data){ // collect the data in a buffer });
   
   this.prepareBuffer = function(){
@@ -34,21 +48,21 @@ exports.FileUpload = function FileUpload(outputPath, filename, res){
     return metadata;
   }
 
-  this.writeToDisk = function(callback){
-    if( that.written ) return;
-    if(!that.okToWrite || !that.doneBuffering){
-        return;
-    }
-    if(!finalbuf) that.prepareBuffer();
-    that.written = true;
-    fs.open(outputPath, 'w', function(err2, fd){
-      fs.write(fd, finalbuf, 0, finalbuf.length, null,
-        function(){
-          fs.close(fd);
-          that.emit("filesaved", that.uploaderInfo);
-        });
-    });
-  }
+  /*this.writeToDisk = function(callback){*/
+  /*if( that.written ) return;*/
+  /*if(!that.okToWrite || !that.doneBuffering){*/
+  /*return;*/
+  /*}*/
+  /*if(!finalbuf) that.prepareBuffer();*/
+  /*that.written = true;*/
+  /*fs.open(outputPath, 'w', function(err2, fd){*/
+  /*fs.write(fd, finalbuf, 0, finalbuf.length, null,*/
+  /*function(){*/
+  /*fs.close(fd);*/
+  /*that.emit("filesaved", that.uploaderInfo);*/
+  /*});*/
+  /*});*/
+  /*}*/
 }
 
 exports.FileUpload.prototype = new process.EventEmitter()

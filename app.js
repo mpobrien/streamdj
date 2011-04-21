@@ -1,6 +1,7 @@
 var fs        = require('fs');
 var path      = require('path')
-var uploads   = require('./fileupload');
+//var uploads   = require('./fileupload');
+var uploads   = require('./uploadstream');
 var http      = require('http');
 var sys       = require('sys')
 var Mu        = require('Mu')
@@ -359,41 +360,75 @@ net.createServer(
 function doUpload(req, res, roomname, sessionId){
   var filePath = utilities.randomString(64);
   var fname = req.headers['x-file-name']
-  var fileUpload = new uploads.FileUpload(settings.uploadDirectory + filePath + ".mp3", fname)
-  fileUpload.uploadid = ++uploadIds;
-  req.addListener("data", fileUpload.bufferData);
-  var metadata = {};
+  req.pause();
+  var metadata = {}
+  getUserInfo(sessionId, function(err, uploaderInfo){
+    //TODO check err!*/
+    //TODO check that user is in the room?*/
+    var fileUpload = new uploads.FileUpload(settings.uploadDirectory + filePath + ".mp3", req, res)
+    fileUpload.on("filedone", function(){
 
-  fileUpload.once("filesaved", function(uploaderInfo){
-    redisClient.incr("maxsongid", function(err, newMaxId){
-      var chatmessage = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
-      var streamMessage = JSON.stringify( {path:settings.uploadDirectory + filePath + ".mp3",
-                                           name:fname,
-                                           uploader: uploaderInfo.name,
-                                           songId: newMaxId, 
-                                           meta: metadata});
-      redisClient.rpush("roomqueue_" + roomname, streamMessage, function(){
-        broadcastToRoom(roomname, chatmessage);
-        redisClient.publish("newQueueReady",roomname);
-      })
+      redisClient.incr("maxsongid_" + roomname, function(err2, newMaxId){
+        var chatmessage = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
+        var streamMessage = JSON.stringify( {path:settings.uploadDirectory + filePath + ".mp3",
+          name:fname,
+          uploader: uploaderInfo.name,
+          songId: newMaxId, 
+          meta: metadata});
+          redisClient.rpush("roomqueue_" + roomname, streamMessage, function(){
+            broadcastToRoom(roomname, chatmessage);
+            redisClient.publish("newQueueReady",roomname);
+          })
+        });
     });
+    fileUpload.setup();
+    req.resume();
   });
 
-  redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name",
-    function(err, replies){ //TODO check for redis error!
-      var userinfo = {user_id:replies[0], name:replies[1]}
-      fileUpload.okToWrite = true; //TODO validate it, if userinfo is bad, drop stream
-      fileUpload.uploaderInfo = userinfo;
-      fileUpload.writeToDisk();
-    })
+  /*req.pause(); // Pause the incoming stream until we make sure the incoming request is OK*/
+  /*req.addListener("data", fileUpload.writeData); */
+  /*getUserInfo(sessionId, function(err, userinfo){*/
+  /*//TODO check err*/
+  /*//TODO check that user is in the room?*/
+  /*fileUpload.prepare();*/
+  /*req.resume();*/
+  /*});*/
 
-  req.once("end", function(){
-    fileUpload.doneBuffering = true;
-    fileUpload.prepareBuffer();
-    metadata = fileUpload.getMetaData();
-    fileUpload.writeToDisk();
-    res.end();
-  });
+  /*req.once("end", function(){*/
+  /*fileUpload.finishFile();*/
+  /*})*/
+  /*var metadata = {};*/
+
+  /*fileUpload.once("filesaved", function(uploaderInfo){*/
+  /*redisClient.incr("maxsongid", function(err, newMaxId){*/
+  /*var chatmessage = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})*/
+  /*var streamMessage = JSON.stringify( {path:settings.uploadDirectory + filePath + ".mp3",*/
+  /*name:fname,*/
+  /*uploader: uploaderInfo.name,*/
+  /*songId: newMaxId, */
+  /*meta: metadata});*/
+  /*redisClient.rpush("roomqueue_" + roomname, streamMessage, function(){*/
+  /*broadcastToRoom(roomname, chatmessage);*/
+  /*redisClient.publish("newQueueReady",roomname);*/
+  /*})*/
+  /*});*/
+  /*});*/
+
+  /*redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name",*/
+  /*function(err, replies){ //TODO check for redis error!*/
+  /*var userinfo = {user_id:replies[0], name:replies[1]}*/
+  /*fileUpload.okToWrite = true; //TODO validate it, if userinfo is bad, drop stream*/
+  /*fileUpload.uploaderInfo = userinfo;*/
+  /*fileUpload.writeToDisk();*/
+  /*})*/
+
+  /*req.once("end", function(){*/
+  /*fileUpload.doneBuffering = true;*/
+  /*fileUpload.prepareBuffer();*/
+  /*metadata = fileUpload.getMetaData();*/
+  /*fileUpload.writeToDisk();*/
+  /*res.end();*/
+  /*});*/
 }
 
 function display_form(req, res, userinfo, roomname, nowplaying) {//{{{
