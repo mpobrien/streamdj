@@ -223,9 +223,9 @@ var debugTag = function(filePath){
 }
 exports.debugTag = debugTag;
 exports.getBasicTagInfo = getBasicTagInfo;
-getBasicTagInfo("/home/mike/2.mp3", function(tagdata){
-  //console.log(tagdata);
-})
+/*getBasicTagInfo("/home/mike/2.mp3", function(tagdata){*/
+/*//console.log(tagdata);*/
+/*})*/
 
 /*getBasicTagInfo("/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3", function(tagdata){*/
 /*console.log(tagdata);*/
