@@ -1,5 +1,6 @@
 var fs        = require('fs');
 var path      = require('path')
+var asyncid3  = require('./asyncid3')
 //var uploads   = require('./fileupload');
 var uploads   = require('./uploadstream');
 var http      = require('http');
@@ -162,7 +163,7 @@ server.addListener("request", function(req, res) {
       }else{
         callbackurl = settings.CALLBACK_URL;
       }
-      console.log(callbackurl);
+      //console.log(callbackurl);
       oa.getOAuthRequestToken({oauth_callback:callbackurl},
           function(error, oauth_token, oauth_token_secret, results){
             if(error) {
@@ -223,7 +224,6 @@ server.addListener("request", function(req, res) {
       });
       break;
     default:
-      console.log("request at", qs.pathname)
       var matches = urlRegEx.exec(qs.pathname);
       if( !matches ){ res.end(); return; } //404
       var roomName = matches[1];
@@ -361,16 +361,20 @@ function doUpload(req, res, roomname, sessionId){
   var filePath = utilities.randomString(64);
   var fname = req.headers['x-file-name']
   req.pause();
+  var fullPath = settings.uploadDirectory + filePath + ".mp3";
+  var fileUpload = new uploads.FileUpload(fullPath, req, res)
+  fileUpload.setup();
   var metadata = {}
   getUserInfo(sessionId, function(err, uploaderInfo){
     //TODO check err!*/
     //TODO check that user is in the room?*/
-    var fileUpload = new uploads.FileUpload(settings.uploadDirectory + filePath + ".mp3", req, res)
+    //TODO validate that it's legit mp3?
     fileUpload.on("filedone", function(){
-
-      redisClient.incr("maxsongid_" + roomname, function(err2, newMaxId){
-        var chatmessage = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
-        var streamMessage = JSON.stringify( {path:settings.uploadDirectory + filePath + ".mp3",
+      redisClient.incr("maxsongid", function(err2, newMaxId){
+        asyncid3.getBasicTagInfo(fullPath, function(tagdata){
+          metadata = tagdata;
+          var chatmessage = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
+          var streamMessage = JSON.stringify( {path:settings.uploadDirectory + filePath + ".mp3",
           name:fname,
           uploader: uploaderInfo.name,
           songId: newMaxId, 
@@ -379,9 +383,11 @@ function doUpload(req, res, roomname, sessionId){
             broadcastToRoom(roomname, chatmessage);
             redisClient.publish("newQueueReady",roomname);
           })
+          var songMeta = JSON.stringify( {fname:fname,meta:metadata, room:roomname, id:newMaxId} );
+          redisClient.set("s_" + newMaxId, songMeta); //TODO make this a hash instead!
         });
+      });
     });
-    fileUpload.setup();
     req.resume();
   });
 

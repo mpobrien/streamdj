@@ -70,7 +70,12 @@ var AsyncId3Parser = function(fd){
       function(err, bytesRead, buffer){
         filePosition += bytesRead;
         var headerCheck = headerBuf.getChunk(3);
-        try{ if(headerCheck.toString() != 'ID3') return; }catch(e){ return; }
+        try{ 
+          if(headerCheck.toString() != 'ID3'){
+            callback("No valid header", null, null);
+            return;
+          }
+        }catch(e){ return; }
         var versionInfo = headerBuf.getChunk(2)
         var majorVer = versionInfo[0]
         var revision = versionInfo[1]
@@ -110,11 +115,17 @@ var AsyncId3Parser = function(fd){
       }
       frameID = frameID.toString().replace(/\u0000/g,'')
       //TODO if frame ID is a tag that we don't care about, just advance the file pointer instead of calling fs.read()!
-      if( frameID.length == 0 ){ that.emit("done"); callback(null, null, null, frameBytesRead, true); return; }
+      if( frameID.length == 0 ){
+        callback(null, null, null, frameBytesRead, true);
+        return;
+      }
       //ok, so now we have the frame ID and how many bytes must be read to get the frame data!
       var frameDataBuf = new Buffer(frameSize);
       //console.log("bout to read:",frameSize);
-      if( frameSize == 0 ){ that.emit("done"); callback(null, null, null, frameBytesRead, true); return; }
+      if( frameSize == 0 ){
+        callback(null, null, null, frameBytesRead, true);
+        return;
+      }
       fs.read(fd, frameDataBuf, 0, frameSize, filePosition, function(err2, bytesRead2, data2){//TODO check for size errors
         frameBytesRead += bytesRead2;
         filePosition += bytesRead2;
@@ -147,11 +158,9 @@ var AsyncId3Parser = function(fd){
 
   this.processAllTags = function(){//{{{
     readId3Header( function(err, headerSize, version){
-      //console.log("headerSize:", headerSize);
       var totalRead = 0;
       var processTagResult = function(err, frameID, textData, frameBytesRead, doneyet){
         totalRead += frameBytesRead;
-        //console.log("read:", totalRead);
         if( doneyet || totalRead >= headerSize) {
           that.emit("done");
           return;
@@ -160,8 +169,12 @@ var AsyncId3Parser = function(fd){
         readId3TagFrame(headerSize, version, processTagResult);
       };
 
-      if(err){ that.emit("Invalid ID3 header"); return; }
-      readId3TagFrame(headerSize, version, processTagResult);
+      if(err){ 
+        that.emit("done");
+        return;
+      }else{
+        readId3TagFrame(headerSize, version, processTagResult);
+      }
         //console.log("frameId", frameId);
         //console.log("textdata", textData);
     });
@@ -182,7 +195,7 @@ var getBasicTagInfo = function(path, callback){
         metadata[v2Mappings[frameID]] = data.toString();
       }
     });
-    asyncParse.on("done", function(){
+    asyncParse.once("done", function(){
       fs.close(fd);
       callback(metadata);
     });
@@ -195,13 +208,13 @@ var debugTag = function(filePath){
     var asyncParse = new AsyncId3Parser(fd);
     asyncParse.on("tag", function(id, data){
       if( frameID in v3Mappings || frameID in v2Mappings){
-        console.log("got tag info:",id, ":", data);
+        //console.log("got tag info:",id, ":", data);
       }else{
-        console.log("got nontext tag info:",id);
+        //console.log("got nontext tag info:",id);
       }
     });
     asyncParse.on("done", function(){
-      console.log("done!");
+      //console.log("done!");
       process.exit(0);
     });
     asyncParse.processAllTags();
@@ -210,8 +223,13 @@ var debugTag = function(filePath){
 }
 exports.debugTag = debugTag;
 exports.getBasicTagInfo = getBasicTagInfo;
+getBasicTagInfo("/home/mike/2.mp3", function(tagdata){
+  //console.log(tagdata);
+})
 
-getBasicTagInfo("/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3")
+/*getBasicTagInfo("/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3", function(tagdata){*/
+/*console.log(tagdata);*/
+/*})*/
 //debugTag("/home/mike/Music/kettel - through friendly waters (sending orbs 2005)/01 - Bodpa.mp3", 'r'); 
 /* TESTING */
 
