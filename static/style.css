@@ -157,7 +157,8 @@ body {
     font-size: .8em; }
   #maincontent #likebox {
     padding-top: 10px;
-    width: 24px; }
+    width: 24px;
+    cursor: pointer; }
   #maincontent #currentfile {
     font-family: Georgia,serif;
     padding-top: 10px; }
