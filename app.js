@@ -40,13 +40,12 @@ sys.puts(util.inspect(settings))
 pubsubClient.subscribe("file-ended");
 pubsubClient.subscribe("file-changed");
 pubsubClient.on("message", function(channel, msg){
-  console.log("received message on", channel, "room", msg.roomname)
+  var incomingMsg = JSON.parse(msg);
+  console.log("received message on", channel, "room", msg)
   if(channel == 'file-ended'){
-    var incomingMsg = JSON.parse(msg);
-    var outgoingMsg = JSON.stringify( { messages:[msggen.stopped(msg.songId)] } ) 
-    broadcastToRoom(msg.roomname, outgoingMsg);
+    var outgoingMsg = JSON.stringify( { messages:[msggen.stopped(incomingMsg.songId)] } ) 
+    broadcastToRoom(incomingMsg.roomname, outgoingMsg);
   }else if(channel == 'file-changed'){
-    var incomingMsg = JSON.parse(msg);
     var messages = [];
     if( incomingMsg.oldfile ) messages.push(msggen.stopped(incomingMsg.oldfile.songId));
     if( incomingMsg.newfile) messages.push(msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta))
@@ -104,7 +103,6 @@ server.addListener("request", function(req, res) {
       getUserInfo(sessionId, function(err, userinfo){
         if(err){ res.end(); return; }
         redisClient.zrevrange("fave_" + userinfo.name, 0, 10,function(err, data){
-          console.log("keys", data);
           if(data){
             var keys = []
             for(var i=0;i<data.length;i++){
@@ -261,20 +259,18 @@ server.addListener("request", function(req, res) {
         if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
         var sessionId = cookies.get("session");
         var songId = qs.query['s']
-        console.log(songId)
         res.end("{}");
         if( isNaN(parseInt(songId)) ) return;
         songId = parseInt(songId)
         getUserInfo(sessionId, function(err, userinfo){
-          console.log(err, userinfo);
           if(err) return; //TODO handle/log error
           //TODO make sure user name is valid, + not empyy
           var add = qs.pathname.indexOf("/like/") == 0
           if( add ){
-            console.log("fave_" + userinfo.name);
+            console.log(userinfo.name, "likes", songId);
             redisClient.zadd("fave_" + userinfo.name, new Date().getTime(), songId ) //key, score, member 
           }else{
-            console.log("un", "fave_" + userinfo.name);
+            console.log(userinfo.name, "unlikes", songId);
             redisClient.zrem("fave_" + userinfo.name, songId);
           }
           //TODO validate room, etc. how to deal with z score?

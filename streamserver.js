@@ -49,6 +49,7 @@ function prepareStartup(){
 }
 
 var fileEnd = function(roomName, fileinfo){
+  console.log("file ended mesgs");
   fileinfo.roomname = roomName;
   redisClient2.publish("file-ended", JSON.stringify(fileinfo));
   redisClient2.del("nowplaying_" + roomName);

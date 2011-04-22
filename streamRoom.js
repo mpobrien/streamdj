@@ -21,7 +21,7 @@ var StreamRoom = function(roomName, redisClient){
 
   mp3Stream.on("frameready", streamWriterFunc);
   mp3Stream.on("stream-end", function(){
-    that.playNextFile()
+    that.playNextFile(nowPlaying)
   });
 
   this.addNewListener = function(req, listener){
@@ -32,10 +32,11 @@ var StreamRoom = function(roomName, redisClient){
   this.playNextFile = function(endingFile){
     redisClient.lpop("roomqueue_" + roomName, function(err, reply){ //TODO catch errors.
       if(!reply){
-        nowPlaying = null;
+        
         if( endingFile ){
-          that.emit("file-end", roomName, JSON.parse(endingFile));
+          that.emit("file-end", roomName, endingFile);
         }
+        nowPlaying = null;
         return; // Nothing on the queue.
       }
       songInfo = JSON.parse(reply);  //TODO check for an error here!
