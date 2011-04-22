@@ -24,9 +24,10 @@ exports.FileUpload = function FileUpload(outputPath, req, res){
     });
     req.once("end", function(){
       outputstream.destroySoon();
+      res.end();
     })
 
-    outputstream.on("close", function(){
+    outputstream.once("close", function(){
       that.emit("filedone");
     });
 
