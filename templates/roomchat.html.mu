@@ -222,9 +222,9 @@
       <div class="optionrow"><button id="restartaudio">Restart Audio Stream</button></div>
     </div>
     <div id="aboutmodal">
-      <div style="color:#DFBA69;">What is this?<br><br></div>
-      <div style="color:#efffd3;">
-        OUTLOUD.FM is an effing sweet and exciting way to play music for your friends; allowing songs to be uploaded and curated in a realtime collaborative playlist. <br><br> Bored and hungry? Simply send the URL of your OUTLOUD.FM room to your friends, and start uploading music! (OUTLOUD.FM will, however, do nothing for your hunger.)<br><br> We are based out of New York City, and would love to hear your comments, bug reports, and/or suggestions -- <a href="mailto:info@outloud.fm">info@outloud.fm</a> <br>
+      <div style="color:#000000; font-style:italic;">What is this?<br><br></div>
+      <div style="color:#000000;">
+        OUTLOUD.FM is an effing sweet and exciting way to play music for your friends; allowing songs to be uploaded and curated in a realtime collaborative playlist. <br><br> Bored and hungry? Simply send the URL of your OUTLOUD.FM room to your friends, and start uploading music! (OUTLOUD.FM will, however, do nothing for your hunger.)<br><br> We are based out of New York City, and would love to hear your comments, bug reports, and/or suggestions -- <a href="mailto:info@outloud.fm" onmouseover="this.style.color='#FF0000'" onmouseout="this.style.color='#000000'">info@outloud.fm</a> <br>
        </div>
      </div>
      <div id="favorites">
