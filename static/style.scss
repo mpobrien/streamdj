@@ -78,7 +78,7 @@ body{
 
 #navbar a:hover{
   color: $navbarLinkColor;
-  text-decoration:underline;
+  text-decoration:none;
 }
 #navbar a:link, a:visited, a:active{
   color: $navbarLinkColor;
@@ -98,11 +98,12 @@ body{
   left:0px;
   background-color:$navbarBgColor;
   color: $navbarTextColor;
+  img{border:0;}
   #branding{
     float:left;
     margin-left:20px;
     font-size:30px;
-  }
+}
   #volwrapper{
     top:20px;
     float:right;
@@ -385,6 +386,7 @@ body{
   .by, .from, .upby{
     font-size:14px;
     font-weight:bold;
+    font-style:italic;
     color:black;
   }
 

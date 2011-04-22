@@ -37,7 +37,7 @@ body {
 
 #navbar a:hover {
   color: #fffedf;
-  text-decoration: underline; }
+  text-decoration: none; }
 
 #navbar a:link, a:visited, a:active {
   color: #fffedf;
@@ -56,6 +56,8 @@ body {
   left: 0px;
   background-color: #2a2c31;
   color: #fffedf; }
+  #navbar img {
+    border: 0; }
   #navbar #branding {
     float: left;
     margin-left: 20px;
@@ -265,6 +267,7 @@ body {
 #favorites .by, #favorites .from, #favorites .upby {
   font-size: 14px;
   font-weight: bold;
+  font-style: italic;
   color: black; }
 
 /* modal overlay */
