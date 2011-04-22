@@ -232,9 +232,16 @@ body{
   font-size:.8em;
 }
 
-#currentfile{
+#likebox{
   padding-top:10px;
+  width:24px;
+  cursor:pointer
+}
+
+
+#currentfile{
   font-family:Georgia,serif;
+  padding-top:10px;
   .uploader{
     font-size:.8em;
     margin-right: 5px;
@@ -249,6 +256,12 @@ body{
   #np_title{
     font-size:20px;
   }
+}
+
+#currentfile.playing{
+  position:relative; 
+  left:32px;
+  top:-38px; 
 }
 
   .section{
@@ -324,7 +337,11 @@ body{
   margin-right:auto;
   display:none;
   .heading{
-    color:cream;
+    width:300px;
+    margin-left:auto;
+    margin-right:auto;
+    color:black;
+    font-weight:bold;
     padding-top:10px;
     border-bottom:1px solid black;
   }
@@ -354,12 +371,32 @@ body{
   width:300px; height:10px;border:1px solid black;
 }
 
+#favorites{
+  li{
+    list-style:none;
+    margin-bottom:12px;
+    margin-top:12px;
+  }
+
+  .by, .title, .artist, .upby, .uploader, .startedplaying, .from{
+    margin-left:2px;
+    margin-right:2px;
+  }
+  .by, .from, .upby{
+    font-size:14px;
+    font-weight:bold;
+    color:black;
+  }
+
+}
+
 
 /* modal overlay */
 #basic-modal-content {display:none;}
 #aboutmodal {display:none;}
+#favorites {display:none;}
 #simplemodal-overlay {background-color:#000;}
-#simplemodal-container {height:250px; width:500px; color:#bbb; background-color:#333; border:4px solid #444; padding:12px;}
+#simplemodal-container {height:250px; width:500px; color:#black; background-color:#fff; border:4px solid #444; padding:12px; font-family:Georgia;}
 #simplemodal-container .simplemodal-data {padding:8px;}
 #simplemodal-container a {color:#ddd;}
 #simplemodal-container a.modalCloseImg {background:url(/static/x.png) no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; right:-16px; cursor:pointer;}

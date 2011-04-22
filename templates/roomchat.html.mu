@@ -72,9 +72,47 @@
          $('#options').click(function(){
            $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
          });
-	$('#about').click(function(){
+	       $('#about').click(function(){
           $('#aboutmodal').modal( {closeHtml:"", overlayClose:true});
          }); 
+         $('#favoriteslink').click(function(){
+           $('#favorites').html('')
+           $.getJSON('/favorites/', function(data){
+             if(!data.faves){
+               $('#favorites').html('No favorites yet!')
+             }else{
+               var favelist = $('<ul class="favelist"></ul>')
+               $.each(data.faves, function(key, message){
+                 var newli = $('<li></li>');
+                 if( 'Title' in message.meta){
+                   newli.append($('<span></span>').attr("class","title").text(message.meta['Title']));
+                 }else{
+                   if( 'Artist' in message.meta){
+                     newli.append($('<span></span>').attr("class","title").text('(Unknown)'));
+                   }else{
+                     newli.append($('<span></span>').attr("class","title").text(message['body']));
+                   }
+                 }
+                 if( 'Artist' in message.meta){
+                   var npartist = $('<span></span>')
+                   npartist.attr("class","artist").append($('<span></span>').attr("class","by").text("by"))
+                           .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
+                   newli.append(npartist)
+                 }
+
+                 if( 'Album' in message.meta){
+                   var npalbum = $('<span></span>')
+                   npalbum.attr("class","album").append($('<span></span>').attr("class","from").text("from"))
+                                                .append($('<span></span>').attr("class","album").text(message.meta['Album'])); 
+                   newli.append(npalbum)
+                 }
+                 newli.appendTo(favelist);
+               })
+               favelist.appendTo('#favorites')
+             }
+             $('#favorites').modal( {closeHtml:"", overlayClose:true});
+           })
+         });
          $('#restartaudio').click(function(){
            soundManager.destroySound('mySound');
            startStream();
@@ -88,7 +126,14 @@
          });
          {{^nowPlaying}}
          $('#currentfile').html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
+         $('#likebox').hide();
          {{/nowPlaying}}
+         {{#liked}}
+         if(nowplayingId){
+           likedIds[nowplayingId] = true;
+           $('#heartimg').attr("src", "/static/heart.png")
+         }
+         {{/liked}}
        })
     </script>
   </head>
@@ -103,7 +148,9 @@
           </div>
       </div>
       <div id="links">
+        <span class="link"><a href="#" id="about">about</a></span>
         <span class="link"><a href="#" id="options">options</a></span>
+        <span class="link"><a href="#" id="favoriteslink">favorites</a></span>
         <span class="link"><a href="/logout">logout</a></span>
       </div>
     </div>
@@ -140,30 +187,12 @@
             <div id="bar_15" class="bar">&nbsp;</div>
           </div>
           <div class="heading">now playing</div>
-          <div id="currentfile">
-            {{#nowPlaying}}
-              {{#meta}}
-                <div id="np_title">{{Title}}</div>
-                <div id="np_artist"><span id="by">by</span>{{Artist}}</div>
-                <div id="np_album"><span id="from">from</span> {{Album}}</div>
-                <div id="np_name" class="notshown"></div>
-              {{/meta}}
-              {{^meta}}
-                <div id="np_title" class="notshown"></div>
-                <div id="np_artist" class="notshown"><span id="by">by</span>{{Artist}}</div>
-                <div id="np_album" class="notshown"><span id="from">from</span> {{Album}}</div>
-                <div id="np_name">{{name}}</div>
-              {{/meta}}
-            {{/nowPlaying}}
-            {{^nowPlaying}}
-              <div id="np_title" class="notshown"></div>
-              <div id="np_artist" class="notshown"><span id="by">by</span>{{Artist}}</div>
-              <div id="np_album" class="notshown"><span id="from">from</span> {{Album}}</div>
-              <div id="np_name">{{name}}</div>
-            {{/nowPlaying}}
+          <div id="nowplayingwrapper">
+            <div id="likebox"><img src="/static/heart_deactive.png" id="heartimg"/></div>
+            <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
           </div>
         </div>
-        <div id="listeners" class="section">
+        <div id="listeners" class="section" style="clear:both;float:left">
           <div class="heading">listeners</div>
           <ul id="listenerslist" style="line-height:24px">
             {{#listeners}}
@@ -172,7 +201,7 @@
           </ul>
         </div>
 
-        <div id="queue" class="section">
+        <div id="queue" class="section" style="clear:both; float:left">
           <div class="heading">queue</div>
           <div class="desc">drag and drop files here to upload.</div>
           <div id="progress"></div>
@@ -192,9 +221,13 @@
       <div class="optionrow"><button id="clearchat">Clear chat history</button></div>
       <div class="optionrow"><button id="restartaudio">Restart Audio Stream</button></div>
     </div>
-<div id="aboutmodal">
+    <div id="aboutmodal">
       <div style="color:#DFBA69;">What is this?<br><br></div>
- <div style="color:#efffd3;">OUTLOUD.FM is an effing sweet and exciting way to play music for your friends; allowing songs to be uploaded and curated in a realtime collaborative playlist. <br><br>
-Bored and hungry? Simply send the URL of your OUTLOUD.FM room to your friends, and start uploading music! (OUTLOUD.FM will, however, do nothing for your hunger.)<br><br> We are based out of New York City, and would love to hear your comments, bug reports, and/or suggestions -- <a href="mailto:info@outloud.fm">info@outloud.fm</a> <br> </div>
+      <div style="color:#efffd3;">
+        OUTLOUD.FM is an effing sweet and exciting way to play music for your friends; allowing songs to be uploaded and curated in a realtime collaborative playlist. <br><br> Bored and hungry? Simply send the URL of your OUTLOUD.FM room to your friends, and start uploading music! (OUTLOUD.FM will, however, do nothing for your hunger.)<br><br> We are based out of New York City, and would love to hear your comments, bug reports, and/or suggestions -- <a href="mailto:info@outloud.fm">info@outloud.fm</a> <br>
+       </div>
+     </div>
+     <div id="favorites">
+     </div>
   </body>
 </html>

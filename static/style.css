@@ -155,9 +155,13 @@ body {
   #maincontent .by, #maincontent .from {
     color: #878c97;
     font-size: .8em; }
-  #maincontent #currentfile {
+  #maincontent #likebox {
     padding-top: 10px;
-    font-family: Georgia,serif; }
+    width: 24px;
+    cursor: pointer; }
+  #maincontent #currentfile {
+    font-family: Georgia,serif;
+    padding-top: 10px; }
     #maincontent #currentfile .uploader {
       font-size: .8em;
       margin-right: 5px;
@@ -169,6 +173,10 @@ body {
       margin-left: 5px; }
     #maincontent #currentfile #np_title {
       font-size: 20px; }
+  #maincontent #currentfile.playing {
+    position: relative;
+    left: 32px;
+    top: -38px; }
   #maincontent .section {
     padding-left: 20px;
     font-family: Kreon;
@@ -221,7 +229,11 @@ body {
   margin-right: auto;
   display: none; }
   #optionsmodal .heading {
-    color: cream;
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    color: black;
+    font-weight: bold;
     padding-top: 10px;
     border-bottom: 1px solid black; }
   #optionsmodal .optionrow {
@@ -243,11 +255,26 @@ body {
   height: 10px;
   border: 1px solid black; }
 
+#favorites li {
+  list-style: none;
+  margin-bottom: 12px;
+  margin-top: 12px; }
+#favorites .by, #favorites .title, #favorites .artist, #favorites .upby, #favorites .uploader, #favorites .startedplaying, #favorites .from {
+  margin-left: 2px;
+  margin-right: 2px; }
+#favorites .by, #favorites .from, #favorites .upby {
+  font-size: 14px;
+  font-weight: bold;
+  color: black; }
+
 /* modal overlay */
 #basic-modal-content {
   display: none; }
 
 #aboutmodal {
+  display: none; }
+
+#favorites {
   display: none; }
 
 #simplemodal-overlay {
@@ -256,10 +283,11 @@ body {
 #simplemodal-container {
   height: 250px;
   width: 500px;
-  color: #bbb;
-  background-color: #333;
+  color: #black;
+  background-color: #fff;
   border: 4px solid #444;
-  padding: 12px; }
+  padding: 12px;
+  font-family: Georgia; }
 
 #simplemodal-container .simplemodal-data {
   padding: 8px; }
