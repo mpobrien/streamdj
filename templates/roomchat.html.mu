@@ -148,6 +148,7 @@
           </div>
       </div>
       <div id="links">
+        <span class="link"><a href="#" id="about">about</a></span>
         <span class="link"><a href="#" id="options">options</a></span>
         <span class="link"><a href="#" id="favoriteslink">favorites</a></span>
         <span class="link"><a href="/logout">logout</a></span>
