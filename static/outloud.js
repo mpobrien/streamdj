@@ -51,18 +51,18 @@ var handleFiles = function(files){//{{{
     var progbar = new ProgressBar();
     $('#progress').append(progbar.outer)
     qxhr.onreadystatechange = function(){}
-    qxhr.upload.onerror = function(e){ console.debug("error", e); }
-    qxhr.upload.onloadstart = function(e){ console.debug("loadstart", e); }
+    qxhr.upload.onerror = function(e){ /*console.debug("error", e);*/ }
+    qxhr.upload.onloadstart = function(e){ /*console.debug("loadstart", e);*/ }
     qxhr.upload.onprogress = function makeupdater(bar){
         return function(e){
-          console.debug(e);
+            /*console.debug(e);*/
           var pct = parseInt((e.loaded / e.totalSize) * 100);
           bar.update(pct);
         }
     }(progbar);
     qxhr.onload = progbar.finish;
     var url = "/" + roomname + "/upload"
-      console.debug("url",url)
+        /*console.debug("url",url)*/
     qxhr.open("POST","/" + roomname + "/upload", true);
     qxhr.setRequestHeader('Content-Type', 'multipart/form-data');
     qxhr.setRequestHeader("X-File-Name", file.fileName);
@@ -91,7 +91,7 @@ var sendMessage = function(){//{{{
 
 var oddify = function(){
   var songs = $('.queuedsong');
-  console.debug(songs);
+  /*console.debug(songs);*/
   for( var i=0;i<songs.length;i++){
     var song = songs[i]
     if( i % 2 > 0 ){
@@ -124,18 +124,18 @@ $(document).ready(//{{{
     ws.onopen = function(){
       ws.send("auth:" + document.cookie);
       setInterval(function(){
-        console.debug("ping?");
+          /*console.debug("ping?");*/
         ws.send("0")
       }, 45000);
     }
     ws.onmessage = function(message){
       if(message.data=='1'){
-        console.debug("pong.");
+          /*console.debug("pong.");*/
         return;
       }
-      console.debug("got message!", message)
+      /*console.debug("got message!", message)*/
       var msgs = $.parseJSON(message.data);
-      console.debug("received", msgs)
+      /*console.debug("received", msgs)*/
       for( var i in msgs.messages){
         var message = msgs.messages[i]
         var newmsghtml;
