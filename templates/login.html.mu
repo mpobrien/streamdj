@@ -54,8 +54,13 @@
 
         {{^userinfo}}
           <div>
-            <a href="/login?r={{room}}"><img src="/static/twitter.png"/></a>
-            <a href="/login?r={{room}}" style="padding-left:10px">Login with Twitter</a>
+            <a href="/login/tw/?r={{room}}"><img src="/static/twitter.png"/></a>
+            <a href="/login/tw/?r={{room}}" style="padding-left:10px">Login with Twitter</a>
+          </div>
+
+          <div>
+            <a href="/login/fb/?r={{room}}"><img src="/static/facebook.png"/></a>
+            <a href="/login/fb/?r={{room}}" style="padding-left:10px">Login with Facebook</a>
           </div>
           <br/>
           <span class="disclaimer">
