@@ -53,28 +53,30 @@ pubsubClient.on("message", function(channel, msg){
   }else{} //bogus message
 });
 
+
 function getUserInfo(sessionId, callback){
   redisClient.mget("session_"+sessionId+"_user_id",
                    "session_"+sessionId+"_screen_name",
                    "session_"+sessionId+"_service",
                    "session_"+sessionId+"_profilepic",
+                   "session_"+sessionId+"_name",
                    function(err, replies){
                    console.log(replies)
     if(replies[0] == null || replies[1] == null){
       callback("No user found", null);
     }else{
-      userinfo = {user_id:replies[0], name:replies[1]}
+      userinfo = {user_id:replies[0], screen_name:replies[1]}
       if(replies[3]) userinfo.pic = replies[3];
       else {
         if(replies[2] == 'fb') userinfo.pic = "http://graph.facebook.com/" + replies[1] + "/picture?type=small"
         else userinfo.pic = "/static/person.png"
       }
       userinfo.service = replies[2]
+      userinfo.name = replies[4]
       callback(null, userinfo);
     }
   });
 }
-
 
 function broadcastToRoom(roomname, message, exclude){
   var chatroom = chatConnections[roomname]
@@ -91,10 +93,8 @@ var oa = new OAuth(settings.REQUEST_TOKEN_URL, settings.ACCESS_TOKEN_URL,
                    settings.OAUTH_VERSION, settings.CALLBACK_URL, settings.HASH_VERSION); 
 
 var homepage = function(req, res){//{{{
-  console.log("homepage");
   var cookies = new Cookies(req, res);
   if( !cookies.get("session") ){ // user is not logged in.
-    console.log("hey");
     utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
     return;
   }else{ // user is logged in.
@@ -104,6 +104,7 @@ var homepage = function(req, res){//{{{
         utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
         return;
       }else{
+        console.log(userinfo.name, " loaded homepage");
         utilities.sendTemplate(res, "login.html", {userinfo:userinfo}, settings.devtemplates)
       }
     });
@@ -114,6 +115,7 @@ var login = function(req, res, qs, matches){//{{{
   var room = qs.query['r']
   var callbackurl;
   if( matches[1] == 'tw' ){
+    console.log("starting twitter login");
     if( room && utilities.validateRoomName(room) ){
       callbackurl = 'http://' + settings.domain + ':' + settings.port + '/authdone/tw/?r=' + escape(room);
     }else{
@@ -130,6 +132,7 @@ var login = function(req, res, qs, matches){//{{{
       }
     });
   }else{
+    console.log("starting facebook login");
     if( room && utilities.validateRoomName(room) ){
       callbackurl = 'http://' + settings.domain + ':' + settings.port + '/authdone/fb/?r=' + escape(room);
     }else{
@@ -142,6 +145,7 @@ var login = function(req, res, qs, matches){//{{{
 }//}}}
 
 var logout = function(req, res){//{{{
+  console.log("logging out.");
   var cookies = new Cookies(req, res)
   var sessionId = cookies.get("session");
   redisClient.del("session_"+sessionId+"_user_id", function(){
@@ -158,6 +162,7 @@ var favorites = function(req, res){//{{{
   var faved = []
   getUserInfo(sessionId, function(err, userinfo){
     if(err){ res.end(); return; }
+    console.log(userinfo.name, "loaded favorites list.");
     redisClient.zrevrange("fave_" + userinfo.name, 0, 10,function(err, data){
       if(data){
         var keys = []
@@ -198,6 +203,7 @@ var room = function(req, res){//{{{
           utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
           return;
         }
+        console.log(userinfo.name, "wants to enter room", roomName);
         if( utilities.validateRoomName(roomName) ){
           redisClient.sadd("rooms", roomName, function(err, reply){
             if(reply==1){ //room is newly created
@@ -238,11 +244,13 @@ var authdone_twitter = function(req, res, qs){//{{{
       if(error){ console.log("Error accessing protected resource at twitter:" + error); res.end(); return; }
       jsondata = JSON.parse(data);  //TODO check for an error here! try/catch it
       var profileImg = jsondata.default_profile_image ? "" : jsondata.profile_image_url ;
+      console.log("successful login with twitter:", results2.screen_name);
       //TODO use a hash here instead maybe?
       var session_id = utilities.randomString(128);
       redisClient.mset("session_"+session_id+"_user_id", results2.user_id,
                        "session_"+session_id+"_service", "tw",
                        "session_"+session_id+"_screen_name", results2.screen_name,
+                       "session_"+session_id+"_name", results2.screen_name,
                        "session_"+session_id+"_profilepic", profileImg,
                        function(){ 
                          //TODO check for error here.
@@ -274,6 +282,7 @@ var authdone_facebook = function(req, res, qs){//{{{
         client_res2.on('data', function(d) {
           var me_data = JSON.parse(d.toString())
           console.log(me_data)
+          console.log("successful login with facebook:", me_data.name);
           /*{ id: '8801758',
             name: 'Michael O\'Brien',
             first_name: 'Michael',
@@ -290,6 +299,7 @@ var authdone_facebook = function(req, res, qs){//{{{
           redisClient.mset("session_"+session_id+"_user_id", me_data.id,
                            "session_"+session_id+"_service", "fb",
                            "session_"+session_id+"_screen_name", me_data.username,
+                           "session_"+session_id+"_name", me_data.name,
             function(){ 
               //TODO check for error here.
               cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});
@@ -379,14 +389,17 @@ var roomdisplay = function(req, res, qs, matches){//{{{
       res.end("room not found :(");
       return;
     }
-    redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name", "nowplayingid_" + roomName,  function(err2, replies){
+    redisClient.mget("session_"+sessionId+"_user_id",
+                     "session_"+sessionId+"_screen_name",
+                     "session_"+sessionId+"_name",
+                     "nowplayingid_" + roomName,  function(err2, replies){
       //TODO;check for err.
-      if(replies[0] == null || replies[1] == null){
+      if(replies[0] == null || replies[1] == null || replies[2] == null){
         utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
         return;
       }
-      userinfo = {user_id:replies[0], name:replies[1]}
-      var nowplaying = replies[2];
+      userinfo = {user_id:replies[0], screen_name:replies[1], name:replies[2]}
+      var nowplaying = replies[3];
       console.log("nowplaying is", nowplaying);
       if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
         redisClient.zscore("fave_" + userinfo.name, nowplaying, function(err3, reply){
@@ -511,8 +524,8 @@ net.createServer(
 
 function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
   res.statusCode = 200
-  var result = { username:userinfo.name,
-                 msgs:[],
+  var result = { username:JSON.stringify(userinfo.name),
+                 msgs:[],                                          
                  wsurl: "ws://" + settings.domain + ":" + settings.port + "/" + roomname,
                  listenurl: "http://" + settings.streamserver_domain + ":" + settings.streamingport + "/listen/" + roomname,
                  roomname: roomname
@@ -520,7 +533,6 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
   redisClient.hgetall("listeners_" + roomname, function(err, reply){
     if(reply == null) reply = [];
     var listeners = [];
-    var appendself = true;
     for(var name in reply){
       if(typeof(name) != "string") continue;
       if(name == userinfo.name) appendself = false;
@@ -528,9 +540,9 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
       listeners.push({name:name, pic:pic});
     }
     result.listeners = listeners
-    if( appendself ){
-      listeners.unshift({name:userinfo.name, pic: userinfo.pic});
-    }
+    /*if( appendself ){*/
+    /*listeners.unshift({name:userinfo.name, pic: userinfo.pic});*/
+    /*}*/
     redisClient.lrange("chatlog_" + roomname, 0, 99, function(err, reply2){
       if(reply2 == null )result.msgs = []
       else result.msgs = reply2;

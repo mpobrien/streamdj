@@ -53,7 +53,7 @@
     <script type="text/javascript">
        var wsurl = '{{wsurl}}'
        var msgs = [{{{msgs}}}]
-       var username = '{{username}}'
+       var username = {{{username}}}
      </script>
     <script type="text/javascript" src="/static/jqwheel.js"></script>
     <script type="text/javascript" src="/static/outloud.js"></script>
