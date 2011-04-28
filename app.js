@@ -322,7 +322,7 @@ var authdone_facebook = function(req, res, qs){//{{{
   });
 }//}}}
 
-var like_unlike = function(req, res, qs){//{{{
+var like_unlike = function(req, res, qs, matches){//{{{
   var cookies = new Cookies(req, res);
   if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
   var sessionId = cookies.get("session");
