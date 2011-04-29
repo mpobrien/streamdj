@@ -54,18 +54,18 @@
 
         {{^userinfo}}
           <div>
-            <a href="/login/tw/?r={{room}}"><img src="/static/twitter.png"/></a>
-            <a href="/login/tw/?r={{room}}" style="padding-left:10px">Login with Twitter</a>
+            <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a>
           </div>
-          <div style="text-align:center; padding-top:5px; padding-bottom:5px;" class="disclaimer">
+          <div style="text-align:center; padding-bottom:5px;" class="disclaimer">
             &nbsp;
           </div>
 
           <div>
-            <a href="/login/fb/?r={{room}}"><img src="/static/facebook.png"/></a>
-            <a href="/login/fb/?r={{room}}" style="padding-left:10px">Login with Facebook</a>
+            <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
           </div>
           <br/>
+	  <br/>
+	  <br/>
           <span class="disclaimer">
             We will  never publish anything<br/> without your explicit permission.
           </span>
