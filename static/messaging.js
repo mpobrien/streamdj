@@ -47,10 +47,20 @@ var MessageHandlers = {
     newMessageHtml.append( $('<span class="from"></span>').text(message['from']) )
     newMessageHtml.append( $('<span class="message"></span>').text("joined the room") )
     newMessageHtml.appendTo("#chat");
-    if($('#user_' + message['from']).length==0){
+    if($('#user_' + message['uid']).length==0){
       var newlistener = $('<li></li>');
-      newlistener.attr('id', 'user_' + message['from'])
-      newlistener.text(message['from'])
+      var newlistener_pic = $('<img src="' + message['body'] + '" width="24px" height="24px"></img>');
+      var newlistener_name = $('<span class="username"></span');
+      newlistener_name.text(message['from'])
+
+      var listenerInfo = message['uid'].split('_')
+      var listenerLink = $('<a></a>')
+      listenerLink.attr('href', listenerInfo[0] =='tw' ? 'http://twitter.com/account/redirect_by_id?id=' + listenerInfo[1]
+                                                      : 'http://facebook.com/profile.php?id=' + listenerInfo[1] )
+      listenerLink.append(newlistener_pic);
+      newlistener.append(listenerLink);
+      newlistener.append(newlistener_name);
+      newlistener.attr('id', 'user_' + message['uid'])
       newlistener.appendTo("#listenerslist");
     }
   },//}}}
@@ -63,7 +73,7 @@ var MessageHandlers = {
       .append( $('<span class="from"></span>').text(message['from']) )
       .append( $('<span class="message"></span>').text("left the room") )
       .appendTo("#chat");
-    $('#user_'+ message['from']).remove();//eadeOut(30, function(){$(this).remove()})
+    $('#user_'+ message['uid']).remove();//eadeOut(30, function(){$(this).remove()})
   },//}}}
 
   "stopped": function(message, isStatic){//{{{

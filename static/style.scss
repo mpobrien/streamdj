@@ -283,7 +283,10 @@ body{
       margin:0px;
       border-bottom:1px dashed $sectionHeadingBorder;
     }
+
+
     ul{
+      padding-left:0px;
       margin-top:10px;
       li{ 
         list-style:none;
@@ -292,6 +295,7 @@ body{
         img{
           vertical-align:middle;
           border:none;
+          padding-right:5px;
         }
       }
     }

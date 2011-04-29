@@ -196,7 +196,7 @@
           <div class="heading">listeners</div>
           <ul id="listenerslist" style="line-height:24px">
             {{#listeners}}
-            <li id="user_{{name}}" style="line-height:24px">{{name}} &nbsp;<a href="http://twitter.com/{{name}}" target="_blank"><img src="{{pic}}" width="24px" height="24px"/></a></li>
+            <li id="user_{{uid}}" style="line-height:24px"><a href="{{link}}" target="_blank"><img src="{{pic}}" width="24px" height="24px"/></a><span class="username">{{name}}</name></li>
             {{/listeners}}
           </ul>
         </div>

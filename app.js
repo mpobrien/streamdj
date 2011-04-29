@@ -40,11 +40,11 @@ pubsubClient.subscribe("file-ended");
 pubsubClient.subscribe("file-changed");
 pubsubClient.on("message", function(channel, msg){
   var incomingMsg = JSON.parse(msg);
-  console.log("received message on", channel, "room", msg)
   if(channel == 'file-ended'){
     var outgoingMsg = JSON.stringify( { messages:[msggen.stopped(incomingMsg.songId)] } ) 
     broadcastToRoom(incomingMsg.roomname, outgoingMsg);
   }else if(channel == 'file-changed'){
+    console.log('[' + incomingMsg.roomname + '] song started playing: ', incomingMsg.newfile.name);
     var messages = [];
     if( incomingMsg.oldfile ) messages.push(msggen.stopped(incomingMsg.oldfile.songId));
     if( incomingMsg.newfile) messages.push(msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta))
@@ -61,14 +61,13 @@ function getUserInfo(sessionId, callback){
                    "session_"+sessionId+"_profilepic",
                    "session_"+sessionId+"_name",
                    function(err, replies){
-                   console.log(replies)
     if(replies[0] == null || replies[1] == null){
       callback("No user found", null);
     }else{
       userinfo = {user_id:replies[0], screen_name:replies[1]}
       if(replies[3]) userinfo.pic = replies[3];
       else {
-        if(replies[2] == 'fb') userinfo.pic = "http://graph.facebook.com/" + replies[1] + "/picture?type=small"
+        if(replies[2] == 'fb') userinfo.pic = "http://graph.facebook.com/" + replies[1] + "/picture?type=square"
         else userinfo.pic = "/static/person.png"
       }
       userinfo.service = replies[2]
@@ -95,12 +94,14 @@ var oa = new OAuth(settings.REQUEST_TOKEN_URL, settings.ACCESS_TOKEN_URL,
 var homepage = function(req, res){//{{{
   var cookies = new Cookies(req, res);
   if( !cookies.get("session") ){ // user is not logged in.
+    console.log("alien loaded homepage");
     utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
     return;
   }else{ // user is logged in.
     var sessionId = cookies.get("session");
     getUserInfo(sessionId, function(err, userinfo){
       if(err){
+        console.log("alien loaded homepage");
         utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
         return;
       }else{
@@ -115,7 +116,7 @@ var login = function(req, res, qs, matches){//{{{
   var room = qs.query['r']
   var callbackurl;
   if( matches[1] == 'tw' ){
-    console.log("starting twitter login");
+    console.log("alien starting twitter login");
     if( room && utilities.validateRoomName(room) ){
       callbackurl = 'http://' + settings.domain + ':' + settings.port + '/authdone/tw/?r=' + escape(room);
     }else{
@@ -132,20 +133,19 @@ var login = function(req, res, qs, matches){//{{{
       }
     });
   }else{
-    console.log("starting facebook login");
+    console.log("alien starting facebook login");
     if( room && utilities.validateRoomName(room) ){
       callbackurl = 'http://' + settings.domain + ':' + settings.port + '/authdone/fb/?r=' + escape(room);
     }else{
       callbackurl = settings.CALLBACK_URL + "/fb/"
     }
-    console.log("callback:",callbackurl)
     res.writeHead(302, { 'Location': 'https://www.facebook.com/dialog/oauth?client_id=' + settings.facebook_app_id + "&redirect_uri=" + escape(callbackurl) + "&scope=publish_stream" });
     res.end()
   }
 }//}}}
 
 var logout = function(req, res){//{{{
-  console.log("logging out.");
+  console.log("logging out");
   var cookies = new Cookies(req, res)
   var sessionId = cookies.get("session");
   redisClient.del("session_"+sessionId+"_user_id", function(){
@@ -163,7 +163,8 @@ var favorites = function(req, res){//{{{
   getUserInfo(sessionId, function(err, userinfo){
     if(err){ res.end(); return; }
     console.log(userinfo.name, "loaded favorites list.");
-    redisClient.zrevrange("fave_" + userinfo.name, 0, 10,function(err, data){
+    var uidkey = userinfo.service + "_" + userinfo.user_id
+    redisClient.zrevrange("fave_" + uidkey, 0, 10,function(err, data){
       if(data){
         var keys = []
         for(var i=0;i<data.length;i++){
@@ -203,7 +204,7 @@ var room = function(req, res){//{{{
           utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
           return;
         }
-        console.log(userinfo.name, "wants to enter room", roomName);
+        console.log(userinfo.name, " is creating/joining room", roomName);
         if( utilities.validateRoomName(roomName) ){
           redisClient.sadd("rooms", roomName, function(err, reply){
             if(reply==1){ //room is newly created
@@ -244,7 +245,7 @@ var authdone_twitter = function(req, res, qs){//{{{
       if(error){ console.log("Error accessing protected resource at twitter:" + error); res.end(); return; }
       jsondata = JSON.parse(data);  //TODO check for an error here! try/catch it
       var profileImg = jsondata.default_profile_image ? "" : jsondata.profile_image_url ;
-      console.log("successful login with twitter:", results2.screen_name);
+      console.log(results2.screen_name, "logged in via twitter");
       //TODO use a hash here instead maybe?
       var session_id = utilities.randomString(128);
       redisClient.mset("session_"+session_id+"_user_id", results2.user_id,
@@ -281,8 +282,7 @@ var authdone_facebook = function(req, res, qs){//{{{
       https.get({ host: 'graph.facebook.com', path: "/me?access_token=" + authtoken.access_token}, function(client_res2) { 
         client_res2.on('data', function(d) {
           var me_data = JSON.parse(d.toString())
-          console.log(me_data)
-          console.log("successful login with facebook:", me_data.name);
+          console.log(me_data.name, " logged in with facebook");
           /*{ id: '8801758',
             name: 'Michael O\'Brien',
             first_name: 'Michael',
@@ -332,12 +332,14 @@ var like_unlike = function(req, res, qs, matches){//{{{
   songId = parseInt(songId)
   getUserInfo(sessionId, function(err, userinfo){
     if(err) return; //TODO handle/log error.  //TODO make sure user name is valid, + not empyy
+    var uidkey = userinfo.service + "_" + userinfo.user_id
+    console.log(uidkey)
     if( matches[1] == 'like'){
       console.log(userinfo.name, "likes", songId);
-      redisClient.zadd("fave_" + userinfo.name, new Date().getTime(), songId ) //key, score, member 
+      redisClient.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member 
     }else{
       console.log(userinfo.name, "unlikes", songId);
-      redisClient.zrem("fave_" + userinfo.name, songId);
+      redisClient.zrem("fave_" + uidkey, songId);
     }
   });
 }//}}}
@@ -382,28 +384,34 @@ var upload = function(req, res, qs, matches){//{{{
 var roomdisplay = function(req, res, qs, matches){//{{{
   var roomName = matches[1]
   var cookies = new Cookies(req, res);
-  if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
+  if( !cookies.get("session") ){
+    utilities.sendTemplate(res, "login.html", {room:roomName}, settings.devtemplates); 
+    return;
+  } // user is not logged in.
   var sessionId = cookies.get("session");
   redisClient.sismember("rooms",roomName, function(err, reply){
     if(reply==0){
+      console.log("user requested unknown room: ", roomName);
       res.end("room not found :(");
       return;
     }
     redisClient.mget("session_"+sessionId+"_user_id",
                      "session_"+sessionId+"_screen_name",
                      "session_"+sessionId+"_name",
+                     "session_"+sessionId+"_profilepic",
+                     "session_"+sessionId+"_service",
                      "nowplayingid_" + roomName,  function(err2, replies){
       //TODO;check for err.
       if(replies[0] == null || replies[1] == null || replies[2] == null){
-        utilities.sendTemplate(res, "login.html", {}, settings.devtemplates)
+        utilities.sendTemplate(res, "login.html", {room:roomName}, settings.devtemplates)
         return;
       }
-      userinfo = {user_id:replies[0], screen_name:replies[1], name:replies[2]}
-      var nowplaying = replies[3];
-      console.log("nowplaying is", nowplaying);
+      userinfo = {user_id:replies[0], screen_name:replies[1], name:replies[2], pic:replies[3], service:replies[4]}
+      console.log(replies[2], "loaded page for room", roomName);
+      var nowplaying = replies[5];
+      var uidkey = userinfo.service + "_" + userinfo.user_id;
       if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
-        redisClient.zscore("fave_" + userinfo.name, nowplaying, function(err3, reply){
-          console.log("here:", reply)
+        redisClient.zscore("fave_" + uidkey, nowplaying, function(err3, reply){
           display_form(req, res, userinfo, roomName, nowplaying, reply);
         });
       }else{
@@ -460,6 +468,7 @@ server.addListener("connection", function(connection){
         getUserInfo(sessionId, function(err, userinfo){
           //TODO check for err.
           connection.name = userinfo.name
+          connection.uid = userinfo.service + '_' + userinfo.user_id;
           connection.authorized = true;
           if(roomname in chatConnections){
             chatConnections[roomname].push(connection);
@@ -467,10 +476,11 @@ server.addListener("connection", function(connection){
             chatConnections[roomname] = [connection];
           }
           //var profilepic = replies[2] ? replies[2] : "_";
-          redisClient.hset("listeners_" + roomname, userinfo.name, userinfo.pic, function(err, reply){
+          var listenerInfo = JSON.stringify([userinfo.name, userinfo.pic])
+          redisClient.hset("listeners_" + roomname, userinfo.service + '_' + userinfo.user_id, listenerInfo, function(err, reply){
             msgId++
             if( reply == 1 ){
-              var message = JSON.stringify( {messages:[msggen.join(connection.name)]})
+              var message = JSON.stringify( {messages:[msggen.join(connection.name,userinfo.service, userinfo.user_id, userinfo.pic)]})
               broadcastToRoom(connection.roomname, message, connection);
               //connection.broadcast(message);
             }else{} // already inside
@@ -486,7 +496,7 @@ server.addListener("connection", function(connection){
       }else{
           //TODO validate the message first?
           var message = JSON.stringify( {messages:[msggen.chat(connection.name, msg)]})
-          sys.puts("[" + connection.roomname + "] " + connection.name + ": " + msg);
+          console.log("[" + connection.roomname + "] ", connection.name + ":", msg);
           broadcastToRoom(connection.roomname, message);
           //server.broadcast(message);
           redisClient.lpush("chatlog_" + connection.roomname, message,  //TODO only trim after 10 over size, etc.
@@ -497,9 +507,9 @@ server.addListener("connection", function(connection){
   connection.addListener("close", function(){
     var chatroom = chatConnections[roomname];
     if( chatroom ) chatConnections[roomname].remove(connection);
-    redisClient.hdel("listeners_" + roomname, connection.name, function(err, reply){
+    redisClient.hdel("listeners_" + roomname, connection.uid, function(err, reply){
       if(reply==1){
-        var message = JSON.stringify( {messages:[msggen.left(connection.name)]})
+        var message = JSON.stringify( {messages:[msggen.left(connection.name, connection.uid)]})
         broadcastToRoom(connection.roomname, message);
       }
     })
@@ -533,16 +543,26 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
   redisClient.hgetall("listeners_" + roomname, function(err, reply){
     if(reply == null) reply = [];
     var listeners = [];
+    var appendself = true;
     for(var name in reply){
       if(typeof(name) != "string") continue;
-      if(name == userinfo.name) appendself = false;
-      var pic = reply[name] != "_" ? reply[name] : "/static/person_small.png";
-      listeners.push({name:name, pic:pic});
+      var val = JSON.parse(reply[name]);
+      var nameparts = name.split('_')
+      var service = nameparts[0]
+      var listener_id = nameparts[1]
+      var listener_name = val[0];
+      var listener_pic = val[1];
+      var listener_link = (service == 'tw' ?  'http://twitter.com/account/redirect_by_id?id=' + listener_id : 'http://facebook.com/profile.php?id=' + listener_id);
+      if(name == userinfo.service + '_' + userinfo.user_id) appendself = false;
+      listeners.push({name:listener_name, pic:listener_pic, link:listener_link, uid:name});
     }
     result.listeners = listeners
-    /*if( appendself ){*/
-    /*listeners.unshift({name:userinfo.name, pic: userinfo.pic});*/
-    /*}*/
+    if( appendself ){
+      var self_link = userinfo.service =='tw' ?  'http://twitter.com/' + userinfo.user_id : 'http://facebook.com/profile.php?id=' + userinfo.user_id;
+      if(userinfo.service == 'fb'){userinfo.pic = 'http://graph.facebook.com/' + userinfo.user_id + '/picture';} 
+      else if( !userinfo.pic ) {userinfo.pic = "/static/person_small.png";}
+      listeners.unshift({name:userinfo.name, pic:userinfo.pic, link:self_link, uid:userinfo.service + '_' + userinfo.user_id});
+    }
     redisClient.lrange("chatlog_" + roomname, 0, 99, function(err, reply2){
       if(reply2 == null )result.msgs = []
       else result.msgs = reply2;

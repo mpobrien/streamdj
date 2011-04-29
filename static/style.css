@@ -195,6 +195,7 @@ body {
       margin: 0px;
       border-bottom: 1px dashed black; }
     #maincontent .section ul {
+      padding-left: 0px;
       margin-top: 10px; }
       #maincontent .section ul li {
         list-style: none;
@@ -202,7 +203,8 @@ body {
         text-style: italic; }
         #maincontent .section ul li img {
           vertical-align: middle;
-          border: none; }
+          border: none;
+          padding-right: 5px; }
 
 .odd {
   background-color: #f0f0f0; }
