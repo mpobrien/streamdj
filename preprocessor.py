@@ -57,7 +57,7 @@ def main():
     r.publish('file-queued', json.dumps(outgoingMessage));
     r.publish("newQueueReady",songInfo['room']);
 
-    r.set("s_" + str(newSongId), metadata); #TODO make this a hash instead?
+    r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?
 
 
 
