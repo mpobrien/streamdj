@@ -555,7 +555,7 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
       var listener_name = val[0];
       var listener_pic = val[1];
       var listener_link = (service == 'tw' ?  'http://twitter.com/account/redirect_by_id?id=' + listener_id : 'http://facebook.com/profile.php?id=' + listener_id);
-      if( !listener_pic && service == 'fb') listener_pic = "http://graph.facebook.com/" + listener_id + "/picture?type=square" 
+      if( service == 'fb') listener_pic = "http://graph.facebook.com/" + listener_id + "/picture?type=square" 
       if(name == userinfo.service + '_' + userinfo.user_id) appendself = false;
       listeners.push({name:listener_name, pic:listener_pic, link:listener_link, uid:name});
     }
