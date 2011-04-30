@@ -16,7 +16,7 @@ var redis     = require('redis');
 var msgs      = require('./messages')
 var querystring = require('querystring')
 var net = require("net"),
-domains = ["outloud.fm:3000","dev.outloud.fm:3000","stream.dev.outloud.fm:3001"];
+domains = ["outloud.fm","dev.outloud.fm","stream.dev.outloud.fm:3001"];
 var chatConnections = {};
 
 Mu.templateRoot = './templates'

@@ -73,7 +73,7 @@ var streamingServer = http.createServer(
 
     if(url_parts.pathname == '/crossdomain.xml'){
       res.writeHead(200, {'Content-Type': 'application/xml'}); 
-      res.end('<?xml version="1.0"?><!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd"><cross-domain-policy><allow-access-from domain="outloud.fm"to-ports="3000"/><allow-access-from domain="dev.outloud.fm"to-ports="3000"/><allow-access-from domain="stream.dev.outloud.fm"to-ports="3001"/></cross-domain-policy>')
+      res.end('<?xml version="1.0"?><!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd"><cross-domain-policy><allow-access-from domain="outloud.fm" to-ports="80"/><allow-access-from domain="dev.outloud.fm"to-ports="80"/><allow-access-from domain="stream.dev.outloud.fm"to-ports="3001"/></cross-domain-policy>')
       return;
     }
 
