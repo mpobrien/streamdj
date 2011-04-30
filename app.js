@@ -368,6 +368,8 @@ var upload = function(req, res, qs, matches){//{{{
   if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
   var sessionId = cookies.get("session");
   getUserInfo(sessionId, function(err, uploaderInfo){
+    if(err || !uploaderInfo) res.end();
+    console.log(uploaderInfo.name," started uploading", fname);
     //TODO check err!*/ //TODO check that user is in the room?*/ //TODO validate that it's legit mp3?
     fileUpload.on("filedone", function(){
       var uploadedFileInfo = JSON.stringify({"path":fullPath, "room":roomname, "uploader":uploaderInfo.name, 'fname':fname});
