@@ -266,6 +266,7 @@ var authdone_twitter = function(req, res, qs){//{{{
 }//}}}
 
 var authdone_facebook = function(req, res, qs){//{{{
+  console.log("facebook authdone");
   var roomname = qs.query['r']
   var fbcode = qs.query['code']
   var redirecturi = settings.CALLBACK_URL + "/fb/" + (roomname ? "?r=" + roomname : "");
@@ -443,6 +444,7 @@ server.addListener("request", function(req, res) {
     return;
   }
 
+  console.log("Request at:", qs.pathname, qs.query);
   var func = router.route(qs.pathname);
   if( func ){
     func[0](req, res, qs, func[1])
@@ -587,7 +589,7 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
 
 
 var redirectserver = http.createServer(function(req, res) {
-  res.writeHead(302, { 'Location': 'http://outloud.fm', });
+  res.writeHead(302, { 'Location': settings.homeurl });
   res.end();
 });
 redirectserver.listen(3000);
