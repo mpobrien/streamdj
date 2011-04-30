@@ -1,6 +1,6 @@
 {
   "uploadDirectory":"/home/mike/uploaded/",
-  "port":3000,
+  "port":80,
   "domain":"dev.outloud.fm",
   "key":"IplmVMSk2qr6uNG6Pw11hg",
   "secret":"zVrKkW8YMWS56WrpPxBjXY9HmpUnZe7AiRCytog8uI",

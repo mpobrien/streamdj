@@ -1,6 +1,6 @@
 {
   "uploadDirectory":"/home/mpobrien/uploaded/",
-  "port":3000,
+  "port":80,
   "domain":"outloud.fm",
   "key":"IplmVMSk2qr6uNG6Pw11hg",
   "secret":"zVrKkW8YMWS56WrpPxBjXY9HmpUnZe7AiRCytog8uI",

@@ -585,3 +585,9 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
   });
 }//}}}
 
+
+var redirectserver = http.createServer(function(req, res) {
+  res.writeHead(302, { 'Location': 'http://outloud.fm', });
+  res.end();
+});
+redirectserver.listen(3000);
