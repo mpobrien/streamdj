@@ -38,6 +38,7 @@ sys.puts(util.inspect(settings))
 
 pubsubClient.subscribe("file-ended");
 pubsubClient.subscribe("file-changed");
+pubsubClient.subscribe("file-queued");
 pubsubClient.on("message", function(channel, msg){
   var incomingMsg = JSON.parse(msg);
   if(channel == 'file-ended'){
@@ -50,7 +51,16 @@ pubsubClient.on("message", function(channel, msg){
     if( incomingMsg.newfile) messages.push(msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta))
     var outgoingMsg = JSON.stringify( {messages:messages }) 
     broadcastToRoom(incomingMsg.roomname, outgoingMsg);
-  }else{} //bogus message
+  }else if(channel == 'file-queued'){
+    console.log("got:", incomingMsg);
+    var messages = [];
+    messages.push( msggen.queued(incomingMsg.uploader, 'asfa', incomingMsg.songId, incomingMsg.meta) )
+    var outgoingMsg = JSON.stringify( {messages:messages })
+    console.log("sending", outgoingMsg);
+    broadcastToRoom(incomingMsg.room, outgoingMsg);
+  }else{
+    
+  } 
 });
 
 
@@ -360,23 +370,8 @@ var upload = function(req, res, qs, matches){//{{{
   getUserInfo(sessionId, function(err, uploaderInfo){
     //TODO check err!*/ //TODO check that user is in the room?*/ //TODO validate that it's legit mp3?
     fileUpload.on("filedone", function(){
-      redisClient.incr("maxsongid", function(err2, newMaxId){
-        asyncid3.getBasicTagInfo(fullPath, function(tagdata){
-          metadata = tagdata;
-          var chatmessage = JSON.stringify( {messages:[msggen.queued(uploaderInfo.name, fname, newMaxId, metadata)]})
-          var streamMessage = JSON.stringify( {path:settings.uploadDirectory + filePath + ".mp3",
-          name:fname,
-          uploader: uploaderInfo.name,
-          songId: newMaxId, 
-          meta: metadata});
-          redisClient.rpush("roomqueue_" + roomname, streamMessage, function(){
-            broadcastToRoom(roomname, chatmessage);
-            redisClient.publish("newQueueReady",roomname);
-          })
-          var songMeta = JSON.stringify( {fname:fname,meta:metadata, room:roomname, id:newMaxId} );
-          redisClient.set("s_" + newMaxId, songMeta); //TODO make this a hash instead!
-        });
-      });
+      var uploadedFileInfo = JSON.stringify({"path":fullPath, "room":roomname, "uploader":uploaderInfo.name, 'fname':fname});
+      redisClient.rpush("newsongready", uploadedFileInfo);
     });
     req.resume();
   });
