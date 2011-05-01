@@ -51,18 +51,27 @@ function prepareStartup(){
 var fileEnd = function(roomName, fileinfo){
   console.log("file ended mesgs");
   fileinfo.roomname = roomName;
-  redisClient2.publish("file-ended", JSON.stringify(fileinfo));
   redisClient2.del("nowplaying_" + roomName);
   redisClient2.del("nowplayingid_" + roomName);
+  redisClient2.incr("roommsg_" + roomName, function(err, reply){
+    fileinfo.msgId = reply;
+    redisClient2.publish("file-ended", JSON.stringify(fileinfo));
+  });
 }
 
 var fileChanged = function(roomName, oldfile, newfile){
-  var msg = {"oldfile":oldfile, "newfile":newfile, "roomname":roomName};
-  redisClient2.publish("file-changed", JSON.stringify(msg));
   redisClient2.set("nowplaying_" + roomName, JSON.stringify(newfile));
   redisClient2.set("nowplayingid_" + roomName, newfile.songId);
-  var message = JSON.stringify( {messages:[msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta)]})
-  redisClient2.lpush("chatlog_" + roomName, message, function(){ redisClient2.ltrim("chatlog_"+ roomName, 100, function(){}) });
+  redisClient2.incrby("roommsg_" + roomName, 2, function(er, reply){ //TODO check errors
+    var msgId = reply;
+    var message = JSON.stringify( {messages:[msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta, msgId)]})
+    var msg = {"oldfile":oldfile, "newfile":newfile, "roomname":roomName, "msgId":msgId};
+    redisClient2.publish("file-changed", JSON.stringify(msg));
+    redisClient2.zadd("roomlog_" + roomName, msgId, message, function(){ 
+      //TODO trim the log?
+      //redisClient2.ltrim("chatlog_"+ roomName, 100, function(){});
+    });
+  });
 }
 
 
