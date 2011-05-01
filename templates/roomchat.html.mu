@@ -84,27 +84,29 @@
                var favelist = $('<ul class="favelist"></ul>')
                $.each(data.faves, function(key, message){
                  var newli = $('<li></li>');
-                 if( 'Title' in message.meta){
-                   newli.append($('<span></span>').attr("class","title").text(message.meta['Title']));
-                 }else{
-                   if( 'Artist' in message.meta){
-                     newli.append($('<span></span>').attr("class","title").text('(Unknown)'));
+                 if( message.meta){
+                   if( 'Title' in message.meta){
+                     newli.append($('<span></span>').attr("class","title").text(message.meta['Title']));
                    }else{
-                     newli.append($('<span></span>').attr("class","title").text(message['body']));
+                     if( 'Artist' in message.meta){
+                       newli.append($('<span></span>').attr("class","title").text('(Unknown)'));
+                     }else{
+                       newli.append($('<span></span>').attr("class","title").text(message['body']));
+                     }
                    }
-                 }
-                 if( 'Artist' in message.meta){
-                   var npartist = $('<span></span>')
-                   npartist.attr("class","artist").append($('<span></span>').attr("class","by").text("by"))
-                           .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
-                   newli.append(npartist)
-                 }
+                   if( 'Artist' in message.meta){
+                     var npartist = $('<span></span>')
+                     npartist.attr("class","artist").append($('<span></span>').attr("class","by").text("by"))
+                             .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
+                     newli.append(npartist)
+                   }
 
-                 if( 'Album' in message.meta){
-                   var npalbum = $('<span></span>')
-                   npalbum.attr("class","album").append($('<span></span>').attr("class","from").text("from"))
-                                                .append($('<span></span>').attr("class","album").text(message.meta['Album'])); 
-                   newli.append(npalbum)
+                   if( 'Album' in message.meta){
+                     var npalbum = $('<span></span>')
+                     npalbum.attr("class","album").append($('<span></span>').attr("class","from").text("from"))
+                                                  .append($('<span></span>').attr("class","album").text(message.meta['Album'])); 
+                     newli.append(npalbum)
+                   }
                  }
                  newli.appendTo(favelist);
                })
@@ -190,6 +192,8 @@
           <div id="nowplayingwrapper">
             <div id="likebox"><img src="/static/heart_deactive.png" id="heartimg"/></div>
             <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
+            <div id="albumart" style="display:none">
+            </div>
           </div>
         </div>
         <div id="listeners" class="section" style="clear:both;float:left">

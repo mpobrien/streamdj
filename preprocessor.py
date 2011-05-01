@@ -1,13 +1,18 @@
 import redis
 import json
-import os
 import mutagen
 import subprocess
+import os, sys, base64
+import md5
+#print os.path.abspath(__file__)
 r = redis.Redis(host='localhost',port=6379,db=0)
 
 UNKNOWN = '(Unknown)'
 
-def main():
+def main(argv):
+  settingsdata = open(argv[0], 'r').read()
+  settings = json.loads(settingsdata)
+  picoutputdir = os.path.dirname(os.path.abspath(__file__)) + '/' + settings['albumart_dir']
   while True:
     "waiting"
     message = r.blpop("newsongready");
@@ -36,6 +41,23 @@ def main():
                 'length' : mutagenInfo.info.length}
     newSongId = r.incr("maxsongid")
 
+    if mutagenInfo.tags and mutagenInfo.tags._EasyID3__id3:
+      pics = mutagenInfo.tags._EasyID3__id3.getall("APIC")
+      if pics:
+        #TODO check max length of pic data?
+        picdata = pics[0].data
+        picdatahash = md5.new();
+        picdatahash.update(picdata)
+        picfilename = base64.b64encode(picdatahash.digest()).replace("/","_")
+        #TODO extension? mime type?
+        fout = open(picoutputdir + '/' + picfilename, 'w')
+        fout.write(picdata)
+        metadata['pic'] = picfilename
+        fout.close();
+         #print os.path.abspath(__file__)
+
+        #print os.path.abspath(__file__)
+
     # Do we need to convert?
     mime = mutagenInfo._FileType__get_mime();
     print mime
@@ -61,4 +83,4 @@ def main():
 
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__': main(sys.argv[1:])
