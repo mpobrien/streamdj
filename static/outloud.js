@@ -212,14 +212,14 @@ $(document).ready(//{{{
       return false;
     }
 
-    document.addEventListener("drop", dragEnter, false);
+    document.addEventListener("drop", drop, false);
     document.addEventListener("dragenter", dragEnter, false);
-    document.addEventListener("dragleave", dragEnter, false);
-    document.addEventListener("dragover", dragEnter, false);
-    droptarget.addEventListener("drop", drop, false);
-    droptarget.addEventListener("dragenter", dragEnter, false);
-    droptarget.addEventListener("dragleave", dragExit, false);
-    droptarget.addEventListener("dragover", dragOver, false);
+    document.addEventListener("dragleave", dragExit, false);
+    document.addEventListener("dragover", dragOver, false);
+    /*droptarget.addEventListener("drop", drop, false);*/
+    /*droptarget.addEventListener("dragenter", dragEnter, false);*/
+    /*droptarget.addEventListener("dragleave", dragExit, false);*/
+    /*droptarget.addEventListener("dragover", dragOver, false);*/
     
     oddify();
 

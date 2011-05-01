@@ -203,7 +203,7 @@
 
         <div id="queue" class="section" style="clear:both; float:left">
           <div class="heading">queue</div>
-          <div class="desc">drag and drop files here to upload.</div>
+          <div class="desc">drag + drop files onto the browser to upload</div>
           <div id="progress"></div>
           <ul id="queueList">
             {{#queue}}
@@ -228,6 +228,8 @@
        </div>
      </div>
      <div id="favorites">
+     </div>
+     <div id="dragmessage">
      </div>
   </body>
 </html>
