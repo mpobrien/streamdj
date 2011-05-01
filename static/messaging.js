@@ -42,7 +42,7 @@ var MessageHandlers = {
   "join"   : function(message, isStatic){//{{{
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"')
-    newMessageHtml.attr("id",message["id"]);
+    //newMessageHtml.attr("id",message["id"]);
     newMessageHtml.append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )
     newMessageHtml.append( $('<span class="from"></span>').text(message['from']) )
     newMessageHtml.append( $('<span class="message"></span>').text("joined the room") )
