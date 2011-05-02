@@ -57,7 +57,7 @@ var MessageHandlers = {
       var listenerLink = $('<a></a>')
       listenerLink.attr('href', listenerInfo[0] =='tw' ? 'http://twitter.com/account/redirect_by_id?id=' + listenerInfo[1]
                                                       : 'http://facebook.com/profile.php?id=' + listenerInfo[1] )
-      listnerLink.attr("target","_blank")
+      listenerLink.attr("target","_blank")
       listenerLink.append(newlistener_pic);
       newlistener.append(listenerLink);
       newlistener.append(newlistener_name);
