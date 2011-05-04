@@ -145,7 +145,7 @@ var login = function(req, res, qs, matches){//{{{
   }else{
     console.log("alien starting facebook login");
     if( room && utilities.validateRoomName(room) ){
-      callbackurl = 'http://' + settings.domain + ':' + settings.port + '/authdone/fb/?r=' + escape(room);
+      callbackurl = 'http://' + settings.domain + '/authdone/fb/?r=' + escape(room);
     }else{
       callbackurl = settings.CALLBACK_URL + "/fb/"
     }
@@ -292,7 +292,9 @@ var authdone_facebook = function(req, res, qs){//{{{
       var authtoken = querystring.parse(raw)
       https.get({ host: 'graph.facebook.com', path: "/me?access_token=" + authtoken.access_token}, function(client_res2) { 
         client_res2.on('data', function(d) {
+            //TODO catch bad json here
           var me_data = JSON.parse(d.toString())
+          console.log(me_data);
           console.log(me_data.name, " logged in with facebook");
           /*{ id: '8801758',
             name: 'Michael O\'Brien',
@@ -441,7 +443,7 @@ server.addListener("request", function(req, res) {
     return;
   }
 
-  console.log("Request at:", qs.pathname, qs.query);
+  console.log("Request at:", qs.pathname, qs.query, "from", req.connection.remoteAddress);
   var func = router.route(qs.pathname);
   if( func ){
     func[0](req, res, qs, func[1])
