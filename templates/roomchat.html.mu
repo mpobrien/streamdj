@@ -1,5 +1,10 @@
 <html>
   <head>
+    <script type="text/javascript">
+    if(!(window.console)){
+      window.console = {log:function(){}, debug:function(){}};
+    }
+    </script>
     <link href="/static/style.css" rel="stylesheet" />
     <link rel="icon" type="image/gif" href="/static/favicon.gif" />
     <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
