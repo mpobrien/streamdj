@@ -39,7 +39,7 @@
       //soundManager.waitForWindowLoad = true;
       soundManager.useFlashBlock = false; 
       var startStream = function(){
-        soundManager.createSound({
+        x = soundManager.createSound({
           id: 'mySound',
           url: '{{listenurl}}',
           autoPlay: true,
@@ -83,27 +83,28 @@
              }else{
                var favelist = $('<ul class="favelist"></ul>')
                $.each(data.faves, function(key, message){
+                 if(!message) return;
                  var newli = $('<li></li>');
-                 if( 'Title' in message.meta){
-                   newli.append($('<span></span>').attr("class","title").text(message.meta['Title']));
+                 if( 'Title' in message){
+                   newli.append($('<span></span>').attr("class","title").text(message['Title']));
                  }else{
-                   if( 'Artist' in message.meta){
+                   if( 'Artist' in message){
                      newli.append($('<span></span>').attr("class","title").text('(Unknown)'));
                    }else{
                      newli.append($('<span></span>').attr("class","title").text(message['body']));
                    }
                  }
-                 if( 'Artist' in message.meta){
+                 if( 'Artist' in message){
                    var npartist = $('<span></span>')
                    npartist.attr("class","artist").append($('<span></span>').attr("class","by").text("by"))
-                           .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
+                           .append($('<span></span>').attr("class","artist").text(message['Artist']))
                    newli.append(npartist)
                  }
 
-                 if( 'Album' in message.meta){
+                 if( 'Album' in message){
                    var npalbum = $('<span></span>')
                    npalbum.attr("class","album").append($('<span></span>').attr("class","from").text("from"))
-                                                .append($('<span></span>').attr("class","album").text(message.meta['Album'])); 
+                                                .append($('<span></span>').attr("class","album").text(message['Album'])); 
                    newli.append(npalbum)
                  }
                  newli.appendTo(favelist);
