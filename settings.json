@@ -1,6 +1,7 @@
 {
   "homeurl":"http://outloud.fm",
   "uploadDirectory":"/home/mpobrien/uploaded/",
+  "albumart_dir":"/static/art/",
   "port":80,
   "domain":"outloud.fm",
   "key":"IplmVMSk2qr6uNG6Pw11hg",

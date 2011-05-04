@@ -42,22 +42,24 @@ pubsubClient.subscribe("file-queued");
 pubsubClient.on("message", function(channel, msg){
   var incomingMsg = JSON.parse(msg);
   if(channel == 'file-ended'){
-    var outgoingMsg = JSON.stringify( { messages:[msggen.stopped(incomingMsg.songId)] } ) 
+    var outgoingMsg = JSON.stringify( { messages:[msggen.stopped(incomingMsg.songId, incomingMsg.msgId)] } ) 
     broadcastToRoom(incomingMsg.roomname, outgoingMsg);
   }else if(channel == 'file-changed'){
     console.log('[' + incomingMsg.roomname + '] song started playing: ', incomingMsg.newfile.name);
     var messages = [];
-    if( incomingMsg.oldfile ) messages.push(msggen.stopped(incomingMsg.oldfile.songId));
-    if( incomingMsg.newfile) messages.push(msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta))
-    var outgoingMsg = JSON.stringify( {messages:messages }) 
+    var msgId = incomingMsg.msgId
+    if( incomingMsg.oldfile ) messages.push(msggen.stopped(incomingMsg.oldfile.songId, msgId - 1));
+    if( incomingMsg.newfile) messages.push(msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta, msgId))
+    var outgoingMsg = JSON.stringify( {messages:messages}) 
     broadcastToRoom(incomingMsg.roomname, outgoingMsg);
   }else if(channel == 'file-queued'){
-    console.log("got:", incomingMsg);
     var messages = [];
-    messages.push( msggen.queued(incomingMsg.uploader, 'asfa', incomingMsg.songId, incomingMsg.meta) )
-    var outgoingMsg = JSON.stringify( {messages:messages })
-    console.log("sending", outgoingMsg);
-    broadcastToRoom(incomingMsg.room, outgoingMsg);
+    redisClient.incr("roommsg_" + incomingMsg.room, function(err, reply){ //TODO check err
+      var msgId = reply;
+      messages.push( msggen.queued(incomingMsg.uploader, 'asfa', incomingMsg.songId, incomingMsg.meta) )
+      var outgoingMsg = JSON.stringify( {messages:messages })
+      broadcastToRoom(incomingMsg.room, outgoingMsg);
+    });
   }else{
     
   } 
@@ -402,13 +404,26 @@ var roomdisplay = function(req, res, qs, matches){//{{{
                      "session_"+sessionId+"_service",
                      "nowplayingid_" + roomName,  function(err2, replies){
       //TODO;check for err.
+      var nowplaying = replies[5];
       if(replies[0] == null || replies[1] == null || replies[2] == null){
-        utilities.sendTemplate(res, "login.html", {room:roomName}, settings.devtemplates)
+        var logincontext = {room:roomName}
+        var displayLoginCallback = function(){
+          utilities.sendTemplate(res, "login.html", logincontext, settings.devtemplates)
+        }
+        if(nowplaying){
+          redisClient.get("s_" + nowplaying, function(err3, reply3){
+            if(!err3 && reply3){
+              logincontext.songInfo = JSON.parse(reply3);
+            }
+            displayLoginCallback();
+          });
+        }else{
+          displayLoginCallback();
+        }
         return;
       }
       userinfo = {user_id:replies[0], screen_name:replies[1], name:replies[2], pic:replies[3], service:replies[4]}
       console.log(replies[2], "loaded page for room", roomName);
-      var nowplaying = replies[5];
       var uidkey = userinfo.service + "_" + userinfo.user_id;
       if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
         redisClient.zscore("fave_" + uidkey, nowplaying, function(err3, reply){
@@ -493,15 +508,18 @@ server.addListener("connection", function(connection){
       }
     }else{
       if(msg=='0'){ //ping! //TODO check timing of pings to prevent DOS
-          connection.send("1");
+        connection.send("1");
       }else{
-          //TODO validate the message first?
-          var message = JSON.stringify( {messages:[msggen.chat(connection.name, msg)]})
+        //TODO validate the message first?
+        redisClient.incr("roommsg_" + connection.roomname, function(err, reply){
+          //TODO check err
+          var msgId = reply;
+          var message = JSON.stringify( {messages:[msggen.chat(connection.name, msg, msgId)]})
           console.log("[" + connection.roomname + "] ", connection.name + ":", msg);
           broadcastToRoom(connection.roomname, message);
-          //server.broadcast(message);
-          redisClient.lpush("chatlog_" + connection.roomname, message,  //TODO only trim after 10 over size, etc.
-            function(){ redisClient.ltrim("chatlog_" + connection.roomname, 100, function(){}) });
+          redisClient.zadd("roomlog_" + connection.roomname, msgId, message, function(err2, reply2){ });
+          //TODO trim sorted set? maybe sometimes?
+        });
       }
     }
   });
@@ -565,8 +583,8 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
       else if( !userinfo.pic ) {userinfo.pic = "/static/person_small.png";}
       listeners.unshift({name:userinfo.name, pic:userinfo.pic, link:self_link, uid:userinfo.service + '_' + userinfo.user_id});
     }
-    redisClient.lrange("chatlog_" + roomname, 0, 99, function(err, reply2){
-      if(reply2 == null )result.msgs = []
+    redisClient.zrevrange("roomlog_" + roomname, 0, 99, function(err, reply2){
+      if(reply2 == null) result.msgs = []
       else result.msgs = reply2;
       redisClient.lrange("roomqueue_" + roomname, 0, 10, function(err, reply3){ //TODO check for err
         if( reply3 ){

@@ -42,7 +42,7 @@ var MessageHandlers = {
   "join"   : function(message, isStatic){//{{{
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"')
-    newMessageHtml.attr("id",message["id"]);
+    //newMessageHtml.attr("id",message["id"]);
     newMessageHtml.append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )
     newMessageHtml.append( $('<span class="from"></span>').text(message['from']) )
     newMessageHtml.append( $('<span class="message"></span>').text("joined the room") )
@@ -80,6 +80,7 @@ var MessageHandlers = {
   "stopped": function(message, isStatic){//{{{
     //isStatic is ignored for now because server does not log these events
     var songId = message["songId"]
+    $('#albumart').hide();
     $('#nowplayingtext').text('');
     $('#currentfile').removeClass("playing").html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
     $('#likebox').hide()
@@ -99,6 +100,7 @@ var MessageHandlers = {
 
     $('#currentfile').html('')
     var nowPlayingInfo;
+    console.log(message)
     if( message.meta ){
       if( 'Title' in message.meta){
         $('#currentfile').append($('<div></div>').attr("id","np_title").text(message.meta['Title']));
@@ -128,6 +130,15 @@ var MessageHandlers = {
     $('#currentfile').append($('<div></div>').attr("id","uploaderinfo")
                              .append($('<span></span>').attr('class','upby').html('added&nbsp;by'))
                              .append($('<span></span>').attr('class','uploader').text(message['from'])))
+
+    if( message.meta && ('pic' in message.meta)){
+      $('#albumart').html('')
+      var aimg = $('<img></img>');
+      aimg.attr('src','/static/art/' + message.meta.pic);
+      aimg.attr('width','32')
+      aimg.appendTo('#albumart');
+      $('#albumart').show();
+    }
 
     if(message.meta && 'Title' in message.meta){
       innerWrapper.append($('<span></span>').attr("class","title").text(message.meta['Title']))

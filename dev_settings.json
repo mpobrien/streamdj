@@ -1,6 +1,7 @@
 {
   "homeurl":"http://dev.outloud.fm",
   "uploadDirectory":"/home/mike/uploaded/",
+  "albumart_dir":"/static/art/",
   "port":80,
   "domain":"dev.outloud.fm",
   "key":"IplmVMSk2qr6uNG6Pw11hg",
