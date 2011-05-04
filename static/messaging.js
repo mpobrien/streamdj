@@ -43,10 +43,12 @@ var MessageHandlers = {
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"')
     //newMessageHtml.attr("id",message["id"]);
-    newMessageHtml.append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )
-    newMessageHtml.append( $('<span class="from"></span>').text(message['from']) )
-    newMessageHtml.append( $('<span class="message"></span>').text("joined the room") )
-    newMessageHtml.appendTo("#chat");
+    if(message.isnew){
+      newMessageHtml.append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )
+      newMessageHtml.append( $('<span class="from"></span>').text(message['from']) )
+      newMessageHtml.append( $('<span class="message"></span>').text("joined the room") )
+      newMessageHtml.appendTo("#chat");
+    }
     if($('#user_' + message['uid']).length==0){
       var newlistener = $('<li></li>');
       var newlistener_pic = $('<img src="' + message['body'] + '" width="24px" height="24px"></img>');
@@ -70,10 +72,10 @@ var MessageHandlers = {
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"');
     newMessageHtml.attr("id",message["id"]);
-    newMessageHtml.append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )
-      .append( $('<span class="from"></span>').text(message['from']) )
-      .append( $('<span class="message"></span>').text("left the room") )
-      .appendTo("#chat");
+    /*newMessageHtml.append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )*/
+    /*.append( $('<span class="from"></span>').text(message['from']) )*/
+    /*.append( $('<span class="message"></span>').text("left the room") )*/
+    /*.appendTo("#chat");*/
     $('#user_'+ message['uid']).remove();//eadeOut(30, function(){$(this).remove()})
   },//}}}
 

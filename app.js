@@ -494,12 +494,12 @@ server.addListener("connection", function(connection){
           //var profilepic = replies[2] ? replies[2] : "_";
           var listenerInfo = JSON.stringify([userinfo.name, userinfo.pic])
           redisClient.hset("listeners_" + roomname, userinfo.service + '_' + userinfo.user_id, listenerInfo, function(err, reply){
-            msgId++
-            if( reply == 1 ){
-              var message = JSON.stringify( {messages:[msggen.join(connection.name,userinfo.service, userinfo.user_id, userinfo.pic)]})
-              broadcastToRoom(connection.roomname, message, connection);
-              //connection.broadcast(message);
-            }else{} // already inside
+            redisClient.sadd("uniqlisteners_" + roomname, userinfo.service + '_' + userinfo.user_id, function(err2, reply2){
+              var message = JSON.stringify({messages:[msggen.join(connection.name,userinfo.service, userinfo.user_id, userinfo.pic, reply2==1)]})
+              if( reply == 1 ){
+                broadcastToRoom(connection.roomname, message, connection);
+              }else{} // already inside
+            });
           })
         })
       }else{ // tried to send message on an unauthorized connection - disconnect it
