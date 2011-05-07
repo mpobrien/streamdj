@@ -281,6 +281,12 @@ var authdone_facebook = function(req, res, qs){//{{{
   console.log("facebook authdone");
   var roomname = qs.query['r']
   var fbcode = qs.query['code']
+  if(!fbcode){ // something happend... user hit deny? whatever, redirect to home page
+    console.log("User denied auth request?");
+    ctx = (roomname && utilities.validateRoomName(roomname) ? {room:roomname} : {room:''})
+    utilities.sendTemplate(res, "login.html", ctx, settings.devtemplates); 
+    return;
+  }
   var redirecturi = settings.CALLBACK_URL + "/fb/" + (roomname ? "?r=" + roomname : "");
   var accesstoken_path = '/oauth/access_token?client_id='
                          + settings.facebook_app_id 
