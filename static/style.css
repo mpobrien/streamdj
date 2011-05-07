@@ -1,80 +1,68 @@
-/* style.scss */
-.bar {
-  display: inline;
-  height: 1px;
-  width: 8px;
-  background-color: #a1d8a8;
-  float: left;
-  border: 1px solid #59ba66; }
-
-.right {
-  text-align: right;
-  font-style: italic;
-  padding-right: 20px; }
-
-#visualization {
-  border-top: 1px solid black; }
-
-.highlight {
-  background-color: #ffffa2;
-  border: 1px dashed #000; }
-
+/* CSS Document */
 body {
-  margin: 0px; }
+  text-align: center;
+  margin: 0px;
+  padding: 0;
+  font: normal 0.8em/1.2em verdana, aria, sans-serif;
+  color: #666; }
 
-.notshown {
-  display: none; }
+#wrapper1 {
+  height: 90%;
+  position: relative;
+  text-align: left;
+  width: 100%;
+  background: #FFF; }
 
-.message, .join {
-  padding-top: 1px;
-  padding-bottom: 2px; }
+#wrapper2 {
+  height: 90%;
+  position: relative;
+  text-align: left;
+  width: 100%; }
 
-.org {
-  color: #dfba69; }
-
-#note {
-  color: #fffedf; }
-
-#navbar a:hover {
-  color: #fffedf;
-  text-decoration: underline;
-  text-decoration: none; }
-
-#navbar a:link, a:visited, a:active {
-  color: #fffedf;
-  text-decoration: none; }
-
-#navbar .link {
-  margin-left: 20px;
-  margin-right: 20px; }
-
-#navbar {
+#header {
+  background-color: #2a2c31;
+  padding: 10px;
+  margin: 0;
+  height: 45px;
   padding-top: 15px;
   font-family: Kreon, Georgia, serif;
-  width: 100%;
-  position: absolute;
-  height: 45px;
-  left: 0px;
-  background-color: #2a2c31;
   color: #fffedf; }
-  #navbar img {
+  #header img {
     border: 0; }
-  #navbar #branding {
+  #header #links .link {
+    margin-left: 20px;
+    margin-right: 20px;
+    font-size: 16px; }
+    #header #links .link a:hover {
+      color: #fffedf;
+      text-decoration: underline; }
+    #header #links .link a:link {
+      color: #fffedf;
+      text-decoration: none; }
+    #header #links .link a:visited, #header #links .link a:active {
+      color: #fffedf; }
+  #header #branding {
+    padding-top: 0px;
     float: left;
     margin-left: 20px;
     font-size: 30px; }
-  #navbar #volwrapper {
+    #header #branding a:hover, #header #branding a:link, #header #branding a:visited, #header #branding a:active {
+      color: #fffedf;
+      text-decoration: none; }
+    #header #branding .org {
+      color: #dfba69; }
+  #header #volwrapper {
     top: 20px;
     float: right;
     height: 40px;
     margin-right: 30px; }
-  #navbar #links {
+  #header #links {
     margin-top: 20px;
     margin-right: 50px;
     float: left; }
-  #navbar .muted {
+  #header .muted {
     background: url("/static/volumeorgmute.png"); }
-  #navbar #volicon {
+  #header #volicon {
     cursor: pointer;
     height: 20px;
     width: 20px;
@@ -82,144 +70,216 @@ body {
     top: 20px;
     margin-top: 5px;
     margin-right: 5px; }
-  #navbar .notmuted {
+  #header .notmuted {
     background: url("/static/volumeorg.png"); }
-  #navbar #volcontrol {
+  #header #volcontrol {
     width: 140px;
     border: 1px solid #a3a7ae;
     height: 14px;
     float: left;
     margin-top: 8px;
     margin-bottom: 13px; }
-  #navbar #volinside {
+  #header #volinside {
     width: 90%;
     background-color: #dfba69;
     height: 100%;
     padding: 0px;
     margin: 0px; }
 
-#maincontent {
-  position: absolute;
-  top: 60px;
-  margin-top: 10px;
-  margin-left: 35px;
-  width: 95%; }
-  #maincontent #chatwrapper {
-    width: 75%; }
-    #maincontent #chatwrapper #chat {
-      overflow-y: scroll;
-      height: 400px;
-      background-color: #f8f8f8;
-      font-family: 'Verdana',sans-serif; }
-      #maincontent #chatwrapper #chat a:active {
-        color: blue; }
-      #maincontent #chatwrapper #chat a:visited {
-        color: #800080; }
-      #maincontent #chatwrapper #chat .timestamp {
-        font-size: .8em;
-        padding-right: 5px;
-        color: #aaa; }
-      #maincontent #chatwrapper #chat .from {
-        font-size: 14px;
-        font-weight: bold;
-        color: black; }
-      #maincontent #chatwrapper #chat .message, #maincontent #chatwrapper #chat .join, #maincontent #chatwrapper #chat .playstart {
-        padding-left: 8px;
-        font-size: 14px; }
-      #maincontent #chatwrapper #chat .message {
-        color: black; }
-      #maincontent #chatwrapper #chat .startplaywrapper {
-        text-align: center; }
-      #maincontent #chatwrapper #chat .playstart {
-        margin-top: 3px;
-        margin-bottom: 3px;
-        padding-top: 4px;
-        padding-bottom: 4px;
-        background-color: #efc7c5; }
-        #maincontent #chatwrapper #chat .playstart .by, #maincontent #chatwrapper #chat .playstart .title, #maincontent #chatwrapper #chat .playstart .artist, #maincontent #chatwrapper #chat .playstart .upby, #maincontent #chatwrapper #chat .playstart .uploader, #maincontent #chatwrapper #chat .playstart .startedplaying {
-          margin-left: 2px;
-          margin-right: 2px; }
-        #maincontent #chatwrapper #chat .playstart .upby {
-          color: black;
-          font-size: .8em; }
-        #maincontent #chatwrapper #chat .playstart .uploader {
-          font-size: .8em; }
-    #maincontent #chatwrapper #sender input {
-      width: 100%; }
-  #maincontent #rightbar {
-    position: absolute;
-    top: 0px;
-    width: 25%;
-    right: 10px; }
-  #maincontent .desc {
-    padding-top: 10px;
-    font-style: italic;
-    color: black; }
-  #maincontent .by, #maincontent .from {
-    color: #878c97;
-    font-size: .8em; }
-  #maincontent #likebox {
-    padding-top: 10px;
-    width: 24px;
-    cursor: pointer; }
-  #maincontent #currentfile {
-    font-family: Georgia,serif;
-    padding-top: 10px; }
-    #maincontent #currentfile .uploader {
+#header h1 {
+  font-size: 200%; }
+
+#maincol {
+  height: 100%;
+  position: relative;
+  margin: 0;
+  padding: 10px; }
+
+#leftcol {
+  height: 100%;
+  position: relative;
+  top: -10px;
+  left: -10px;
+  float: left;
+  width: 220px;
+  /* for IE5/WIN */
+  voice-family: "\"}\"";
+  voice-family: inherit;
+  width: 350px;
+  /* actual value */
+  margin: 0 0 -10px 0;
+  background-color: white;
+  z-index: 100; }
+
+#rightcol {
+  height: 100%;
+  position: relative;
+  top: -10px;
+  right: -10px;
+  float: right;
+  width: 220px;
+  /* for IE5/WIN */
+  voice-family: "\"}\"";
+  voice-family: inherit;
+  width: 250px;
+  /* actual value */
+  margin: 0 0 -10px 0;
+  background-color: white;
+  z-index: 99; }
+
+#centercol {
+  height: 100%;
+  position: relative;
+  padding-left: 350px;
+  padding-right: 250px; }
+
+#centercol a {
+  color: #666; }
+
+#centercol a:hover {
+  border-bottom: 1px solid;
+  color: #9343B9; }
+
+#chatwrapper {
+  width: 100%; }
+  #chatwrapper #chat {
+    overflow-y: scroll;
+    height: 95%; }
+    #chatwrapper #chat .timestamp {
       font-size: .8em;
-      margin-right: 5px;
-      margin-left: 5px; }
-    #maincontent #currentfile .by, #maincontent #currentfile .from, #maincontent #currentfile .upby {
-      color: #878c97;
-      font-size: .8em;
-      margin-right: 5px;
-      margin-left: 5px; }
-    #maincontent #currentfile #np_title {
-      font-size: 20px; }
-  #maincontent #currentfile.playing {
-    position: relative;
-    left: 32px;
-    top: -38px; }
-  #maincontent .section {
-    padding-left: 20px;
-    font-family: Kreon;
-    color: #3e4147;
-    text-align: left;
-    width: 300px;
-    margin-bottom: 20px; }
-    #maincontent .section .heading {
-      text-shadow: #bec1c6 1px 2px;
+      padding-right: 5px;
+      color: #aaa; }
+    #chatwrapper #chat .from {
+      font-size: 14px;
       font-weight: bold;
-      font-size: 24px;
-      padding: 0px;
-      margin: 0px;
-      border-bottom: 1px dashed black; }
-    #maincontent .section ul {
-      padding-left: 0px;
-      margin-top: 10px; }
-      #maincontent .section ul li {
-        list-style: none;
-        font-family: Georgia,serif;
-        text-style: italic; }
-        #maincontent .section ul li img {
-          vertical-align: middle;
-          border: none;
-          padding-right: 5px; }
+      color: black; }
+    #chatwrapper #chat .message, #chatwrapper #chat .join, #chatwrapper #chat .playstart {
+      padding-left: 8px;
+      font-size: 14px; }
+    #chatwrapper #chat .message {
+      margin-top: 2px;
+      font-size: 14px;
+      color: black; }
+    #chatwrapper #chat .playstart {
+      border--radius: 5px;
+      -moz-border-radius: 5px;
+      -webkit-border-radius: 5px;
+      background: #bcdea5;
+      /* for non-css3 browsers */
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to');
+      /* for IE */
+      background: -webkit-gradient(linear, left top, left bottom, from(#bcdea5), to(#d8ecca));
+      /* for webkit browsers */
+      background: -moz-linear-gradient(top, #bcdea5, #d8ecca);
+      /* for firefox 3.6+ */
+      margin-top: 5px;
+      margin-right: 5px;
+      border: 1px solid #84c35a;
+      color: black;
+      padding-top: 15px;
+      padding-bottom: 15px; }
+    #chatwrapper #chat .startplaywrapper {
+      text-align: center; }
+      #chatwrapper #chat .startplaywrapper .title, #chatwrapper #chat .startplaywrapper .artist {
+        font-size: 1.1em;
+        font-weight: bold; }
+      #chatwrapper #chat .startplaywrapper .by, #chatwrapper #chat .startplaywrapper .title, #chatwrapper #chat .startplaywrapper .artist, #chatwrapper #chat .startplaywrapper .upby, #chatwrapper #chat .startplaywrapper .uploader, #chatwrapper #chat .startplaywrapper .startedplaying {
+        margin-left: 2px;
+        margin-right: 2px; }
+      #chatwrapper #chat .startplaywrapper .upby {
+        color: black;
+        font-size: .8em; }
+      #chatwrapper #chat .startplaywrapper .uploader {
+        font-size: .8em; }
+  #chatwrapper #sender #newchat {
+    width: 100%; }
 
-.odd {
-  background-color: #f0f0f0; }
+.colheading {
+  padding-left: 20px;
+  font-family: Kreon;
+  color: #3e4147;
+  font-size: 24px; }
 
-#queue .by, #queue .title, #queue .artist, #queue .upby, #queue .uploader {
-  margin-left: 2px;
-  margin-right: 2px; }
-#queue .upby {
-  color: black;
-  font-size: .8em; }
-#queue .uploader {
-  font-size: .8em; }
-#queue li.queuedsong {
-  padding-top: 8px;
-  padding-bottom: 8px; }
+#footer {
+  position: relative;
+  top: 1px;
+  width: 100%;
+  clear: both;
+  margin: 0;
+  padding: 1% 0;
+  text-align: center;
+  color: #CCC; }
+
+#visualization {
+  border-top: 1px solid black; }
+  #visualization .bar {
+    display: inline;
+    height: 1px;
+    width: 8px;
+    background-color: #a1d8a8;
+    float: left;
+    border: 1px solid #59ba66; }
+
+#nowplayingwrapper {
+  padding-top: 30px; }
+
+#currentfile {
+  line-height: 1.5em;
+  position: relative;
+  top: -24px;
+  left: 34px;
+  padding-left: 5px;
+  padding-right: 15px;
+  font-family: Georgia, serif;
+  font-size: 16px; }
+  #currentfile .by, #currentfile .from, #currentfile .upby {
+    font-size: .8em;
+    margin-right: 5px; }
+  #currentfile .uploader {
+    font-size: .9em; }
+  #currentfile #np_title, #currentfile #np_artist, #currentfile #np_album {
+    font-size: 1.2em; }
+
+#likebox {
+  padding-left: 10px;
+  width: 24px;
+  cursor: pointer; }
+
+#queuelist {
+  height: 380px;
+  overflow-y: scroll;
+  padding-left: 5px; }
+  #queuelist .odd {
+    background-color: #ddd; }
+  #queuelist li {
+    list-style: none;
+    margin-top: 5px;
+    padding: 5px; }
+    #queuelist li .title, #queuelist li .artist, #queuelist li .by, #queuelist li .upby, #queuelist li .uploader {
+      margin-right: 4px; }
+    #queuelist li .title, #queuelist li .artist {
+      font-weight: bold; }
+    #queuelist li .by, #queuelist li .upby {
+      font-size: .9em; }
+
+.desc {
+  text-align: center;
+  font-family: Kreon, serif;
+  font-size: 1.2em; }
+
+#queue {
+  border: 1px dashed transparent; }
+
+#queue.highlight {
+  background-color: #ffffa2;
+  border: 1px dashed #000; }
+
+#listenerslist {
+  padding-left: 5px; }
+  #listenerslist li {
+    list-style: none; }
+    #listenerslist li img {
+      padding-right: 10px; }
 
 #optionsmodal {
   border--radius: 10px;
@@ -249,29 +309,6 @@ body {
   #optionsmodal .divider {
     height: 1px;
     border-bottom: 1px dotted #cccccc; }
-
-.progressBar {
-  width: 0%;
-  height: 10px;
-  background-color: black; }
-
-.progressContainer {
-  width: 300px;
-  height: 10px;
-  border: 1px solid black; }
-
-#favorites li {
-  list-style: none;
-  margin-bottom: 12px;
-  margin-top: 12px; }
-#favorites .by, #favorites .title, #favorites .artist, #favorites .upby, #favorites .uploader, #favorites .startedplaying, #favorites .from {
-  margin-left: 2px;
-  margin-right: 2px; }
-#favorites .by, #favorites .from, #favorites .upby {
-  font-size: 14px;
-  font-weight: bold;
-  color: black;
-  font-style: italic; }
 
 /* modal overlay */
 #basic-modal-content {

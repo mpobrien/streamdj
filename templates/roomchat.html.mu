@@ -1,13 +1,13 @@
 <html>
   <head>
-    <script type="text/javascript">
-    if(!(window.console)){
-      window.console = {log:function(){}, debug:function(){}};
-    }
-    </script>
     <link href="/static/style.css" rel="stylesheet" />
-    <link rel="icon" type="image/gif" href="/static/favicon.gif" />
     <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
+    <link rel="icon" type="image/gif" href="/static/favicon.gif" />
+    <script type="text/javascript">
+      if(!(window.console)){
+        window.console = {log:function(){}, debug:function(){}};
+      }
+    </script>
     <title> outloud.fm </title>
     <script type="text/javascript" src="/static/swfobject.js"></script>
     <script type="text/javascript" src="/static/web_socket.js"></script>
@@ -61,8 +61,6 @@
        var username = {{{username}}}
      </script>
     <script type="text/javascript" src="/static/jqwheel.js"></script>
-    <script type="text/javascript" src="/static/outloud.js"></script>
-
      <script>
        var newMessageCount = 0;
        var countmsgs = false;
@@ -81,6 +79,11 @@
           $('#aboutmodal').modal( {closeHtml:"", overlayClose:true});
          }); 
          $('#favoriteslink').click(function(){
+           var fav = $('#favorites')
+           if(!fav){
+             fav = $('<div id="favorites"></div>')
+             fav.appendTo(document)
+           }
            $('#favorites').html('')
            $.getJSON('/favorites/', function(data){
              if(!data.faves){
@@ -142,7 +145,7 @@
          });
          {{^nowPlaying}}
          $('#currentfile').html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
-         $('#likebox').hide();
+         //$('#likebox').hide();
          {{/nowPlaying}}
          {{#liked}}
          if(nowplayingId){
@@ -152,9 +155,11 @@
          {{/liked}}
        })
     </script>
+    <script type="text/javascript" src="/static/outloud.js"></script>
   </head>
+  
   <body>
-    <div id="navbar">
+    <div id="header">
       <div id="branding"><a href="/"><span id="note"><img src="/static/notebrand.png"></span>&nbsp;&nbsp;outloud<span class="org">.fm</span></a></div>
       <div id="volwrapper">
           <div id="volicon" class="notmuted">
@@ -171,83 +176,78 @@
       </div>
     </div>
 
-    <div id="maincontent">
-      <div id="chatwrapper">
-        <div id="chat">
-        </div>
-        <div id="sender">
-          <input type="text" id="newchat" placeholder="say something..."/>
-        </div>
-      </div>
-      <div id="rightbar">
-        <div id="nowplaying" class="section">
-        <div id="soundviz">
-        
-        </div>
-          <div id="visualization" style="width:160px">
-            <div id="bar_0" class="bar">&nbsp;</div>
-            <div id="bar_1" class="bar">&nbsp;</div>
-            <div id="bar_2" class="bar">&nbsp;</div>
-            <div id="bar_3" class="bar">&nbsp;</div>
-            <div id="bar_4" class="bar">&nbsp;</div>
-            <div id="bar_5" class="bar">&nbsp;</div>
-            <div id="bar_6" class="bar">&nbsp;</div>
-            <div id="bar_7" class="bar">&nbsp;</div>
-            <div id="bar_8" class="bar">&nbsp;</div>
-            <div id="bar_9" class="bar">&nbsp;</div>
-            <div id="bar_10" class="bar">&nbsp;</div>
-            <div id="bar_11" class="bar">&nbsp;</div>
-            <div id="bar_12" class="bar">&nbsp;</div>
-            <div id="bar_13" class="bar">&nbsp;</div>
-            <div id="bar_14" class="bar">&nbsp;</div>
-            <div id="bar_15" class="bar">&nbsp;</div>
-          </div>
-          <div class="heading">now playing</div>
-          <div id="nowplayingwrapper">
-            <div id="likebox"><img src="/static/heart_deactive.png" id="heartimg"/></div>
-            <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
-            <div id="albumart" style="display:none">
-            </div>
-          </div>
-        </div>
-        <div id="listeners" class="section" style="clear:both;float:left">
-          <div class="heading">listeners</div>
-          <ul id="listenerslist" style="line-height:24px">
-            {{#listeners}}
-            <li id="user_{{uid}}" style="line-height:24px"><a href="{{link}}" target="_blank"><img src="{{pic}}" width="24px" height="24px"/></a><span class="username">{{name}}</name></li>
-            {{/listeners}}
-          </ul>
-        </div>
+    <div id="wrapper1"><!-- sets background to white and creates full length leftcol-->
+      <div id="wrapper2"><!-- sets background to white and creates full length rightcol-->
+        <div id="maincol"><!-- begin main content area -->
 
-        <div id="queue" class="section" style="clear:both; float:left">
-          <div class="heading">queue</div>
-          <div class="desc">drag + drop files onto the browser to upload</div>
-          <div id="progress"></div>
-          <ul id="queueList">
-            {{#queue}}
-              <li class="queuedsong" id="song_{{songId}}">
-                {{#meta}}<span class="title">{{Title}}</span><span class="by">by</span><span class="artist">{{Artist}}</span>{{/meta}}
-                {{^meta}}<span class="title">{{name}}</span>{{/meta}}<span class="upby">added&nbsp;by</span><span class="uploader">{{uploader}}</span>
-              </li>
-            {{/queue}}
-          </ul>
+          <div id="leftcol"><!-- begin leftcol -->
+            <h1 class="colheading">
+              <!--<div style="float:left">Now Playing</div>-->
+              <div id="visualization" style="margin-left:10px;width:160px; float:left">
+                <div id="bar_0" class="bar">&nbsp;</div>
+                <div id="bar_1" class="bar">&nbsp;</div>
+                <div id="bar_2" class="bar">&nbsp;</div>
+                <div id="bar_3" class="bar">&nbsp;</div>
+                <div id="bar_4" class="bar">&nbsp;</div>
+                <div id="bar_5" class="bar">&nbsp;</div>
+                <div id="bar_6" class="bar">&nbsp;</div>
+                <div id="bar_7" class="bar">&nbsp;</div>
+                <div id="bar_8" class="bar">&nbsp;</div>
+                <div id="bar_9" class="bar">&nbsp;</div>
+                <div id="bar_10" class="bar">&nbsp;</div>
+                <div id="bar_11" class="bar">&nbsp;</div>
+                <div id="bar_12" class="bar">&nbsp;</div>
+                <div id="bar_13" class="bar">&nbsp;</div>
+                <div id="bar_14" class="bar">&nbsp;</div>
+                <div id="bar_15" class="bar">&nbsp;</div>
+              </div>
+            </h1>
+
+            <div id="nowplayingwrapper">
+              <div id="likebox"><img src="/static/heart_deactive.png" id="heartimg"/></div>
+              <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
+              <!--<div id="albumart" style="display:none"> </div>-->
+            </div>
+            <h1 class="colheading">Coming up</h1>
+            <div id="queue">
+              <div class="desc">drag and drop files to upload</div>
+              <ul id="queueList">
+                {{#queue}}
+                  <li class="queuedsong" id="song_{{songId}}">
+                    {{#meta}}<span class="title">{{Title}}</span><span class="by">by</span><span class="artist">{{Artist}}</span>{{/meta}}
+                    {{^meta}}<span class="title">{{name}}</span>{{/meta}}<span class="upby">added&nbsp;by</span><span class="uploader">{{uploader}}</span>
+                  </li>
+                {{/queue}}
+              </ul>
+            </div>
+          </div><!-- end leftcol -->
+          <div id="rightcol"><!-- begin rightcol -->
+            <h1 class="colheading">Listeners</h1>
+            <ul id="listenerslist" style="line-height:24px">
+              {{#listeners}}
+              <li id="user_{{uid}}" style="line-height:24px"><a href="{{link}}" target="_blank"><img src="{{pic}}" width="24px" height="24px"/></a><span class="username">{{name}}</name></li>
+              {{/listeners}}
+            </ul>
+          </div><!-- end righttcol -->
+          <div id="centercol"><!-- begin centercol -->
+            <div id="chatwrapper">
+              <div id="chat">
+              </div>
+              <div id="sender">
+                <input type="text" id="newchat" placeholder="say something..."/>
+              </div>
+            </div>
+          </div><!-- end centercol -->
+        </div><!-- end main content area -->
+
+        <div id="footer">
         </div>
-      </div>
-    </div>
-    <div id="optionsmodal">
+      </div><!-- end wrapper1 -->
+    </div><!-- end wrapper2 -->
+    <div id="optionsmodal" style="display:none">
       <div class="heading">Options</div>
       <div class="optionrow"><button id="clearchat">Clear chat history</button></div>
       <div class="optionrow"><button id="restartaudio">Restart Audio Stream</button></div>
     </div>
-    <div id="aboutmodal">
-      <div style="color:#000000; font-style:italic;">What is this?<br><br></div>
-      <div style="color:#000000;">
-        OUTLOUD.FM is an effing sweet and exciting way to play music for your friends; allowing songs to be uploaded and curated in a realtime collaborative playlist. <br><br> Bored and hungry? Simply send the URL of your OUTLOUD.FM room to your friends, and start uploading music! (OUTLOUD.FM will, however, do nothing for your hunger.)<br><br> We are based out of New York City, and would love to hear your comments, bug reports, and/or suggestions -- <a href="mailto:info@outloud.fm" onmouseover="this.style.color='#FF0000'" onmouseout="this.style.color='#000000'">info@outloud.fm</a> <br>
-       </div>
-     </div>
-     <div id="favorites">
-     </div>
-     <div id="dragmessage">
-     </div>
   </body>
 </html>

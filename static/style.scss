@@ -1,19 +1,12 @@
-/* style.scss */
-
-//$basecolor: #DED4B9;
-//$cream: #efffd3;
-//$orange: #CE534D;
-//$coffee: #46433A;
-
 $navheight: 45px;
-
 $navbarBgColor: #2a2c31;
 $navbarTextColor: #fffedf;
 $navbarLinkColor: #fffedf;
 $volumebarColor: #DFBA69;
 $volumebarBorderColor: lighten(#3e4147, 40%);
 $dotfmColor: #DFBA69; 
-$startPlayingMessageColor:#EFC7C5;
+//$startPlayingMessageColor: #FFE545;
+$startPlayingMessageColor: #BCDEA5;
 $notecolor: #fffedf;
 $uploadedByColor: black;
 $dragDropFilesColor: black;
@@ -22,27 +15,13 @@ $sectionHeadingColor: #3E4147;
 $sectionHeadingShadow: lighten(#3E4147,50%);
 $sectionHeadingBorder: black;
 $barborder:#59BA66;
+$leftcolWidth: 350px;
+$rightcolWidth: 250px;
+$leftcolColor: #fff;
+$rightcolColor: #fff;
 $barinner:lighten($barborder, 20%);
-//#A0B88D;
 
-.bar{
-  display:inline;
-  height:1px;
-  width:8px;
-  background-color:$barinner;
-  float:left;
-  border:1px solid $barborder;
-}
-
-.right{
-  text-align:right;
-  font-style:italic;
-  padding-right:20px;
-}
-
-#visualization{
-border-top:1px solid black;
-}
+/* CSS Document */
 
 @mixin rounded($radius: 10px) {
   border--radius: $radius;
@@ -50,63 +29,91 @@ border-top:1px solid black;
   -webkit-border-radius: $radius;
 }
 
-.highlight{
-  background-color:#ffffa2;
-  border:1px dashed #000;
+@mixin gradient($from, $to) {
+  background: $from; /* for non-css3 browsers */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from($from), to($to)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  $from,  $to); /* for firefox 3.6+ */ 
 }
 
 
-body{
-  margin:0px;
+
+
+body {
+	text-align:center;
+	margin:0px;
+	padding:0;
+	font:normal 0.8em/1.2em verdana,aria,sans-serif;
+	color:#666;
 }
 
-.notshown{
-  display:none;
+#wrapper1 {
+  height:90%;
+	position:relative;
+	text-align:left;
+	width:100%;
+	//background:#FFF url("../images/rightcolor_bg.gif") repeat-y top right;
+	background:#FFF;
 }
 
-.message, .join{
-  padding-top:1px;
-  padding-bottom:2px;
+#wrapper2 {
+  height:90%;
+	position:relative;
+	text-align:left;
+	width:100%;
+	//background:url("../images/leftcolor_bg.gif") repeat-y top left;
 }
 
-.org{
-  color:$dotfmColor;
-}
-#note{
-  color:$notecolor;
-}
-
-#navbar a:hover{
-  color: $navbarLinkColor;
-  text-decoration:underline;
-  text-decoration: none;
-
-}
-#navbar a:link, a:visited, a:active{
-  color: $navbarLinkColor;
-  text-decoration:none;
-}
-#navbar .link{
-  margin-left:20px;
-  margin-right:20px;
-}
-
-#navbar { 
+#header {
+  background-color: $navbarBgColor;
+	padding:10px;
+	margin:0;
+  height: $navheight;
   padding-top:15px;
   font-family:Kreon, Georgia, serif;
-  width:100%;
-  position:absolute;
-  height:$navheight;
-  left:0px;
-  background-color:$navbarBgColor;
   color: $navbarTextColor;
   img { border: 0; }
 
+  #links{
+    .link{
+      margin-left:20px;
+      margin-right:20px;
+      font-size:16px;
+
+      a:hover{
+        color: $navbarLinkColor;
+        text-decoration: underline;
+      }
+
+      a:link{
+        color: $navbarLinkColor;
+        text-decoration:none;
+      }
+
+      a:visited, a:active{
+        color: $navbarLinkColor;
+      }
+
+    }        
+  }
+
   #branding{
+    padding-top:0px;
     float:left;
     margin-left:20px;
     font-size:30px;
+
+    a:hover, a:link, a:visited, a:active{
+      color: $navbarLinkColor;
+      text-decoration: none;
+    }
+
+    .org{
+      color:$dotfmColor;
+    }
+
   }
+
   #volwrapper{
     top:20px;
     float:right;
@@ -143,198 +150,255 @@ body{
      width:90%; background-color: $volumebarColor; height:100%; padding:0px; margin:0px; }
 }
 
-#maincontent{
-  position:absolute;
-  top:$navheight + 15px;
-  margin-top:10px;
-  margin-left:35px;
-  width:95%;
+#header h1 {
+	font-size:200%;
+}
 
-  #chatwrapper{
-    width:75%;
+#maincol {
+  height:100%;
+	position:relative;
+	margin:0;
+	padding:10px;
+}
 
-    #chat{
-      overflow-y:scroll;
-      height:400px;
-      background-color:#f8f8f8;
-      font-family: 'Verdana',sans-serif;
+#leftcol { 
+  height:100%;
+	position:relative;
+	top:-10px;
+	left:-10px;
+	float:left;
+	width:220px;  /* for IE5/WIN */
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	width: $leftcolWidth; /* actual value */
+	margin:0 0 -10px 0;
+	//padding:10px;
+  background-color: $leftcolColor;
+	z-index:100;
+}
 
-      a:active{
-        color:blue;
-      }
-      a:visited{
-        color:#800080;
-      }
+#rightcol {
+  height:100%;
+	position:relative;
+	top:-10px;
+	right:-10px;
+	float:right;
+	width:220px;  /* for IE5/WIN */
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	width:$rightcolWidth; /* actual value */
+	margin:0 0 -10px 0;
+	//padding:10px;
+	background-color:$rightcolColor;
+	z-index:99;
+}
 
+#centercol {
+  height:100%;
+	position:relative;
+	padding-left:$leftcolWidth;
+	padding-right:$rightcolWidth;
+}
 
-      .timestamp{
-        font-size:.8em;
-        padding-right:5px;
-        color: #aaa;
-      }
+#centercol a {
+	color:#666;
+}
 
-      .from{
-        font-size:14px;
+#centercol a:hover {
+	border-bottom:1px solid;
+	color:#9343B9;
+}
+
+#chatwrapper{
+  width:100%;
+  
+  #chat{
+    overflow-y:scroll;
+    //border:1px solid #333;
+    height:95%;
+
+    .timestamp{
+      font-size:.8em;
+      padding-right:5px;
+      color: #aaa;
+    }
+
+    .from{
+      font-size:14px;
+      font-weight:bold;
+      color:black;
+    }
+
+    .message, .join, .playstart{
+      padding-left:8px;
+      font-size:14px;
+    }
+
+    .message{
+      margin-top:2px;
+      font-size:14px;
+      color:black;
+    }
+
+    .playstart{
+      @include rounded(5px);
+      @include gradient($startPlayingMessageColor, lighten($startPlayingMessageColor, 10%));
+      margin-top:5px;
+      margin-right:5px;
+      border:1px solid darken($startPlayingMessageColor, 20%);
+      color:black;
+      padding-top:15px;
+      padding-bottom:15px;
+    }
+
+    .startplaywrapper{
+      text-align:center;
+      .title, .artist {
+        font-size:1.1em;
         font-weight:bold;
-        color:black;
       }
 
-      .message, .join, .playstart{
-        padding-left:8px;
-        font-size:14px;
-      }
-      .message{ color:black; }
-      //.join{ color:lighten($coffee, 70%); }
-      .startplaywrapper{
-        text-align:center;
-      }
-      .playstart{
-        margin-top:3px;
-        margin-bottom:3px;
-        padding-top:4px;
-        padding-bottom:4px;
-        background-color: $startPlayingMessageColor;
 
-        .by, .title, .artist, .upby, .uploader, .startedplaying{
-          margin-left:2px;
-          margin-right:2px;
-        }
-        .upby{
-          color:$uploadedByColor;
-          font-size:.8em;
-        }
+      .by, .title, .artist, .upby, .uploader, .startedplaying{
+        margin-left:2px;
+        margin-right:2px;
+      }
+
+      .upby{
+        color:$uploadedByColor;
+        font-size:.8em;
+      }
         .uploader{
           font-size:.8em;
         }
-      }
 
     }
 
-    #sender input{
+
+  }
+
+  #sender{
+    #newchat{
       width:100%;
     }
-
   }
 
-#rightbar{
-  position:absolute;
-  top: 0px;
-  width:25%;
-
-  right:10px;
-  //left: 70%;
 }
 
-.desc{
-  padding-top:10px;
-  font-style:italic;
-  color: $dragDropFilesColor;
+.colheading{
+  padding-left:20px;
+  font-family:Kreon;
+  color:$sectionHeadingColor;
+  font-size:24px;
 }
 
-.by, .from{
-  color:lighten($byfromcolor, 30%);
-  font-size:.8em;
+#footer {
+	position:relative;
+	top:1px;
+	width:100%;
+	clear:both;
+	margin:0;
+	padding:1% 0;
+	text-align:center;
+	color:#CCC;
 }
 
-#likebox{
-  padding-top:10px;
-  width:24px;
-  cursor:pointer
+#visualization{
+  border-top:1px solid black;
+  .bar{
+    display:inline;
+    height:1px;
+    width:8px;
+    background-color:$barinner;
+    float:left;
+    border:1px solid $barborder;
+  }
 }
 
+#nowplayingwrapper{
+  padding-top:30px;
+}
 
 #currentfile{
-  font-family:Georgia,serif;
-  padding-top:10px;
-  .uploader{
-    font-size:.8em;
-    margin-right: 5px;
-    margin-left: 5px;
-  }
+  line-height:1.5em;
+  position:relative;
+  top:-24px;
+  left:34px;
+  padding-left: 5px;
+  padding-right: 15px;
+  font-family:Georgia, serif;
+  font-size:16px;
   .by, .from, .upby{
-    color:lighten($byfromcolor, 30%);
     font-size:.8em;
-    margin-right: 5px;
-    margin-left: 5px;
+    margin-right:5px;
   }
-  #np_title{
-    font-size:20px;
+  .uploader{
+    font-size:.9em;
+  }
+  #np_title, #np_artist, #np_album{
+    font-size:1.2em;
   }
 }
-
-#currentfile.playing{
-  position:relative; 
-  left:32px;
-  top:-38px; 
+#likebox{
+  padding-left:10px;
+  width:24px;
+  cursor:pointer;
 }
 
-  .section{
-    padding-left:20px;
-    font-family:Kreon;
-    color:$sectionHeadingColor;
-    text-align:left;
-    width:300px;
-    margin-bottom:20px;
-    .heading{
-      text-shadow: $sectionHeadingShadow 1px 2px; 
-      font-weight:bold;
-      font-size:24px;
-      padding:0px;
-      margin:0px;
-      border-bottom:1px dashed $sectionHeadingBorder;
-    }
-
-
-    ul{
-      padding-left:0px;
-      margin-top:10px;
-      li{ 
-        list-style:none;
-        font-family:Georgia,serif;
-        text-style:italic;
-        img{
-          vertical-align:middle;
-          border:none;
-          padding-right:5px;
-        }
-      }
-    }
-
-
-  }
-
-
-}
-
+#queuelist{
+  height:380px;
+  overflow-y:scroll;
+  padding-left:5px;
   .odd{
-    background-color:#f0f0f0;
+    background-color:#ddd;
   }
 
+  li{
+    list-style:none;
+    margin-top:5px;
+    padding:5px;
+
+    .title, .artist, .by, .upby, .uploader{
+      margin-right:4px;
+    }
+
+    .title, .artist {
+      font-weight:bold;
+    }
+
+    .by, .upby{
+      font-size:.9em;
+    }
+
+
+  }
+}
+.desc{
+  text-align:center;
+  font-family: Kreon, serif;
+  font-size:1.2em;
+}
 
 #queue{
-
-  .by, .title, .artist, .upby, .uploader{
-    margin-left:2px;
-    margin-right:2px;
-  }
-  .upby{
-    color:$uploadedByColor;
-    font-size:.8em;
-  }
-  .uploader{
-    font-size:.8em;
-  }
-
-  li.queuedsong{
-    padding-top:8px;
-    padding-bottom:8px;
-  }
-
-
-
+  border:1px dashed transparent;
 }
 
-#optionsmodal{
+#queue.highlight{
+  background-color:#ffffa2;
+  border:1px dashed #000;
+}
+
+#listenerslist{
+ padding-left: 5px;
+  
+  li{
+    list-style:none;
+    img{ padding-right:10px; }
+  }
+}
+
+
+ #optionsmodal{
   @include rounded(10px);
   font-family: Kreon, Georgia;
   position:absolute;
@@ -369,36 +433,6 @@ body{
 
 
 }
-
-
-.progressBar{
-  width:0%;
-  height:10px; background-color:black;
-}
-.progressContainer{
-  width:300px; height:10px;border:1px solid black;
-}
-
-#favorites{
-  li{
-    list-style:none;
-    margin-bottom:12px;
-    margin-top:12px;
-  }
-
-  .by, .title, .artist, .upby, .uploader, .startedplaying, .from{
-    margin-left:2px;
-    margin-right:2px;
-  }
-  .by, .from, .upby{
-    font-size:14px;
-    font-weight:bold;
-    color:black;
-    font-style: italic; 
- }
-
-}
-
 
 /* modal overlay */
 #basic-modal-content {display:none;}
