@@ -79,58 +79,56 @@
           $('#aboutmodal').modal( {closeHtml:"", overlayClose:true});
          }); 
          $('#favoriteslink').click(function(){
-           var fav = $('#favorites')
-           if(!fav){
-             fav = $('<div id="favorites"></div>')
-             fav.appendTo(document)
-           }
-           $('#favorites').html('')
-           $.getJSON('/favorites/', function(data){
-             if(!data.faves){
-               $('#favorites').html('No favorites yet!')
-             }else{
-               var favelist = $('<ul class="favelist"></ul>')
-               $.each(data.faves, function(key, message){
-                 if(!message) return;
-                 var newli = $('<li></li>');
-                 if( 'Title' in message){
-                   newli.append($('<span></span>').attr("class","title").text(message['Title']));
-                 }else{
-                   if( 'Artist' in message){
-                     newli.append($('<span></span>').attr("class","title").text('(Unknown)'));
+           $('#player').hide('slide', function(){
+             $('#favorites').html('')
+             $.getJSON('/favorites/', function(data){
+               if(!data.faves){
+                 $('#favorites').html('No favorites yet!')
+               }else{
+                 var favelist = $('<ul class="favelist"></ul>')
+                 $.each(data.faves, function(key, message){
+                   console.log(message)
+                   if(!message) return;
+                   var newli = $('<div class="favorite_entry"></div>');
+                   if( 'Title' in message){
+                     newli.append($('<span></span>').attr("class","title").text(message['Title']));
                    }else{
-                     if( 'Artist' in message.meta){
+                     if( 'Artist' in message){
                        newli.append($('<span></span>').attr("class","title").text('(Unknown)'));
                      }else{
-                       newli.append($('<span></span>').attr("class","title").text(message['body']));
+                       if( 'Artist' in message.meta){
+                         newli.append($('<span></span> ').attr("class","title").text('(Unknown)'));
+                       }else{
+                         newli.append($('<span></span> ').attr("class","title").text(message['body']));
+                       }
+                     }
+                     if( 'Artist' in message.meta){
+                       var npartist = $('<span></span> ')
+                       npartist.attr("class","artist").append($('<span></span>').attr("class","by").text("by"))
+                               .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
+                       newli.append(npartist)
                      }
                    }
-                   if( 'Artist' in message.meta){
+                   if( 'Artist' in message){
                      var npartist = $('<span></span>')
                      npartist.attr("class","artist").append($('<span></span>').attr("class","by").text("by"))
-                             .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
+                             .append($('<span></span>').attr("class","artist").text(message['Artist']))
                      newli.append(npartist)
                    }
-                 }
-                 if( 'Artist' in message){
-                   var npartist = $('<span></span>')
-                   npartist.attr("class","artist").append($('<span></span>').attr("class","by").text("by"))
-                           .append($('<span></span>').attr("class","artist").text(message['Artist']))
-                   newli.append(npartist)
-                 }
 
-                 if( 'Album' in message){
-                   var npalbum = $('<span></span>')
-                   npalbum.attr("class","album").append($('<span></span>').attr("class","from").text("from"))
-                                                .append($('<span></span>').attr("class","album").text(message['Album'])); 
-                   newli.append(npalbum)
-                 }
-                 newli.appendTo(favelist);
-               })
-               favelist.appendTo('#favorites')
-             }
-             $('#favorites').modal( {closeHtml:"", overlayClose:true});
-           })
+                   if( 'Album' in message){
+                     var npalbum = $('<span></span>')
+                     npalbum.attr("class","album").append($('<span></span>').attr("class","from").text("from"))
+                                                  .append($('<span></span>').attr("class","album").text(message['Album'])); 
+                     newli.append(npalbum)
+                   }
+                   newli.appendTo('#favorites');
+                 })
+                 //favelist.appendTo('#favorites')
+                 $('#favorites').show('slide')
+               }
+             })
+           });
          });
          $('#restartaudio').click(function(){
            soundManager.destroySound('mySound');
@@ -181,44 +179,48 @@
         <div id="maincol"><!-- begin main content area -->
 
           <div id="leftcol"><!-- begin leftcol -->
-            <h1 class="colheading">
-              <!--<div style="float:left">Now Playing</div>-->
-              <div id="visualization" style="margin-left:10px;width:160px; float:left">
-                <div id="bar_0" class="bar">&nbsp;</div>
-                <div id="bar_1" class="bar">&nbsp;</div>
-                <div id="bar_2" class="bar">&nbsp;</div>
-                <div id="bar_3" class="bar">&nbsp;</div>
-                <div id="bar_4" class="bar">&nbsp;</div>
-                <div id="bar_5" class="bar">&nbsp;</div>
-                <div id="bar_6" class="bar">&nbsp;</div>
-                <div id="bar_7" class="bar">&nbsp;</div>
-                <div id="bar_8" class="bar">&nbsp;</div>
-                <div id="bar_9" class="bar">&nbsp;</div>
-                <div id="bar_10" class="bar">&nbsp;</div>
-                <div id="bar_11" class="bar">&nbsp;</div>
-                <div id="bar_12" class="bar">&nbsp;</div>
-                <div id="bar_13" class="bar">&nbsp;</div>
-                <div id="bar_14" class="bar">&nbsp;</div>
-                <div id="bar_15" class="bar">&nbsp;</div>
-              </div>
-            </h1>
+            <div id="player">
+              <h1 class="colheading">
+                <!--<div style="float:left">Now Playing</div>-->
+                <div id="visualization" style="margin-left:10px;width:160px; float:left">
+                  <div id="bar_0" class="bar">&nbsp;</div>
+                  <div id="bar_1" class="bar">&nbsp;</div>
+                  <div id="bar_2" class="bar">&nbsp;</div>
+                  <div id="bar_3" class="bar">&nbsp;</div>
+                  <div id="bar_4" class="bar">&nbsp;</div>
+                  <div id="bar_5" class="bar">&nbsp;</div>
+                  <div id="bar_6" class="bar">&nbsp;</div>
+                  <div id="bar_7" class="bar">&nbsp;</div>
+                  <div id="bar_8" class="bar">&nbsp;</div>
+                  <div id="bar_9" class="bar">&nbsp;</div>
+                  <div id="bar_10" class="bar">&nbsp;</div>
+                  <div id="bar_11" class="bar">&nbsp;</div>
+                  <div id="bar_12" class="bar">&nbsp;</div>
+                  <div id="bar_13" class="bar">&nbsp;</div>
+                  <div id="bar_14" class="bar">&nbsp;</div>
+                  <div id="bar_15" class="bar">&nbsp;</div>
+                </div>
+              </h1>
 
-            <div id="nowplayingwrapper">
-              <div id="likebox"><img src="/static/heart_deactive.png" id="heartimg"/></div>
-              <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
-              <!--<div id="albumart" style="display:none"> </div>-->
+              <div id="nowplayingwrapper">
+                <div id="likebox"><img src="/static/heart_deactive.png" id="heartimg"/></div>
+                <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
+                <!--<div id="albumart" style="display:none"> </div>-->
+              </div>
+              <h1 class="colheading">Coming up</h1>
+              <div id="queue">
+                <div class="desc">drag and drop files to upload</div>
+                <ul id="queueList">
+                  {{#queue}}
+                    <li class="queuedsong" id="song_{{songId}}">
+                      {{#meta}}<span class="title">{{Title}}</span><span class="by">by</span><span class="artist">{{Artist}}</span>{{/meta}}
+                      {{^meta}}<span class="title">{{name}}</span>{{/meta}}<span class="upby">added&nbsp;by</span><span class="uploader">{{uploader}}</span>
+                    </li>
+                  {{/queue}}
+                </ul>
+              </div>
             </div>
-            <h1 class="colheading">Coming up</h1>
-            <div id="queue">
-              <div class="desc">drag and drop files to upload</div>
-              <ul id="queueList">
-                {{#queue}}
-                  <li class="queuedsong" id="song_{{songId}}">
-                    {{#meta}}<span class="title">{{Title}}</span><span class="by">by</span><span class="artist">{{Artist}}</span>{{/meta}}
-                    {{^meta}}<span class="title">{{name}}</span>{{/meta}}<span class="upby">added&nbsp;by</span><span class="uploader">{{uploader}}</span>
-                  </li>
-                {{/queue}}
-              </ul>
+            <div id="favorites" style="display:none">
             </div>
           </div><!-- end leftcol -->
           <div id="rightcol"><!-- begin rightcol -->

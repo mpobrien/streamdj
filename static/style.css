@@ -310,6 +310,16 @@ body {
     height: 1px;
     border-bottom: 1px dotted #cccccc; }
 
+#favorites .favorite_entry {
+  padding-left: 15px; }
+#favorites .favelist {
+  padding-left: 5px;
+  list-style: none; }
+  #favorites .favelist li .title, #favorites .favelist li .artist, #favorites .favelist li .by, #favorites .favelist li .album, #favorites .favelist li .upby, #favorites .favelist li .uploader {
+    margin-right: 4px; }
+  #favorites .favelist li .title, #favorites .favelist li .artist {
+    font-size: 1.2em; }
+
 /* modal overlay */
 #basic-modal-content {
   display: none; }
@@ -318,7 +328,8 @@ body {
   display: none; }
 
 #favorites {
-  display: none; }
+  display: none;
+  width: 350px; }
 
 #simplemodal-overlay {
   background-color: #000; }
