@@ -264,7 +264,8 @@ body {
   #queuelist li {
     list-style: none;
     margin-top: 5px;
-    padding: 5px; }
+    padding: 5px;
+    padding-left: 30px; }
     #queuelist li .title, #queuelist li .artist, #queuelist li .by, #queuelist li .upby, #queuelist li .uploader {
       margin-right: 4px; }
     #queuelist li .title, #queuelist li .artist {
