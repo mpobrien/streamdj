@@ -186,7 +186,13 @@ var favorites = function(req, res){//{{{
           if(data2){
             for(var i=0;i<data2.length;i++){
               if(data2[i]){
-                faved.push(JSON.parse(data2[i]));
+                try{
+                  var fave_info = JSON.parse(data2[i]);
+                  faved.push(fave_info);
+                }catch(exception){
+                  console.log("bad json?", data2[i]);
+                  continue;
+                }
               }
             }
             res.end(JSON.stringify({faves:faved}));

@@ -72,60 +72,61 @@
          countmsgs = true;
        }
        $(document).ready(function(){
+         var favoritesopen = false;
          $('#options').click(function(){
            $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
+         });
+
+         $('#closefavorites').click(function(){
+           $('#favorites').hide('slide', 'fast',function(){
+             $('#player').show('slide', 'fast');
+           });
+
          });
 	       $('#about').click(function(){
           $('#aboutmodal').modal( {closeHtml:"", overlayClose:true});
          }); 
          $('#favoriteslink').click(function(){
-           $('#player').hide('slide', function(){
-             $('#favorites').html('')
+           if(favoritesopen){
+             $('#favorites').hide('slide', 'fast',function(){
+               $('#player').show('slide', 'fast');
+               favoritesopen = false;
+             });
+             return;
+           }
+
+           $('#player').hide('slide', 'fast',function(){
+
+             $('#favelist').html('')
              $.getJSON('/favorites/', function(data){
                if(!data.faves){
                  $('#favorites').html('No favorites yet!')
                }else{
-                 var favelist = $('<ul class="favelist"></ul>')
+                 var count = 0;
                  $.each(data.faves, function(key, message){
+                   count++;
                    console.log(message)
                    if(!message) return;
-                   var newli = $('<div class="favorite_entry"></div>');
+                   var newli = $('<div class="favorite_entry' + (count%2>0 ? ' odd':'') + '"></div>');
                    if( 'Title' in message){
                      newli.append($('<span></span>').attr("class","title").text(message['Title']));
-                   }else{
-                     if( 'Artist' in message){
-                       newli.append($('<span></span>').attr("class","title").text('(Unknown)'));
-                     }else{
-                       if( 'Artist' in message.meta){
-                         newli.append($('<span></span> ').attr("class","title").text('(Unknown)'));
-                       }else{
-                         newli.append($('<span></span> ').attr("class","title").text(message['body']));
-                       }
-                     }
-                     if( 'Artist' in message.meta){
-                       var npartist = $('<span></span> ')
-                       npartist.attr("class","artist").append($('<span></span>').attr("class","by").text("by"))
-                               .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
-                       newli.append(npartist)
-                     }
                    }
                    if( 'Artist' in message){
-                     var npartist = $('<span></span>')
-                     npartist.attr("class","artist").append($('<span></span>').attr("class","by").text("by"))
-                             .append($('<span></span>').attr("class","artist").text(message['Artist']))
-                     newli.append(npartist)
+                     newli.append($('<br/>'));
+                     newli.append($('<span></span>').attr("class","by").text("by"))
+                     newli.append($('<span></span>').attr("class","artist").text(message['Artist']))
                    }
-
                    if( 'Album' in message){
-                     var npalbum = $('<span></span>')
-                     npalbum.attr("class","album").append($('<span></span>').attr("class","from").text("from"))
-                                                  .append($('<span></span>').attr("class","album").text(message['Album'])); 
+                     newli.append($('<br/>'));
+                     newli.append($('<span>from</span>').attr("class","from"));
+                     var npalbum = $('<span></span>').attr("class","from").text(message['Album'])
                      newli.append(npalbum)
                    }
-                   newli.appendTo('#favorites');
+                   newli.appendTo('#favelist');
                  })
-                 //favelist.appendTo('#favorites')
-                 $('#favorites').show('slide')
+                 $('#favorites').show('slide', 'fast', function(){
+                   favoritesopen = true;
+                 });
                }
              })
            });
@@ -209,6 +210,7 @@
               </div>
               <h1 class="colheading">Coming up</h1>
               <div id="queue">
+                <div id="progress"></div>
                 <div class="desc">drag and drop files to upload</div>
                 <ul id="queueList">
                   {{#queue}}
@@ -221,6 +223,9 @@
               </div>
             </div>
             <div id="favorites" style="display:none">
+              <button id="closefavorites">&larr; Back to Player</button>
+              <div id="favelist">
+              </div>
             </div>
           </div><!-- end leftcol -->
           <div id="rightcol"><!-- begin rightcol -->
@@ -246,6 +251,13 @@
         </div>
       </div><!-- end wrapper1 -->
     </div><!-- end wrapper2 -->
+    <div id="aboutmodal" style="display:none">
+      <div style="color:black; font-family:Kreon, Georgia, serif; font-size:1.1em">
+        OUTLOUD.FM is an effing sweet and exciting way to play music for your friends; allowing songs to be uploaded and curated in a realtime collaborative playlist. <br><br> Bored and hungry? Simply send the URL of your OUTLOUD.FM room to your friends, and start uploading music! (OUTLOUD.FM will, however, do nothing for your hunger.)<br><br> We are based out of New York City, and would love to hear your comments, bug reports, and/or suggestions.<br/><br/>
+        E-mail us! <a href="mailto:info@outloud.fm" style="color:blue">info@outloud.fm</a><br/><br/>
+        Follow us on twitter! <a href="http://twitter.com/outloudfm" style="color:blue">@outloudfm</a>
+       </div>
+     </div>
     <div id="optionsmodal" style="display:none">
       <div class="heading">Options</div>
       <div class="optionrow"><button id="clearchat">Clear chat history</button></div>

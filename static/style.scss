@@ -345,9 +345,19 @@ body {
   cursor:pointer;
 }
 
+.progressBar{
+  width:0%;
+  height:10px; background-color:black;
+}
+
+.progressContainer{
+  width:300px; height:10px;border:1px solid black;
+}
+
+
 #queuelist{
   height:380px;
-  overflow-y:scroll;
+  overflow-y:auto;
   padding-left:5px;
   .odd{
     background-color:#ddd;
@@ -393,7 +403,8 @@ body {
   
   li{
     list-style:none;
-    img{ padding-right:10px; }
+    line-height:24px;
+    img{ padding-right:10px; border:none; }
   }
 }
 
@@ -434,19 +445,19 @@ body {
 }
 
 #favorites{
-  .favorite_entry{
-    padding-left:15px;
+  .odd{
+    background-color:#ddd;
   }
-  .favelist{
-    padding-left:5px;
-    list-style:none;
-    li{
-      .title, .artist, .by, .album, .upby, .uploader{
-        margin-right:4px;
-      }
-      .title, .artist{
-        font-size:1.2em;
-      }
+
+  .favorite_entry{
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-left:15px;
+    .title, .artist, .by, .album, .upby, .uploader, .from{
+      margin-right:4px;
+    }
+    .title, .artist{
+      font-size:1.2em;
     }
   }
 }

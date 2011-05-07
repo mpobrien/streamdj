@@ -245,9 +245,19 @@ body {
   width: 24px;
   cursor: pointer; }
 
+.progressBar {
+  width: 0%;
+  height: 10px;
+  background-color: black; }
+
+.progressContainer {
+  width: 300px;
+  height: 10px;
+  border: 1px solid black; }
+
 #queuelist {
   height: 380px;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding-left: 5px; }
   #queuelist .odd {
     background-color: #ddd; }
@@ -277,9 +287,11 @@ body {
 #listenerslist {
   padding-left: 5px; }
   #listenerslist li {
-    list-style: none; }
+    list-style: none;
+    line-height: 24px; }
     #listenerslist li img {
-      padding-right: 10px; }
+      padding-right: 10px;
+      border: none; }
 
 #optionsmodal {
   border--radius: 10px;
@@ -310,14 +322,15 @@ body {
     height: 1px;
     border-bottom: 1px dotted #cccccc; }
 
+#favorites .odd {
+  background-color: #ddd; }
 #favorites .favorite_entry {
+  padding-top: 5px;
+  padding-bottom: 5px;
   padding-left: 15px; }
-#favorites .favelist {
-  padding-left: 5px;
-  list-style: none; }
-  #favorites .favelist li .title, #favorites .favelist li .artist, #favorites .favelist li .by, #favorites .favelist li .album, #favorites .favelist li .upby, #favorites .favelist li .uploader {
+  #favorites .favorite_entry .title, #favorites .favorite_entry .artist, #favorites .favorite_entry .by, #favorites .favorite_entry .album, #favorites .favorite_entry .upby, #favorites .favorite_entry .uploader, #favorites .favorite_entry .from {
     margin-right: 4px; }
-  #favorites .favelist li .title, #favorites .favelist li .artist {
+  #favorites .favorite_entry .title, #favorites .favorite_entry .artist {
     font-size: 1.2em; }
 
 /* modal overlay */
