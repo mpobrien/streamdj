@@ -61,6 +61,7 @@
        var username = {{{username}}}
      </script>
     <script type="text/javascript" src="/static/jqwheel.js"></script>
+    <script type="text/javascript" src="/static/outloud.js"></script>
      <script>
        var newMessageCount = 0;
        var countmsgs = false;
@@ -144,7 +145,8 @@
          });
          {{^nowPlaying}}
          $('#currentfile').html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
-         //$('#likebox').hide();
+         $('#visualization').hide();
+         $('#likebox').hide();
          {{/nowPlaying}}
          {{#liked}}
          if(nowplayingId){
@@ -154,7 +156,6 @@
          {{/liked}}
        })
     </script>
-    <script type="text/javascript" src="/static/outloud.js"></script>
   </head>
   
   <body>

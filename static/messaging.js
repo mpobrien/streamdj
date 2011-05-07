@@ -86,6 +86,7 @@ var MessageHandlers = {
     $('#nowplayingtext').text('');
     $('#currentfile').removeClass("playing").html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
     $('#likebox').hide()
+    $('#visualization').hide();
     $('#song_' + songId).hide('slide', function(){$(this).remove()} );
     nowplayingId = null;
     oddify(); //TODO clean up
@@ -162,6 +163,7 @@ var MessageHandlers = {
     if(!isStatic){
       $('#currentfile').addClass("playing");
       $('#likebox').show();
+      $('#visualization').show();
       $('#nowplayingtext').text(message['body']);
       $('#song_' + songId).hide('slide', function(){$(this).remove()});
       oddify(); //TODO clean up
