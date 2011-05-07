@@ -46,7 +46,6 @@ var handleFiles = function(files){//{{{
   for( var fn in files ){
     var file = files[fn];
     if( !file.fileSize ) continue;
-    var reader = new FileReader();
     var qxhr = new XMLHttpRequest();
     var progbar = new ProgressBar();
     $('#progress').append(progbar.outer)
