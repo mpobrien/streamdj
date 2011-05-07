@@ -457,6 +457,11 @@ var router = new routing.Router([
 
 var server = ws.createServer();
 server.addListener("request", function(req, res) {
+  req.on("clientError", function(exception){
+      console.log("ERROR - ", exception);
+      res.end();
+  });
+
   var qs = require('url').parse(req.url, true)
   if( qs.pathname.indexOf('/static/') === 0 ){
     var uri = qs.pathname
