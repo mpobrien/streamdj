@@ -30,9 +30,34 @@ var StreamRoom = function(roomName, redisClient){
   }
 
   this.playNextFile = function(endingFile){
+    //To pop the lowest-ranked member of a sorted set in redis, we need 2 steps:
+    //1. zrange <key> 0 0 WITHSCORES (returns lowest ranked key and its score)
+    //2. zremrangebyscore <key> score score // removes that lowest element
+    redisClient.zrange("roomqueue_" + roomName, 0, 0, "withscores", function(err, reply){
+      //TODO check for err.
+      if(!reply || reply.length==0){
+        if( endingFile ){
+          that.emit("file-end", roomName, endingFile);
+        }
+        nowPlaying = null;
+        return; // Nothing on the queue.
+      }
+      var songInfo = JSON.parse(reply[0])
+      var songId = reply[1]
+      redisClient.zremrangebyscore("roomqueue_" + roomName, songId, songId, function(err2, reply2){
+        nowPlaying = songInfo;
+        console.log("[" + roomName + "] now playing: ", songInfo);
+        fs.readFile(songInfo.path, function(err3, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)
+          that.emit("file-change", roomName, endingFile, nowPlaying);
+          if(err) console.log("err:",err);
+          setTimeout(function(){ mp3Stream.streamFile(data) }, 100)
+          console.log("playing: " + reply);
+        });
+      });
+    });
+/*
     redisClient.lpop("roomqueue_" + roomName, function(err, reply){ //TODO catch errors.
       if(!reply){
-        
         if( endingFile ){
           that.emit("file-end", roomName, endingFile);
         }
@@ -48,7 +73,7 @@ var StreamRoom = function(roomName, redisClient){
         setTimeout(function(){ mp3Stream.streamFile(data) }, 100)
         console.log("playing: " + reply);
       });
-    });
+    });*/
   }
 
 };

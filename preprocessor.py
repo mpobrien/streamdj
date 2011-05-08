@@ -1,4 +1,5 @@
 import redis
+import traceback
 import json
 import mutagen
 import subprocess
@@ -31,7 +32,7 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
               'length' : mutagenInfo.info.length}
   newSongId = r.incr("maxsongid")
 
-  if mutagenInfo.tags and mutagenInfo.tags._EasyID3__id3:
+  if mutagenInfo.tags and hasattr(mutagenInfo.tags, '_EasyID3__id3'):
     pics = mutagenInfo.tags._EasyID3__id3.getall("APIC")
     if pics:
       #TODO check max length of pic data?
@@ -62,10 +63,12 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
     outputpath = songInfo['path']
 
 
-  outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'path':outputpath, 'meta':metadata, 'songId':newSongId}
+  outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'uid':songInfo['uid'], 'path':outputpath, 'meta':metadata, 'songId':newSongId}
   print json.dumps(outgoingMessage)
   streamMessage = json.dumps( {'path':outputpath, 'name':songInfo['fname'], 'uploader':songInfo['uploader'], 'songId':newSongId, 'meta':metadata});
-  r.rpush("roomqueue_" + songInfo['room'], streamMessage);
+  #r.rpush("roomqueue_" + songInfo['room'], streamMessage);
+  r.zadd("roomqueue_" + songInfo['room'], streamMessage, newSongId ) #key, score, member 
+  #r.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member 
   r.publish('file-queued', json.dumps(outgoingMessage));
   r.publish("newQueueReady",songInfo['room']);
 
@@ -84,7 +87,9 @@ def main(argv):
       parsedFile = mutagen.File(songInfo['path'], easy=True)
       processFile(parsedFile, songInfo, picoutputdir)
     except Exception, e: 
-      print "Couldn't parse audio information, skipping.", e
+      print "Couldn't parse audio information, skipping:", e
+      traceback.print_exc(file=sys.stdout)
+
 
 
 

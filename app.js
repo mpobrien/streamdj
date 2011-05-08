@@ -388,7 +388,8 @@ var upload = function(req, res, qs, matches){//{{{
     console.log(uploaderInfo.name," started uploading", fname);
     //TODO check err!*/ //TODO check that user is in the room?*/ //TODO validate that it's legit mp3?
     fileUpload.on("filedone", function(){
-      var uploadedFileInfo = JSON.stringify({"path":fullPath, "room":roomname, "uploader":uploaderInfo.name, 'fname':fname});
+      var uidkey = userinfo.service + "_" + userinfo.user_id;
+      var uploadedFileInfo = JSON.stringify({"path":fullPath, "room":roomname, "uploader":uploaderInfo.name,'uid':uidkey, 'fname':fname});
       redisClient.rpush("newsongready", uploadedFileInfo);
     });
     req.resume();
@@ -603,7 +604,7 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
     redisClient.zrevrange("roomlog_" + roomname, 0, 99, function(err, reply2){
       if(reply2 == null) result.msgs = []
       else result.msgs = reply2;
-      redisClient.lrange("roomqueue_" + roomname, 0, 10, function(err, reply3){ //TODO check for err
+      redisClient.zrange("roomqueue_" + roomname, 0, 10, function(err, reply3){ //TODO check for err
         if( reply3 ){
           var queueinfo = [];
           var i=0;
