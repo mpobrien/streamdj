@@ -209,7 +209,7 @@
                 <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
                 <!--<div id="albumart" style="display:none"> </div>-->
               </div>
-              <h1 class="colheading">Coming up</h1>
+              <h1 class="colheading">Queue</h1>
               <div id="queue">
                 <div id="progress"></div>
                 <div class="desc">drag and drop files to upload</div>

@@ -6,7 +6,9 @@ $volumebarColor: #DFBA69;
 $volumebarBorderColor: lighten(#3e4147, 40%);
 $dotfmColor: #DFBA69; 
 //$startPlayingMessageColor: #FFE545;
-$startPlayingMessageColor: #BCDEA5;
+$startPlayingMessageColor: #CAE6FF;
+$startPlayingMessageColorLight: #f1f8fe;
+$startPlayingMessageBorder: #97ACBF;
 $notecolor: #fffedf;
 $uploadedByColor: black;
 $dragDropFilesColor: black;
@@ -242,10 +244,10 @@ body {
 
     .playstart{
       @include rounded(5px);
-      @include gradient($startPlayingMessageColor, lighten($startPlayingMessageColor, 10%));
+      @include gradient($startPlayingMessageColor, ($startPlayingMessageColorLight));
       margin-top:5px;
       margin-right:5px;
-      border:1px solid darken($startPlayingMessageColor, 20%);
+      border:1px solid ($startPlayingMessageBorder);
       color:black;
       padding-top:15px;
       padding-bottom:15px;

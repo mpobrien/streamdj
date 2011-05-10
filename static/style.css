@@ -164,17 +164,17 @@ body {
       border--radius: 5px;
       -moz-border-radius: 5px;
       -webkit-border-radius: 5px;
-      background: #bcdea5;
+      background: #cae6ff;
       /* for non-css3 browsers */
       filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to');
       /* for IE */
-      background: -webkit-gradient(linear, left top, left bottom, from(#bcdea5), to(#d8ecca));
+      background: -webkit-gradient(linear, left top, left bottom, from(#cae6ff), to(#f1f8fe));
       /* for webkit browsers */
-      background: -moz-linear-gradient(top, #bcdea5, #d8ecca);
+      background: -moz-linear-gradient(top, #cae6ff, #f1f8fe);
       /* for firefox 3.6+ */
       margin-top: 5px;
       margin-right: 5px;
-      border: 1px solid #84c35a;
+      border: 1px solid #97acbf;
       color: black;
       padding-top: 15px;
       padding-bottom: 15px; }
