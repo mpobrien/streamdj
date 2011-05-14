@@ -94,7 +94,6 @@ function broadcastToRoom(roomname, message, exclude){
   if(chatroom){
     for(var i=0;i<chatroom.length;i++){
       if(exclude && exclude == chatroom[i]) continue;
-      console.log("sending", message);
       chatroom[i].send(message);
     }
   }//TODO error if chatroom isn't found
@@ -357,11 +356,9 @@ var remove_from_queue = function(req, res, qs, matches){
   var sessionId = cookies.get("session");
   var songId = qs.query['s']
   res.end("{}");
-  console.log("m1");
   if( isNaN(parseInt(songId)) ) return;
   songId = parseInt(songId)
   getUserInfo(sessionId, function(err, userinfo){
-    console.log("m2");
     if(err || !userinfo) return; //TODO handle/log error.  //TODO make sure user name is valid, + not empyy
     //get the song info by ID - 
     //verify that its the right room, and the right uploader
@@ -374,7 +371,6 @@ var remove_from_queue = function(req, res, qs, matches){
       if(songInfo.room == roomname && songInfo.uid == uidkey){
         //ok, we can remove it
         redisClient.zremrangebyscore("roomqueue_" + roomname, songId, songId, function(err4, reply4){
-          console.log("m4" , reply4 );
           var numRemoved = reply4;
           if( numRemoved > 0){
             var message = JSON.stringify({messages:[msggen.queue_del(songId)]})
