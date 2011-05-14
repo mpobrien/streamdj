@@ -74,6 +74,11 @@ exports.Mp3Stream = function Mp3Stream(){
       var bm = new Bitmask(chunk)
       var samplerate;
       var h = bm.get(0,31)
+      var framesyncCheck = (h >>> 16 ) & 0xffe0
+      if( framesyncCheck != 0xffe0){
+        console.log("bad frame sync!", h, framesyncCheck);
+        return null;
+      }
       var version = (h & 0x00180000) >> 19
       var isprotected = !(h & 0x00010000)
       var b = (h & 0xf000) >> 12
