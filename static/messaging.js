@@ -26,6 +26,8 @@ var MessageHandlers = {
     var songLi = $('<li></li>').attr("class","queuedsong").attr('id','song_' + songId)
     var useFilename = true;
     if(message.meta && 'Title' in message.meta){
+      if( uidkey == message['uid'])
+      songLi.append($('<div class="delsong">&nbsp;</div>').attr("id","delsong_" + songId))
       songLi.append($('<span></span>').attr("class","title").text(message.meta['Title']))
       if(message.meta && 'Artist' in message.meta){
         songLi.append($('<span></span>').attr("class","by").text("by"))
@@ -168,6 +170,12 @@ var MessageHandlers = {
       $('#song_' + songId).hide('slide', function(){$(this).remove()});
       oddify(); //TODO clean up
     }
+  },//}}}
+
+  "qdel": function(message, isStatic){//{{{
+    console.log("yo", message);
+    var songId = message["songId"]
+    $('#song_' + songId).hide('slide', function(){$(this).remove()});
   }//}}}
 
 }

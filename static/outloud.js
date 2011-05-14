@@ -72,6 +72,7 @@ var handleFiles = function(files){//{{{
 /* Message handling */
 function processMessage(message, isStatic){//{{{
   var type = message.type;
+  console.log(message)
   var handler = MessageHandlers[type]
   if(handler){
     handler(message, isStatic);
@@ -87,6 +88,10 @@ var sendMessage = function(){//{{{
   objDiv.scrollTop = objDiv.scrollHeight;
   $('#newchat').val('');
 }//}}}
+
+var removeSongFromQueue = function(songId){
+  $.get( '/' + roomname + '/remove', {s:songId}, function(){})
+}
 
 var oddify = function(){
   var songs = $('.queuedsong');

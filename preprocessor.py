@@ -61,17 +61,19 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
     print "converted", retcode, outputpath
   else:
     outputpath = songInfo['path']
+  
 
 
   outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'uid':songInfo['uid'], 'path':outputpath, 'meta':metadata, 'songId':newSongId}
   print json.dumps(outgoingMessage)
-  streamMessage = json.dumps( {'path':outputpath, 'name':songInfo['fname'], 'uploader':songInfo['uploader'], 'songId':newSongId, 'meta':metadata});
+  streamMessage = json.dumps( {'path':outputpath, 'name':songInfo['fname'], 'uid':songInfo['uid'], 'uploader':songInfo['uploader'], 'songId':newSongId, 'meta':metadata});
   #r.rpush("roomqueue_" + songInfo['room'], streamMessage);
   r.zadd("roomqueue_" + songInfo['room'], streamMessage, newSongId ) #key, score, member 
   #r.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member 
   r.publish('file-queued', json.dumps(outgoingMessage));
   r.publish("newQueueReady",songInfo['room']);
-
+  metadata['room']= songInfo['room']
+  metadata['uid'] = songInfo['uid']
   r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?#}}}
 
 def main(argv):

@@ -16,8 +16,36 @@
     <script type="text/javascript" src="/static/simplemodal.js"></script>
     <script type="text/javascript" src="/static/messaging.js"></script>
     <script type="text/javascript" src="/static/soundmanager2.js"></script>
+
+    <script type="text/javascript">
+      function confirm(message, callback) {
+        $('#confirm').modal({
+          closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+          position: ["20%",],
+          overlayId: 'confirm-overlay',
+          containerId: 'confirm-container', 
+          onShow: function (dialog) {
+            var modal = this;
+
+            $('.message', dialog.data[0]).append(message);
+
+            // if the user clicks "yes"
+            $('.yes', dialog.data[0]).click(function () {
+              // call the callback
+              if ($.isFunction(callback)) {
+                callback.apply();
+              }
+              // close the dialog
+              modal.close(); // or $.modal.close();
+            });
+          }
+        });
+      }
+    </script>
+
     <script type="text/javascript">
       var roomname = '{{roomname}}'
+      var uidkey = '{{uidkey}}'
       WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
       WEB_SOCKET_DEBUG = true;
       var numbars = 16;
@@ -77,6 +105,16 @@
          $('#options').click(function(){
            $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
          });
+
+         $('.delsong').live('click',
+           function(div){
+             var songId = $(this).attr("id").split("_")[1];
+             var callback = function(){
+               console.log("deleting",songId);
+               removeSongFromQueue(songId);
+             }
+             confirm("Are you sure you want to delete this song from the queue?", callback);
+           });
 
          $('#closefavorites').click(function(){
            $('#favorites').hide('slide', 'fast',function(){
@@ -216,6 +254,7 @@
                 <ul id="queueList">
                   {{#queue}}
                     <li class="queuedsong" id="song_{{songId}}">
+                    {{#mine}}<div class="delsong" id="delsong_{{songId}}">&nbsp;</div>{{/mine}}
                       {{#meta}}<span class="title">{{Title}}</span><span class="by">by</span><span class="artist">{{Artist}}</span>{{/meta}}
                       {{^meta}}<span class="title">{{name}}</span>{{/meta}}<span class="upby">added&nbsp;by</span><span class="uploader">{{uploader}}</span>
                     </li>
@@ -264,5 +303,12 @@
       <div class="optionrow"><button id="clearchat">Clear chat history</button></div>
       <div class="optionrow"><button id="restartaudio">Restart Audio Stream</button></div>
     </div>
+		<div id='confirm'>
+			<div class='header'><span>Confirm</span></div>
+			<div class='message'></div>
+			<div class='buttons'>
+				<div class='no simplemodal-close'>No</div><div class='yes'>Yes</div>
+			</div>
+		</div>
   </body>
 </html>

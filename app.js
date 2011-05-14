@@ -56,7 +56,7 @@ pubsubClient.on("message", function(channel, msg){
     var messages = [];
     redisClient.incr("roommsg_" + incomingMsg.room, function(err, reply){ //TODO check err
       var msgId = reply;
-      messages.push( msggen.queued(incomingMsg.uploader, 'asfa', incomingMsg.songId, incomingMsg.meta) )
+      messages.push( msggen.queued(incomingMsg.uploader, 'asfa', incomingMsg.songId, incomingMsg.meta, incomingMsg.uid) )
       var outgoingMsg = JSON.stringify( {messages:messages })
       broadcastToRoom(incomingMsg.room, outgoingMsg);
     });
@@ -94,6 +94,7 @@ function broadcastToRoom(roomname, message, exclude){
   if(chatroom){
     for(var i=0;i<chatroom.length;i++){
       if(exclude && exclude == chatroom[i]) continue;
+      console.log("sending", message);
       chatroom[i].send(message);
     }
   }//TODO error if chatroom isn't found
@@ -349,6 +350,44 @@ var authdone_facebook = function(req, res, qs){//{{{
   });
 }//}}}
 
+var remove_from_queue = function(req, res, qs, matches){
+  var roomname = matches[1];
+  var cookies = new Cookies(req, res);
+  if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
+  var sessionId = cookies.get("session");
+  var songId = qs.query['s']
+  res.end("{}");
+  console.log("m1");
+  if( isNaN(parseInt(songId)) ) return;
+  songId = parseInt(songId)
+  getUserInfo(sessionId, function(err, userinfo){
+    console.log("m2");
+    if(err || !userinfo) return; //TODO handle/log error.  //TODO make sure user name is valid, + not empyy
+    //get the song info by ID - 
+    //verify that its the right room, and the right uploader
+    //if so, zremrangebyscore roomqueue_<roomname> songId songId
+    var uidkey = userinfo.service + "_" + userinfo.user_id
+    redisClient.get("s_" + songId, function(err3, reply3){
+      if(err3 || !reply3) return;
+
+      var songInfo = JSON.parse(reply3);
+      if(songInfo.room == roomname && songInfo.uid == uidkey){
+        //ok, we can remove it
+        redisClient.zremrangebyscore("roomqueue_" + roomname, songId, songId, function(err4, reply4){
+          console.log("m4" , reply4 );
+          var numRemoved = reply4;
+          if( numRemoved > 0){
+            var message = JSON.stringify({messages:[msggen.queue_del(songId)]})
+            console.log("broadcasting", roomname);
+            broadcastToRoom(roomname, message, null);
+          }
+        });
+      }
+    });
+  });
+  //redisClient.zremrangebyscore("roomqueue_" + roomName, songId, songId, function(err2, reply2){
+}
+
 var like_unlike = function(req, res, qs, matches){//{{{
   var cookies = new Cookies(req, res);
   if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
@@ -458,6 +497,7 @@ var router = new routing.Router([
   ["^/authdone/tw/?$", authdone_twitter],
   ["^/authdone/fb/?$", authdone_facebook],
   ["^/(like|unlike)/?$", like_unlike],
+  ["^/([\\w\-]+)/remove/?$", remove_from_queue],
   ["^/([\\w\-]+)/upload/?$", upload],
   ["^/([\\w\-]+)/?$", roomdisplay],
 ]);
@@ -571,11 +611,13 @@ net.createServer(
 
 function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
   res.statusCode = 200
+  var uidkey = userinfo.service + '_' + userinfo.user_id;
   var result = { username:JSON.stringify(userinfo.name),
                  msgs:[],                                          
                  wsurl: "ws://" + settings.domain + ":" + settings.port + "/" + roomname,
                  listenurl: "http://" + settings.streamserver_domain + ":" + settings.streamingport + "/listen/" + roomname,
-                 roomname: roomname
+                 roomname: roomname,
+                 uidkey:uidkey
                }
   redisClient.hgetall("listeners_" + roomname, function(err, reply){
     if(reply == null) reply = [];
@@ -591,7 +633,7 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
       var listener_pic = val[1];
       var listener_link = (service == 'tw' ?  'http://twitter.com/account/redirect_by_id?id=' + listener_id : 'http://facebook.com/profile.php?id=' + listener_id);
       if( service == 'fb') listener_pic = "http://graph.facebook.com/" + listener_id + "/picture?type=square" 
-      if(name == userinfo.service + '_' + userinfo.user_id) appendself = false;
+      if(name == uidkey) appendself = false;
       listeners.push({name:listener_name, pic:listener_pic, link:listener_link, uid:name});
     }
     result.listeners = listeners
@@ -608,8 +650,14 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
         if( reply3 ){
           var queueinfo = [];
           var i=0;
+          var uidkey = userinfo.service + '_' + userinfo.user_id;
           for(i=0;i<reply3.length;i++){
-            queueinfo.push(JSON.parse(reply3[i]));
+            var queueItem = JSON.parse(reply3[i]);
+            console.log(queueItem, uidkey);
+            if(queueItem.uid && queueItem.uid == uidkey){
+              queueItem.mine = true;
+            }
+            queueinfo.push(queueItem);
           }
           result.queue = queueinfo;
         }else{

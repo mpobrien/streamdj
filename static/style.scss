@@ -365,11 +365,22 @@ body {
     background-color:#ddd;
   }
 
+  .delsong{
+    z-index:100;
+    display:inline;
+    height:11px;
+    width:11px;
+    background: url('/static/delsong.png') no-repeat;
+    padding-right:8px;
+    cursor:pointer;
+  }
+
   li{
+    line-height:14px;
     list-style:none;
     margin-top:5px;
     padding:5px;
-    padding-left:30px;
+    padding-left:5px;
 
     .title, .artist, .by, .upby, .uploader{
       margin-right:4px;
@@ -478,4 +489,21 @@ body {
 #simplemodal-container h3 {color:#84b8d9;}
 
 
+#confirm {display:none; font-family:Georgia;}
+
+/* Overlay */
+#confirm-overlay {background-color:#eee; cursor:wait;}
+
+/* Container */
+#confirm-container {height:140px; width:420px;  text-align:left; background:#fff; border:2px solid #336699;}
+#confirm-container .header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:bold;}
+#confirm-container .header span {padding-left:8px;}
+#confirm-container .message {color:#333; font-size:14px; margin:0; padding:12px 4px 12px 8px;}
+#confirm-container .buttons {line-height:26px; width:160px; float:right; padding:10px 8px 0;} 
+#confirm-container .buttons div {float:right; margin-left:4px; width:70px; height:26px; color:#666; font-weight:bold; text-align:center; background:url(../img/confirm/button.gif) repeat-x; border:1px solid #bbb; cursor:pointer;} 
+#confirm-container a.modal-close,
+#confirm-container a.modal-close:link,
+#confirm-container a.modal-close:active,
+#confirm-container a.modal-close:visited {text-decoration:none; font-weight:bold; position:absolute; right:10px; top:2px; color:#fff;}
+#confirm-container a.modal-close:hover {color:#ccc;}
 

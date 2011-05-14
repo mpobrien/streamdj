@@ -9,8 +9,12 @@ exports.MessageGenerator = function MessageGenerator(){
   }
 
 
-  this.queued = function(from, filename, id, meta){
-    return {"type":"enq", 'from':from,'body':filename, 'songId':id, 'time':new Date().getTime(), 'meta':meta}
+  this.queued = function(from, filename, id, meta, uid){
+    return {"type":"enq", 'from':from,'body':filename, 'songId':id, 'time':new Date().getTime(), 'meta':meta, 'uid':uid}
+  }
+
+  this.queue_del = function(songId){
+    return {"type":"qdel", 'songId':songId};
   }
 
   this.join = function(who, service, uid, pic, isnew){
