@@ -79,6 +79,11 @@ exports.Mp3Stream = function Mp3Stream(){
         console.log("bad frame sync!", h, framesyncCheck);
         return null;
       }
+      var layerCheck = (h >>> 16 ) & 0x0006
+      if( layerCheck != 0x0002){
+        console.log("not mpeg layer3!", h, layerCheck);
+        return null;
+      }
       var version = (h & 0x00180000) >> 19
       var isprotected = !(h & 0x00010000)
       var b = (h & 0xf000) >> 12
