@@ -458,20 +458,50 @@ body {
 
 }
 
+
+.heartbox{
+  width:24px;
+  height:24px;
+  cursor:pointer;
+}
+.on{
+   background: url('/static/heart.png') no-repeat;
+}
+
+.off{
+   background: url('/static/heart_deactive.png') no-repeat;
+}
+
+.hover{
+   background: url('/static/heart_hover.png') no-repeat;
+}
+
 #favorites{
+
   .odd{
-    background-color:#ddd;
+  background-color:#ddd;
+  }
+
+
+  .favwrapper{
+    position:relative;
   }
 
   .favorite_entry{
-    padding-top:5px;
-    padding-bottom:5px;
+    position:relative;
+    padding-top:10px;
+    left:24px;
+    top:-25px;
+    width: $leftcolWidth - 30;
     padding-left:15px;
+    .fav_line{
+    }
+
     .title, .artist, .by, .album, .upby, .uploader, .from{
       margin-right:4px;
     }
     .title, .artist{
-      font-size:1.2em;
+      font-size:1.1em;
     }
   }
 }

@@ -226,40 +226,39 @@ $(document).ready(//{{{
     /*droptarget.addEventListener("dragover", dragOver, false);*/
     
     oddify();
-
-    $('#heartimg').hover(
-      function(){ 
-        if( nowplayingId && !(nowplayingId in likedIds)){ // not liked yet
-          $(this).attr("src", "/static/heart_hover.png")
-        }else{//liked already!
-          $(this).attr("src", "/static/heart.png")
+    $('.heartbox').live({
+       mouseenter: function(){
+          console.log("on");
+          if( !$(this).hasClass('on') ){ // not liked yet
+            $(this).addClass("hover");
+          }else{}
+       },
+       mouseleave: function(){
+        console.log("off");
+        if( !$(this).hasClass('on') ){ // not liked yet
+          $(this).removeClass("hover");
         }
-      },
-      function(){
-        if( nowplayingId && !(nowplayingId in likedIds)){ // not liked yet
-          $(this).attr("src", "/static/heart_deactive.png")
-        }else{ //liked!
-          $(this).attr("src", "/static/heart.png")
-        }
-      }
-    )
+       }, 
 
-    $('#heartimg').click(
-      function(){
-        if(nowplayingId){
-          if(nowplayingId in likedIds){ // UNLIKE
-            delete likedIds[nowplayingId]
-            $(this).attr("src", "/static/heart_deactive.png")
-            $.get( '/unlike/', {s:nowplayingId}, function(){})//[ data ], [ success(data, textStatus, jqXHR) ], [ dataType ] )
+       click: function(){
+         var me = this;
+         console.log("this",this);
+         console.log("songid",$.data(this,"songId"));
+         if( !$(this).hasClass('on') ){
+           $.get( '/like/', {s:$.data(this,"songId")}, 
+               function(){
+                 $(me).removeClass('off').removeClass('hover').addClass('on');
+               });
+         }else{
+           $.get( '/unlike/', {s:$.data(this,"songId")},
+               function(){
+                 console.log("callback");
+                 $(me).removeClass('on').removeClass('hover').addClass('off');
+               });
+         }
+       }
 
-          }else{ //LIKE
-            likedIds[nowplayingId] = true;
-            $(this).attr("src", "/static/heart.png")
-            $.get( '/like/', {s:nowplayingId}, function(){})//[ data ], [ success(data, textStatus, jqXHR) ], [ dataType ] )
-          }
-        }
-      }
-    );
+       });
 
   }
 

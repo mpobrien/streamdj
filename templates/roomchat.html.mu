@@ -110,7 +110,6 @@
            function(div){
              var songId = $(this).attr("id").split("_")[1];
              var callback = function(){
-               console.log("deleting",songId);
                removeSongFromQueue(songId);
              }
              confirm("Are you sure you want to delete this song from the queue?", callback);
@@ -118,6 +117,7 @@
 
          $('#closefavorites').click(function(){
            $('#favorites').hide('slide', 'fast',function(){
+             favoritesopen = false;
              $('#player').show('slide', 'fast');
            });
 
@@ -144,24 +144,31 @@
                  var count = 0;
                  $.each(data.faves, function(key, message){
                    count++;
-                   console.log(message)
                    if(!message) return;
-                   var newli = $('<div class="favorite_entry' + (count%2>0 ? ' odd':'') + '"></div>');
+                   var wrapper = $('<div class="favwrapper' + (count%2>0 ? ' odd':'') + '"></div>');
+                   var newli = $('<div class="favorite_entry"></div>');
+                   //var unfavorite = $('<div class="unfavorite"><img src="/static/heart.png"/></div>');
+                   var unfavorite = $('<div class="heartbox on">&nbsp;</div>');
+                   $(unfavorite).data('songId', message['songId']);
                    if( 'Title' in message){
-                     newli.append($('<span></span>').attr("class","title").text(message['Title']));
+                     newli.append($('<div class="fav_line"></div>').append(
+                       $('<span></span>').attr("class","title").text(message['Title']))
+                     )
                    }
                    if( 'Artist' in message){
-                     newli.append($('<br/>'));
-                     newli.append($('<span></span>').attr("class","by").text("by"))
-                     newli.append($('<span></span>').attr("class","artist").text(message['Artist']))
+                     newli.append($('<div class="fav_line"></div>').append(
+                       $('<span></span>').attr("class","by").text("by")).append(
+                       $('<span></span>').attr("class","artist").text(message['Artist'])))
                    }
                    if( 'Album' in message){
-                     newli.append($('<br/>'));
-                     newli.append($('<span>from</span>').attr("class","from"));
-                     var npalbum = $('<span></span>').attr("class","from").text(message['Album'])
-                     newli.append(npalbum)
+                     newli.append($('<div class="fav_line"></div>').append(
+                      $('<span>from</span>').attr("class","from")).append(
+                      $('<span></span>').attr("class","artist").text(message['Album'])
+                     ))
                    }
-                   newli.appendTo('#favelist');
+                   unfavorite.appendTo(wrapper)
+                   newli.appendTo(wrapper);
+                   wrapper.appendTo('#favelist');
                  })
                  $('#favorites').show('slide', 'fast', function(){
                    favoritesopen = true;
@@ -187,10 +194,9 @@
          $('#likebox').hide();
          {{/nowPlaying}}
          {{#liked}}
-         if(nowplayingId){
-           likedIds[nowplayingId] = true;
-           $('#heartimg').attr("src", "/static/heart.png")
-         }
+           if(nowplayingId){
+             $('#nowplayingheart').removeClass("off").addClass("on");
+           }
          {{/liked}}
        })
     </script>
@@ -243,7 +249,7 @@
               </h1>
 
               <div id="nowplayingwrapper">
-                <div id="likebox"><img src="/static/heart_deactive.png" id="heartimg"/></div>
+                <div id="likebox"><div id="nowplayingheart" class="heartbox off"></div></div>
                 <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
                 <!--<div id="albumart" style="display:none"> </div>-->
               </div>

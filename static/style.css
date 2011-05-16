@@ -332,16 +332,35 @@ body {
     height: 1px;
     border-bottom: 1px dotted #cccccc; }
 
+.heartbox {
+  width: 24px;
+  height: 24px;
+  cursor: pointer; }
+
+.on {
+  background: url("/static/heart.png") no-repeat; }
+
+.off {
+  background: url("/static/heart_deactive.png") no-repeat; }
+
+.hover {
+  background: url("/static/heart_hover.png") no-repeat; }
+
 #favorites .odd {
   background-color: #ddd; }
+#favorites .favwrapper {
+  position: relative; }
 #favorites .favorite_entry {
-  padding-top: 5px;
-  padding-bottom: 5px;
+  position: relative;
+  padding-top: 10px;
+  left: 24px;
+  top: -25px;
+  width: 320px;
   padding-left: 15px; }
   #favorites .favorite_entry .title, #favorites .favorite_entry .artist, #favorites .favorite_entry .by, #favorites .favorite_entry .album, #favorites .favorite_entry .upby, #favorites .favorite_entry .uploader, #favorites .favorite_entry .from {
     margin-right: 4px; }
   #favorites .favorite_entry .title, #favorites .favorite_entry .artist {
-    font-size: 1.2em; }
+    font-size: 1.1em; }
 
 /* modal overlay */
 #basic-modal-content {

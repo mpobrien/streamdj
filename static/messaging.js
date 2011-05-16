@@ -95,7 +95,7 @@ var MessageHandlers = {
   },//}}}
 
   "started": function(message, isStatic){//{{{
-    $('#heartimg').attr("src", "/static/heart_deactive.png")
+    $('#nowplayingheart').removeClass("on").addClass("off");
     var innerWrapper = $('<div></div>').attr("class","startplaywrapper")
     var enqDiv = $('<div></div>')
                    .attr("class","playstart")
@@ -159,6 +159,7 @@ var MessageHandlers = {
     innerWrapper.append($('<span></span>').attr('class','startedplaying').html("started playing"))
     enqDiv.appendTo("#chat");
     var songId = message["songId"]
+    $('#nowplayingheart').data("songId", songId);
     nowplayingId = songId
 
                       
