@@ -204,7 +204,7 @@
   
   <body>
     <div id="header">
-      <div id="branding"><a href="/"><span id="note"><img src="/static/notebrand.png"></span>&nbsp;&nbsp;outloud<span class="org">.fm</span></a></div>
+      <div id="branding"><a href="/"><img src="/static/ol.png"></a></div>
       <div id="volwrapper">
           <div id="volicon" class="notmuted">
           </div>
@@ -298,7 +298,7 @@
       </div><!-- end wrapper1 -->
     </div><!-- end wrapper2 -->
     <div id="aboutmodal" style="display:none">
-      <div style="color:black; font-family:Kreon, Georgia, serif; font-size:1.1em">
+      <div style="color:black; font-family:Verdana, sans-serif; font-size:0.8em">
         OUTLOUD.FM is an effing sweet and exciting way to play music for your friends; allowing songs to be uploaded and curated in a realtime collaborative playlist. <br><br> Bored and hungry? Simply send the URL of your OUTLOUD.FM room to your friends, and start uploading music! (OUTLOUD.FM will, however, do nothing for your hunger.)<br><br> We are based out of New York City, and would love to hear your comments, bug reports, and/or suggestions.<br/><br/>
         E-mail us! <a href="mailto:info@outloud.fm" style="color:blue">info@outloud.fm</a><br/><br/>
         Follow us on twitter! <a href="http://twitter.com/outloudfm" style="color:blue">@outloudfm</a>

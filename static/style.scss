@@ -6,9 +6,9 @@ $volumebarColor: #DFBA69;
 $volumebarBorderColor: lighten(#3e4147, 40%);
 $dotfmColor: #DFBA69; 
 //$startPlayingMessageColor: #FFE545;
-$startPlayingMessageColor: #CAE6FF;
-$startPlayingMessageColorLight: #f1f8fe;
-$startPlayingMessageBorder: #97ACBF;
+$startPlayingMessageColor: #ffe6e6;
+$startPlayingMessageColorLight: #fef2f2;
+$startPlayingMessageBorder: #ffcccc;
 $notecolor: #fffedf;
 $uploadedByColor: black;
 $dragDropFilesColor: black;
@@ -45,7 +45,8 @@ body {
 	text-align:center;
 	margin:0px;
 	padding:0;
-	font:normal 0.8em/1.2em verdana,aria,sans-serif;
+ 	font-family: Verdana,sans-serif;;
+/*	font:normal 0.8em/1.2em verdana,aria,sans-serif;*/
 	color:#666;
 }
 
@@ -72,7 +73,7 @@ body {
 	margin:0;
   height: $navheight;
   padding-top:15px;
-  font-family:Kreon, Georgia, serif;
+  font-family:Verdana, sans-serif;
   color: $navbarTextColor;
   img { border: 0; }
 
@@ -80,11 +81,11 @@ body {
     .link{
       margin-left:20px;
       margin-right:20px;
-      font-size:16px;
-
+      font-size:14px;
+     
       a:hover{
         color: $navbarLinkColor;
-        text-decoration: underline;
+        text-decoration: none;
       }
 
       a:link{
@@ -103,7 +104,7 @@ body {
     padding-top:0px;
     float:left;
     margin-left:20px;
-    font-size:30px;
+    font-size:35px;
 
     a:hover, a:link, a:visited, a:active{
       color: $navbarLinkColor;
@@ -226,19 +227,19 @@ body {
     }
 
     .from{
-      font-size:14px;
+      font-size:12px;
       font-weight:bold;
       color:black;
     }
 
     .message, .join, .playstart{
       padding-left:8px;
-      font-size:14px;
+      font-size:12px;
     }
 
     .message{
       margin-top:2px;
-      font-size:14px;
+      font-size:12px;
       color:black;
     }
 
@@ -289,9 +290,9 @@ body {
 
 .colheading{
   padding-left:20px;
-  font-family:Kreon;
+  font-family: Verdana;
   color:$sectionHeadingColor;
-  font-size:24px;
+  font-size:20px;
 }
 
 #footer {
@@ -328,8 +329,8 @@ body {
   left:34px;
   padding-left: 5px;
   padding-right: 15px;
-  font-family:Georgia, serif;
-  font-size:16px;
+  font-family:Verdana,  sans-serif;
+  font-size:14px;
   .by, .from, .upby{
     font-size:.8em;
     margin-right:5px;
@@ -359,6 +360,7 @@ body {
 
 #queuelist{
   height:380px;
+  font-size:.9em;
   overflow-y:auto;
   padding-left:5px;
   .odd{
@@ -399,7 +401,7 @@ body {
 }
 .desc{
   text-align:center;
-  font-family: Kreon, serif;
+  font-family: Verdana,sans-serif;
   font-size:1.2em;
 }
 
@@ -417,7 +419,7 @@ body {
   
   li{
     list-style:none;
-    line-height:24px;
+    line-height:20px;
     img{ padding-right:10px; border:none; }
   }
 }
@@ -425,7 +427,7 @@ body {
 
  #optionsmodal{
   @include rounded(10px);
-  font-family: Kreon, Georgia;
+  font-family: Verdana, Georgia;
   position:absolute;
   width:450px;
   height:300px;

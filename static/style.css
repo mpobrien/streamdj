@@ -3,7 +3,8 @@ body {
   text-align: center;
   margin: 0px;
   padding: 0;
-  font: normal 0.8em/1.2em verdana, aria, sans-serif;
+  font-family: Verdana,sans-serif;
+  /*	font:normal 0.8em/1.2em verdana,aria,sans-serif;*/
   color: #666; }
 
 #wrapper1 {
@@ -25,17 +26,17 @@ body {
   margin: 0;
   height: 45px;
   padding-top: 15px;
-  font-family: Kreon, Georgia, serif;
+  font-family: Verdana, sans-serif;
   color: #fffedf; }
   #header img {
     border: 0; }
   #header #links .link {
     margin-left: 20px;
     margin-right: 20px;
-    font-size: 16px; }
+    font-size: 14px; }
     #header #links .link a:hover {
       color: #fffedf;
-      text-decoration: underline; }
+      text-decoration: none; }
     #header #links .link a:link {
       color: #fffedf;
       text-decoration: none; }
@@ -45,7 +46,7 @@ body {
     padding-top: 0px;
     float: left;
     margin-left: 20px;
-    font-size: 30px; }
+    font-size: 35px; }
     #header #branding a:hover, #header #branding a:link, #header #branding a:visited, #header #branding a:active {
       color: #fffedf;
       text-decoration: none; }
@@ -150,31 +151,31 @@ body {
       padding-right: 5px;
       color: #aaa; }
     #chatwrapper #chat .from {
-      font-size: 14px;
+      font-size: 12px;
       font-weight: bold;
       color: black; }
     #chatwrapper #chat .message, #chatwrapper #chat .join, #chatwrapper #chat .playstart {
       padding-left: 8px;
-      font-size: 14px; }
+      font-size: 12px; }
     #chatwrapper #chat .message {
       margin-top: 2px;
-      font-size: 14px;
+      font-size: 12px;
       color: black; }
     #chatwrapper #chat .playstart {
       border--radius: 5px;
       -moz-border-radius: 5px;
       -webkit-border-radius: 5px;
-      background: #cae6ff;
+      background: #ffe6e6;
       /* for non-css3 browsers */
       filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to');
       /* for IE */
-      background: -webkit-gradient(linear, left top, left bottom, from(#cae6ff), to(#f1f8fe));
+      background: -webkit-gradient(linear, left top, left bottom, from(#ffe6e6), to(#fef2f2));
       /* for webkit browsers */
-      background: -moz-linear-gradient(top, #cae6ff, #f1f8fe);
+      background: -moz-linear-gradient(top, #ffe6e6, #fef2f2);
       /* for firefox 3.6+ */
       margin-top: 5px;
       margin-right: 5px;
-      border: 1px solid #97acbf;
+      border: 1px solid #ffcccc;
       color: black;
       padding-top: 15px;
       padding-bottom: 15px; }
@@ -196,9 +197,9 @@ body {
 
 .colheading {
   padding-left: 20px;
-  font-family: Kreon;
+  font-family: Verdana;
   color: #3e4147;
-  font-size: 24px; }
+  font-size: 20px; }
 
 #footer {
   position: relative;
@@ -230,8 +231,8 @@ body {
   left: 34px;
   padding-left: 5px;
   padding-right: 15px;
-  font-family: Georgia, serif;
-  font-size: 16px; }
+  font-family: Verdana,  sans-serif;
+  font-size: 14px; }
   #currentfile .by, #currentfile .from, #currentfile .upby {
     font-size: .8em;
     margin-right: 5px; }
@@ -257,6 +258,7 @@ body {
 
 #queuelist {
   height: 380px;
+  font-size: .9em;
   overflow-y: auto;
   padding-left: 5px; }
   #queuelist .odd {
@@ -284,7 +286,7 @@ body {
 
 .desc {
   text-align: center;
-  font-family: Kreon, serif;
+  font-family: Verdana,sans-serif;
   font-size: 1.2em; }
 
 #queue {
@@ -298,7 +300,7 @@ body {
   padding-left: 5px; }
   #listenerslist li {
     list-style: none;
-    line-height: 24px; }
+    line-height: 20px; }
     #listenerslist li img {
       padding-right: 10px;
       border: none; }
@@ -307,7 +309,7 @@ body {
   border--radius: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
-  font-family: Kreon, Georgia;
+  font-family: Verdana, Georgia;
   position: absolute;
   width: 450px;
   height: 300px;
