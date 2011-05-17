@@ -362,7 +362,7 @@ body {
   #favorites .favorite_entry .title, #favorites .favorite_entry .artist, #favorites .favorite_entry .by, #favorites .favorite_entry .album, #favorites .favorite_entry .upby, #favorites .favorite_entry .uploader, #favorites .favorite_entry .from {
     margin-right: 4px; }
   #favorites .favorite_entry .title, #favorites .favorite_entry .artist {
-    font-size: 1.1em; }
+    font-size: .9em; }
 
 /* modal overlay */
 #basic-modal-content {
