@@ -16,9 +16,10 @@
     <div id="container">
       <div id="leftside">
         outloud<span class="dotfm">.fm</span>
-        <div> <img src="/static/note.png"/> </div>
       </div>
-      <div id="rightside">
+
+      </div>
+	<div id="rightside">
         {{#userinfo}}
           <div>
             <div class="userinfo" style="float:left; width:100%">
@@ -30,7 +31,7 @@
               </div>
             </div>
           </div>
-          <h1>Create or join a room</h1>
+          <h1>Create or join a room</h1><br>
           <div class="formcontainer">
             <form action="/room" method="POST">
               <label for="roomname">Room Name:</label>
@@ -53,32 +54,49 @@
         {{/userinfo}}
 
         {{^userinfo}}
-          <div>
-            <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a>
-          </div>
-          <div style="text-align:center; padding-bottom:5px;" class="disclaimer">
-            &nbsp;
-          </div>
 
-          <div>
-            <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
+    <div id="headline">
+        The coolest way to share</br>
+        music with your friends.
+      </div>
+      <div id="blurb">
+	OUTLOUD.fm is an interactive music sharing website<br> that lets you and your friends hear music together in<br> a chat room--all at the same time! Anyone can upload <br>songs that get added to an infinite playlist for a more <br>personalized music recommendation experience. </div>
+     <div class="slideshow" id="flavor_1"></div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
+<script src="static/agile_carousel.a1.js"></script>
+
+<script>
+    $.getJSON("static/agile_carousel_data.php", function(data) {
+        $(document).ready(function(){
+            $("#flavor_1").agile_carousel({
+                carousel_data: data,
+                carousel_outer_height: 330,
+                carousel_height: 330,
+                slide_height: 230,
+                carousel_outer_width: 510,
+                slide_width: 510,
+                transition_time: 300,
+                timer: 4000,
+                continuous_scrolling: true,
+                control_set_1: "numbered_buttons",
+                no_control_set: "hover_previous_button,hover_next_button"
+            });
+        });
+    });
+</script>
+       <div id="start">
+
+	    Get Started!
+	  </div> 
+       <div id="login">
+
+            <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a> -or- <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
           </div>
-          <br/>
-	  <br/>
-	  <br/>
-          <span class="disclaimer">
-            We will  never publish anything<br/> without your explicit permission.
-          </span>
+          <div id="disclaimer">
+            We will  never publish anything without your explicit permission.
+          </div>
         {{/userinfo}}
       </div>
-    </div>
-
-
-
-
-
-
-
 
 
     <div style="text-align:center; color:#efffd3; font-size:44px; padding-top:2cm;">
@@ -89,3 +107,21 @@
     </div>
   </body>
 </html>
+         
+	 
+        
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
