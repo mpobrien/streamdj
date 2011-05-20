@@ -15,7 +15,7 @@
 
     <div id="container">
       <div id="leftside">
-        outloud<span class="dotfm">.fm</span>
+       <img src="/static/ol_med.png">
       </div>
 
       </div>
