@@ -1,6 +1,5 @@
 <html>
   <head>
-  <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'/>
   <link href='/static/login.css' rel='stylesheet' type='text/css'/>
   <style>
     .error{
@@ -47,7 +46,7 @@
           {{#invalid}}
             <div class="error">
               The room name you chose is not valid.<br/><br/>
-              Pick something with only letters,<br/> numbers, and spaces, between </br>
+              Pick something with only letters and numbers, between </br>
               6 and 15 characters long.
             </div>
           {{/invalid}}
