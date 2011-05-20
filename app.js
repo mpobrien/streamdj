@@ -255,10 +255,11 @@ var authdone_twitter = function(req, res, qs){//{{{
   var roomname = qs.query['r']
   var cookies = new Cookies(req, res)
   oa.getOAuthAccessToken(token, verifier, function(error, oauth_access_token, oauth_access_token_secret, results2) {
-    if(!results2){
+    if(!results2 || error){
       console.log("results from oauth is undefined!");
       console.log("error?", error);
       utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
+      return;
     }
     if( !results2.user_id ){
       res.end(); 
