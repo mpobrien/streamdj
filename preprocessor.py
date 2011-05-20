@@ -66,6 +66,8 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
 
   outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'uid':songInfo['uid'], 'path':outputpath, 'meta':metadata, 'songId':newSongId}
   print json.dumps(outgoingMessage)
+  if 'fname' not in songInfo:
+      songInfo['fname'] = "(Unknown)"
   streamMessage = json.dumps( {'path':outputpath, 'name':songInfo['fname'], 'uid':songInfo['uid'], 'uploader':songInfo['uploader'], 'songId':newSongId, 'meta':metadata});
   #r.rpush("roomqueue_" + songInfo['room'], streamMessage);
   r.zadd("roomqueue_" + songInfo['room'], streamMessage, newSongId ) #key, score, member 
