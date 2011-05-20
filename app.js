@@ -255,6 +255,11 @@ var authdone_twitter = function(req, res, qs){//{{{
   var roomname = qs.query['r']
   var cookies = new Cookies(req, res)
   oa.getOAuthAccessToken(token, verifier, function(error, oauth_access_token, oauth_access_token_secret, results2) {
+    if(!results2){
+      console.log("results from oauth is undefined!");
+      console.log("error?", error);
+      utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
+    }
     if( !results2.user_id ){
       res.end(); 
       return;
@@ -424,7 +429,7 @@ var upload = function(req, res, qs, matches){//{{{
     console.log(uploaderInfo.name," started uploading", fname);
     //TODO check err!*/ //TODO check that user is in the room?*/ //TODO validate that it's legit mp3?
     fileUpload.on("filedone", function(){
-      var uidkey = userinfo.service + "_" + userinfo.user_id;
+      var uidkey = uploaderInfo.service + "_" + uploaderInfo.user_id;
       var uploadedFileInfo = JSON.stringify({"path":fullPath, "room":roomname, "uploader":uploaderInfo.name,'uid':uidkey, 'fname':fname});
       redisClient.rpush("newsongready", uploadedFileInfo);
     });
@@ -471,7 +476,7 @@ var roomdisplay = function(req, res, qs, matches){//{{{
         }
         return;
       }
-      userinfo = {user_id:replies[0], screen_name:replies[1], name:replies[2], pic:replies[3], service:replies[4]}
+      var userinfo = {user_id:replies[0], screen_name:replies[1], name:replies[2], pic:replies[3], service:replies[4]}
       console.log(replies[2], "loaded page for room", roomName);
       var uidkey = userinfo.service + "_" + userinfo.user_id;
       if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
@@ -650,7 +655,7 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
           var uidkey = userinfo.service + '_' + userinfo.user_id;
           for(i=0;i<reply3.length;i++){
             var queueItem = JSON.parse(reply3[i]);
-            console.log(queueItem, uidkey);
+            //console.log(queueItem, uidkey);
             if(queueItem.uid && queueItem.uid == uidkey){
               queueItem.mine = true;
             }
