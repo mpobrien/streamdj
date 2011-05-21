@@ -60,8 +60,8 @@
         music with your friends.
       </div>
       <div id="blurb">
-	OUTLOUD.fm is an interactive music sharing website<br> that lets you and your friends hear music together in<br> a chat room--all at the same time! Anyone can upload <br>songs that get added to an infinite playlist for a more <br>personalized music recommendation experience. </div>
-     <div class="slideshow" id="flavor_1"></div>
+      OUTLOUD.FM lets you create rooms where you can chat <br> and listen to music with your friends with a real time <br>collaborative playlist. Just sign in, pick a room name, and<br> start uploading music! </div>
+      <div class="slideshow" id="flavor_1"></div>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
 <script src="static/agile_carousel.a1.js"></script>
 
