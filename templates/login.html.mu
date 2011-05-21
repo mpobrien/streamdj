@@ -59,8 +59,8 @@
         music with your friends.
       </div>
       <div id="blurb">
-	OUTLOUD.fm lets you and your friends upload music and<br/> play tracks for each other in real time, while you chat <br/>- with a collaborative, streaming playlist.</div>
-     <div class="slideshow" id="flavor_1"></div>
+      OUTLOUD.FM lets you create rooms where you can chat <br> and listen to music with your friends with a real time <br>collaborative playlist. Just sign in, pick a room name, and<br> start uploading music! </div>
+      <div class="slideshow" id="flavor_1"></div>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
 <script src="static/agile_carousel.a1.js"></script>
 
