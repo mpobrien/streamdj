@@ -518,7 +518,13 @@ server.addListener("request", function(req, res) {
     return;
   }
 
-  console.log("Request at:", qs.pathname, qs.query, "from", req.connection.remoteAddress);
+  var r;
+  if('referer' in req.headers){
+    r = req.headers['referer']
+  }else{
+    r= "unknown"
+  }
+  console.log("Request at:", qs.pathname, qs.query, "from", req.connection.remoteAddress, r);
   var func = router.route(qs.pathname);
   if( func ){
     func[0](req, res, qs, func[1])
