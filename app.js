@@ -314,7 +314,16 @@ var authdone_facebook = function(req, res, qs){//{{{
       https.get({ host: 'graph.facebook.com', path: "/me?access_token=" + authtoken.access_token}, function(client_res2) { 
         client_res2.on('data', function(d) {
             //TODO catch bad json here
-          var me_data = JSON.parse(d.toString())
+          var me_data;
+          try{
+            me_data = JSON.parse(d.toString())
+          }catch(exception){
+            console.log("ERROR during facebook oauth callback:", exception);
+            console.log("from facebook:", d.toString());
+            utilities.sendTemplate(res, "login.html", {room:roomName}, settings.devtemplates); 
+            return;
+          }
+        
           console.log(me_data);
           console.log(me_data.name, " logged in with facebook");
           /*{ id: '8801758',
