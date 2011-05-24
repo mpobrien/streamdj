@@ -1,5 +1,7 @@
 <html>
   <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
     <link href="/static/style.css" rel="stylesheet" />
     <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
     <link rel="icon" type="image/gif" href="/static/favicon.gif" />
