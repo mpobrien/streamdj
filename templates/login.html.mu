@@ -104,6 +104,10 @@
     </div>
     <div id="info">
     </div>
+    <div id="footer">
+      <a href="/static/about.html">about/faq</a>
+    </div>
+
   </body>
 </html>
          
