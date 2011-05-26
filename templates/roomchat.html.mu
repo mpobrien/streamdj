@@ -215,7 +215,7 @@
           </div>
       </div>
       <div id="links">
-        <span class="link"><a href="#" id="about">about</a></span>
+        <span class="link"><a href="#" id="about">help</a></span>
         <span class="link"><a href="#" id="options">options</a></span>
         <span class="link"><a href="#" id="favoriteslink">favorites</a></span>
         <span class="link"><a href="/logout">logout</a></span>
@@ -300,10 +300,13 @@
       </div><!-- end wrapper1 -->
     </div><!-- end wrapper2 -->
     <div id="aboutmodal" style="display:none">
-      <div style="color:black; font-family:Verdana, sans-serif; font-size:0.8em">
-        OUTLOUD.FM is an effing sweet and exciting way to play music for your friends; allowing songs to be uploaded and curated in a realtime collaborative playlist. <br><br> Bored and hungry? Simply send the URL of your OUTLOUD.FM room to your friends, and start uploading music! (OUTLOUD.FM will, however, do nothing for your hunger.)<br><br> We are based out of New York City, and would love to hear your comments, bug reports, and/or suggestions.<br/><br/>
-        E-mail us! <a href="mailto:info@outloud.fm" style="color:blue">info@outloud.fm</a><br/><br/>
-        Follow us on twitter! <a href="http://twitter.com/outloudfm" style="color:blue">@outloudfm</a>
+      <div style="color:black; text-align:left; font-family:Verdana, sans-serif; font-size:12px">
+        <b>My audio is skipping. :( </b><br>
+	   -That sucks! Just refresh the page OR click on Options --> Restart Audio Stream<br><br>
+        <b>My song got skipped/didn't play.</b><br>
+	   -Poor guy! A couple things could've happened -- it's possible that your song was a corrupted file, or a file that our processor did not like. If you REALLY want to play the song, you could run it through the iTunes mp3 converter (info here: <a href="http://support.apple.com/kb/ht1550" style="color:blue">http://support.apple.com/kb/ht1550</a> ). Or, you just uploaded a filetype that we don't support. Please keep it mp3, m4a, aiff, flacc, wma.<br> <br>
+        <b> I found a bug that's not listed here. This site sucks. What do I do?</b><br>
+-Please let us know about any bugs, or suggestions you have that would make OUTLOUD.FM better for you. Email us at <a href="mailto:info@outloud.fm" style="color:blue">info@outloud.fm</a>, or find us on Twitter <a href="http://twitter.com/outloudfm" style="color:blue">@outloudfm</a> 
        </div>
      </div>
     <div id="optionsmodal" style="display:none">
