@@ -304,9 +304,9 @@
         <b>My audio is skipping. :( </b><br>
 	   -That sucks! Just refresh the page OR click on Options --> Restart Audio Stream<br><br>
         <b>My song got skipped/didn't play.</b><br>
-	   -Poor guy! A couple things could've happened -- it's possible that your song was a corrupted file, or a file that our processor did not like. If you REALLY want to play the song, you could run it through the iTunes mp3 converter (info here: <a href="http://support.apple.com/kb/ht1550" style="color:blue">http://support.apple.com/kb/ht1550</a> ). Or, you just uploaded a filetype that we don't support. Please keep it mp3, m4a, aiff, flacc, wma.<br> <br>
+	   -Poor guy! It's possible that your song was a corrupted file, or unsupported format.  We're working hard on making the site work with any file you throw at it. If you REALLY want to play the song, you could run it through the iTunes mp3 converter (info here: <a href="http://support.apple.com/kb/ht1550" style="color:blue">http://support.apple.com/kb/ht1550</a> ). We support mp3, m4a, or wma.<br> <br>
         <b> I found a bug that's not listed here. This site sucks. What do I do?</b><br>
--Please let us know about any bugs, or suggestions you have that would make OUTLOUD.FM better for you. Email us at <a href="mailto:info@outloud.fm" style="color:blue">info@outloud.fm</a>, or find us on Twitter <a href="http://twitter.com/outloudfm" style="color:blue">@outloudfm</a> 
+-Please let us know about any bugs or suggestions you have that would make OUTLOUD.FM better for you. Email us at <a href="mailto:info@outloud.fm" style="color:blue">info@outloud.fm</a> (please include some basic info -- browser + version, operating system, astrological sign, favorite color). Or find us on Twitter <a href="http://twitter.com/outloudfm" style="color:blue">@outloudfm</a> 
        </div>
      </div>
     <div id="optionsmodal" style="display:none">
