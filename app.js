@@ -320,7 +320,7 @@ var authdone_facebook = function(req, res, qs){//{{{
           }catch(exception){
             console.log("ERROR during facebook oauth callback:", exception);
             console.log("from facebook:", d.toString());
-            utilities.sendTemplate(res, "login.html", {room:roomName}, settings.devtemplates); 
+            utilities.sendTemplate(res, "login.html", {}, settings.devtemplates); 
             return;
           }
         
@@ -515,8 +515,19 @@ var router = new routing.Router([
 ]);
 
 var server = ws.createServer();
+
+
+server.addListener("error", function(req, res) {
+  console.log("something went wrong");
+})
+
 server.addListener("request", function(req, res) {
   req.on("clientError", function(exception){
+      console.log("ERROR - ", exception);
+      res.end();
+  });
+
+  req.on("error", function(exception){
       console.log("ERROR - ", exception);
       res.end();
   });
