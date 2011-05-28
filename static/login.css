@@ -20,7 +20,9 @@ h1 {
 #footer {
     padding-top:30px;
   clear: both;
-  text-align: center; }
+  padding-top: 70px;
+  text-align: center;
+  font-size: 13px; }
 
 #profileImg {
   padding-left: 15px; }
