@@ -273,6 +273,7 @@ var authdone_twitter = function(req, res, qs){//{{{
       console.log(results2.screen_name, "logged in via twitter");
       //TODO use a hash here instead maybe?
       var session_id = utilities.randomString(128);
+      redisClient.sadd("allusers", "tw_" + results2.user_id);
       redisClient.mset("session_"+session_id+"_user_id", results2.user_id,
                        "session_"+session_id+"_service", "tw",
                        "session_"+session_id+"_screen_name", results2.screen_name,
