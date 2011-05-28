@@ -57,6 +57,16 @@ var fileEnd = function(roomName, fileinfo){
     fileinfo.msgId = reply;
     redisClient2.publish("file-ended", JSON.stringify(fileinfo));
   });
+
+  if( fileinfo && fileinfo.path){
+    fs.unlink(fileinfo.path, function(error){
+        if( error ){
+          console.log("error occurred deleting file after finished:", error);
+        }else{
+          console.log("Deleted file", fileinfo.path);
+        }
+    })
+  }
 }
 
 var fileChanged = function(roomName, oldfile, newfile){
@@ -72,6 +82,15 @@ var fileChanged = function(roomName, oldfile, newfile){
       //redisClient2.ltrim("chatlog_"+ roomName, 100, function(){});
     });
   });
+  if( oldfile && oldfile.path){
+    fs.unlink(oldfile.path, function(error){
+        if( error ){
+          console.log("error occurred deleting file after finished:", error);
+        }else{
+          console.log("Deleted file", oldfile.path);
+        }
+    })
+  }
 }
 
 
