@@ -72,7 +72,6 @@ var handleFiles = function(files){//{{{
 /* Message handling */
 function processMessage(message, isStatic){//{{{
   var type = message.type;
-  console.log(message)
   var handler = MessageHandlers[type]
   if(handler){
     handler(message, isStatic);
