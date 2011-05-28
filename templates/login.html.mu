@@ -97,16 +97,13 @@
         });
     });
 </script>
-       <div id="start">
-
-	    Get Started!
-	  </div> 
+    <div id="start"> Get Started!  </div> 
        <div id="login">
 
             <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a> -or- <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
           </div>
           <div id="disclaimer">
-            We will  never publish anything without your explicit permission.
+            We will <b>NEVER</b> publish to your account feed<br/> without you explicitly choosing to do so.
           </div>
         {{/userinfo}}
       </div>
@@ -121,7 +118,6 @@
     <div id="footer">
       <a href="/static/about.html">about</a>
     </div>
-
   </body>
 </html>
          
