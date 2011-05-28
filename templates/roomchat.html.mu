@@ -140,9 +140,10 @@
 
              $('#favelist').html('')
              $.getJSON('/favorites/', function(data){
-               if(!data.faves){
-                 $('#favorites').html('No favorites yet!')
+               if(!data.faves || data.numFavorites == 0){
+                 $('#nofaves').show();
                }else{
+                 $('#nofaves').hide();
                  var count = 0;
                  $.each(data.faves, function(key, message){
                    count++;
@@ -172,10 +173,10 @@
                    newli.appendTo(wrapper);
                    wrapper.appendTo('#favelist');
                  })
-                 $('#favorites').show('slide', 'fast', function(){
-                   favoritesopen = true;
-                 });
                }
+               $('#favorites').show('slide', 'fast', function(){
+                 favoritesopen = true;
+               });
              })
            });
          });
@@ -286,8 +287,13 @@
             </div>
             <div id="favorites" style="display:none">
               <button id="closefavorites">&larr; Back to Player</button>
-              <div id="favelist">
+              <div id="favesheader">Favorites</div>
+              <div id="nofaves">
+                You haven't added any songs to your favorites list yet.<br/>
+                To add a song to this list so you can find it later,<br/>
+                click on the <img src="/static/heart_deactive.png"/> next to a song while it's playing.
               </div>
+              <div id="favelist"></div>
             </div>
           </div><!-- end leftcol -->
           <div id="rightcol"><!-- begin rightcol -->

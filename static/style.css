@@ -349,6 +349,16 @@ body {
 .hover {
   background: url("/static/heart_hover.png") no-repeat; }
 
+#favorites #nofaves {
+  display: none;
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+  padding: 30px 80px 50px; }
+#favorites #favesheader {
+  text-align: center;
+  font-weight: bold;
+  padding: 5px; }
 #favorites .odd {
   background-color: #ddd; }
 #favorites .favwrapper {

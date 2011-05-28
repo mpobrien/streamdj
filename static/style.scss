@@ -480,6 +480,18 @@ body {
 }
 
 #favorites{
+  #nofaves{
+    display:none;
+    font-size:12px;
+    line-height:24px;
+    text-align:center;
+    padding: 30px 80px 50px;
+  }
+  #favesheader{
+    text-align:center;
+    font-weight:bold;
+    padding:5px;
+  }
 
   .odd{
   background-color:#ddd;
