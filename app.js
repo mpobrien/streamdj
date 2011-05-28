@@ -176,34 +176,41 @@ var favorites = function(req, res){//{{{
     if(err){ res.end(); return; }
     console.log(userinfo.name, "loaded favorites list.");
     var uidkey = userinfo.service + "_" + userinfo.user_id
-    redisClient.zrevrange("fave_" + uidkey, 0, 10,function(err, data){
-      if(data){
-        var keys = []
-        for(var i=0;i<data.length;i++){
-          keys.push("s_" + data[i]);
-        }
-        redisClient.mget(keys, function(err2, data2){
-          if(data2){
-            for(var i=0;i<data2.length;i++){
-              if(data2[i]){
-                try{
-                  var fave_info = JSON.parse(data2[i]);
-                  fave_info.songId = data[i];
-                  faved.push(fave_info);
-                }catch(exception){
-                  console.log("bad json?", data2[i]);
-                  continue;
+    responseJson = {numFavorites:0, faves:[]};
+    redisClient.zcard("fave_" + uidkey, function(err, data){
+      if( data != undefined ){
+        responseJson.numFavorites = data;
+      }
+
+      redisClient.zrevrange("fave_" + uidkey, 0, 10,function(err, data){
+        if(data){
+          var keys = []
+          for(var i=0;i<data.length;i++){
+            keys.push("s_" + data[i]);
+          }
+          redisClient.mget(keys, function(err2, data2){
+            if(data2){
+              for(var i=0;i<data2.length;i++){
+                if(data2[i]){
+                  try{
+                    var fave_info = JSON.parse(data2[i]);
+                    fave_info.songId = data[i];
+                    responseJson.faves.push(fave_info);
+                  }catch(exception){
+                    console.log("bad json?", data2[i]);
+                    continue;
+                  }
                 }
               }
+              res.end(JSON.stringify(responseJson));
+            }else{
+              res.end("{\"faves\":[], \"numFavorites\":0}");
             }
-            res.end(JSON.stringify({faves:faved}));
-          }else{
-            res.end("{\"faves\":[]}");
-          }
-        });
-      }else{
-        res.end("{\"faves\":[]}");
-      }
+          });
+        }else{
+          res.end("{\"faves\":[]}");
+        }
+      });
     });
   })
 }//}}}
