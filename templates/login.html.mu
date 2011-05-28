@@ -93,7 +93,7 @@
             <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a> -or- <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
           </div>
           <div id="disclaimer">
-            We will  never publish anything without your explicit permission.
+            ( We NEVER publish to your account feed without your explicit action )
           </div>
         {{/userinfo}}
       </div>
@@ -108,7 +108,6 @@
     <div id="footer">
       <a href="/static/about.html">about</a>
     </div>
-
   </body>
 </html>
          
