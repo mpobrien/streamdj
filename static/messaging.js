@@ -105,7 +105,6 @@ var MessageHandlers = {
 
     $('#currentfile').html('')
     var nowPlayingInfo;
-    console.log(message)
     if( message.meta ){
       if( 'Title' in message.meta){
         $('#currentfile').append($('<div></div>').attr("id","np_title").text(message.meta['Title']));
@@ -174,7 +173,6 @@ var MessageHandlers = {
   },//}}}
 
   "qdel": function(message, isStatic){//{{{
-    console.log("yo", message);
     var songId = message["songId"]
     $('#song_' + songId).hide('slide', function(){$(this).remove()});
   }//}}}

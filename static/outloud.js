@@ -228,13 +228,11 @@ $(document).ready(//{{{
     oddify();
     $('.heartbox').live({
        mouseenter: function(){
-          console.log("on");
           if( !$(this).hasClass('on') ){ // not liked yet
             $(this).addClass("hover");
           }else{}
        },
        mouseleave: function(){
-        console.log("off");
         if( !$(this).hasClass('on') ){ // not liked yet
           $(this).removeClass("hover");
         }
