@@ -16,6 +16,7 @@
       <div id="leftside">
        <img src="/static/ol_med.png">
       </div>
+      </div>
 
       </div>
 	<div id="rightside">
@@ -105,7 +106,7 @@
     <div id="info">
     </div>
     <div id="footer">
-      <a href="/static/about.html">about/faq</a>
+      <a href="/static/about.html">about</a>
     </div>
 
   </body>
