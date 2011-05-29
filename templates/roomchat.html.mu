@@ -67,6 +67,7 @@
       }
       soundManager.url = '/static/swf/';
       soundManager.debugMode = false;
+      soundManager.useHighPerformance = true;
       soundManager.flashVersion = 9;
       soundManager.flash9Options.useEQData = true;
       soundManager.flash9Options.useWaveformData = true;
