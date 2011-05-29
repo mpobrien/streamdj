@@ -1,6 +1,5 @@
 <html>
   <head>
-
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
     <link href="/static/style.css" rel="stylesheet" />
     <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
@@ -138,8 +137,11 @@
            $.getJSON('/favorites/', {p:pageNum}, function(data){
              if(!data.faves || data.numFavorites == 0){
                $('#nofaves').show();
+               $('#favesheader').text("Favorites (0)")
              }else{
                var numfavorites = data.numFavorites;
+               if(!numfavorites) numfavorites = 0;
+               $('#favesheader').text("Favorites (" + numfavorites + ")")
                var numPages = Math.ceil(data.numFavorites / 10 );
                if( numPages > 1){
                  if( data.page > 0 ){

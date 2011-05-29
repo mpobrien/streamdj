@@ -509,11 +509,15 @@ body {
   #favepages{
     margin-left:20px;
     margin-bottom:15px;
+    text-align:center;
   }
   #curpage{
     cursor:default;
     font-weight:bold;
     border:1px solid #ccc;
+  }
+  .nolink{
+    cursor:default;
   }
   .favepagelink{
     list-style:none;
@@ -534,6 +538,8 @@ body {
   .favwrapper{
     position:relative;
     clear:both;
+    border-bottom:1px solid #ccc;
+    border-right:1px solid #ccc;
     .heartbox{
       margin-left:5px;
       margin-top:10px;
@@ -542,6 +548,7 @@ body {
   }
   .first{
     @include rounded-topright(5px);
+    border-top:1px solid #ccc;
   }
   .last{
     @include rounded-botright(5px);
