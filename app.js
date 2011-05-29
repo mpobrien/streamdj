@@ -167,22 +167,28 @@ var logout = function(req, res){//{{{
   })
 }//}}}
 
-var favorites = function(req, res){//{{{
+var favorites = function(req, res, qs){//{{{
   var cookies = new Cookies(req, res);
   var sessionId = cookies.get("session");
   if( !sessionId ){ res.end(); return; }// not logged in
   var faved = []
+  var pagesize = 10;
   getUserInfo(sessionId, function(err, userinfo){
     if(err){ res.end(); return; }
     console.log(userinfo.name, "loaded favorites list.");
     var uidkey = userinfo.service + "_" + userinfo.user_id
     responseJson = {numFavorites:0, faves:[]};
+    var pageNum = qs.query['p']
+    if( !pageNum ) pageNum = 0;
+    var lowerBound = (pageNum*pagesize);
+    var upperBound = lowerBound + pagesize
+    responseJson.page = pageNum;
     redisClient.zcard("fave_" + uidkey, function(err, data){
       if( data != undefined ){
         responseJson.numFavorites = data;
       }
 
-      redisClient.zrevrange("fave_" + uidkey, 0, 10,function(err, data){
+      redisClient.zrevrange("fave_" + uidkey, lowerBound, upperBound,function(err, data){
         if(data){
           var keys = []
           for(var i=0;i<data.length;i++){
@@ -204,11 +210,11 @@ var favorites = function(req, res){//{{{
               }
               res.end(JSON.stringify(responseJson));
             }else{
-              res.end("{\"faves\":[], \"numFavorites\":0}");
+              res.end("{\"faves\":[],\"page\":0,\"numFavorites\":0}");
             }
           });
         }else{
-          res.end("{\"faves\":[]}");
+          res.end("{\"faves\":[],\"page\":0,\"numFavorites\":0}");
         }
       });
     });
