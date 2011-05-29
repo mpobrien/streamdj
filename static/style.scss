@@ -31,6 +31,19 @@ $barinner:lighten($barborder, 20%);
   -webkit-border-radius: $radius;
 }
 
+@mixin rounded-topright($radius: 10px) {
+  border-top-right-radius: $radius;
+  -moz-border-radius-topright: $radius;
+  -webkit-border-top-right-radius: $radius;
+}
+
+@mixin rounded-botright($radius: 10px) {
+  border-bottom-right-radius: $radius;
+  -moz-border-radius-bottomright: $radius;
+  -webkit-border-bottom-right-radius: $radius;
+}
+
+
 @mixin gradient($from, $to) {
   background: $from; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to'); /* for IE */
@@ -488,9 +501,29 @@ body {
     padding: 30px 80px 50px;
   }
   #favesheader{
+    font-size:1.2em;
     text-align:center;
     font-weight:bold;
     padding:5px;
+  }
+  #favepages{
+    margin-left:20px;
+    margin-bottom:15px;
+  }
+  #curpage{
+    cursor:default;
+    font-weight:bold;
+    border:1px solid #ccc;
+  }
+  .favepagelink{
+    list-style:none;
+    cursor:pointer;
+    display:inline;
+    margin-right:5px;
+    padding-top:3px;
+    padding-bottom:4px;
+    padding-left:5px;
+    padding-right:5px;
   }
 
   .odd{
@@ -500,15 +533,30 @@ body {
 
   .favwrapper{
     position:relative;
+    clear:both;
+    .heartbox{
+      margin-left:5px;
+      margin-top:10px;
+      float:left;
+    }
+  }
+  .first{
+    @include rounded-topright(5px);
+  }
+  .last{
+    @include rounded-botright(5px);
+  }
+  .odd{
+    @include gradient(#ddd, lighten(#ddd, 10%));
+    background-color:#ddd;
   }
 
   .favorite_entry{
+    padding-top: 7px;
+    padding-bottom: 7px;
+    float:left;
     position:relative;
-    padding-top:10px;
-    left:24px;
-    top:-25px;
-    width: $leftcolWidth - 30;
-    padding-left:15px;
+    padding-left:10px;
     .fav_line{
     }
 
@@ -519,6 +567,10 @@ body {
       font-size:.9em;
     }
   }
+}
+
+.clearer{
+  clear:both;
 }
 
 

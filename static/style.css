@@ -356,24 +356,66 @@ body {
   text-align: center;
   padding: 30px 80px 50px; }
 #favorites #favesheader {
+  font-size: 1.2em;
   text-align: center;
   font-weight: bold;
   padding: 5px; }
+#favorites #favepages {
+  margin-left: 20px;
+  margin-bottom: 15px; }
+#favorites #curpage {
+  cursor: default;
+  font-weight: bold;
+  border: 1px solid #ccc; }
+#favorites .favepagelink {
+  list-style: none;
+  cursor: pointer;
+  display: inline;
+  margin-right: 5px;
+  padding-top: 3px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px; }
 #favorites .odd {
   background-color: #ddd; }
 #favorites .favwrapper {
-  position: relative; }
-#favorites .favorite_entry {
   position: relative;
-  padding-top: 10px;
-  left: 24px;
-  top: -25px;
-  width: 320px;
-  padding-left: 15px; }
+  clear: both; }
+  #favorites .favwrapper .heartbox {
+    margin-left: 5px;
+    margin-top: 10px;
+    float: left; }
+#favorites .first {
+  border-top-right-radius: 5px;
+  -moz-border-radius-topright: 5px;
+  -webkit-border-top-right-radius: 5px; }
+#favorites .last {
+  border-bottom-right-radius: 5px;
+  -moz-border-radius-bottomright: 5px;
+  -webkit-border-bottom-right-radius: 5px; }
+#favorites .odd {
+  background: #dddddd;
+  /* for non-css3 browsers */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to');
+  /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#dddddd), to(#f7f7f7));
+  /* for webkit browsers */
+  background: -moz-linear-gradient(top, #dddddd, #f7f7f7);
+  /* for firefox 3.6+ */
+  background-color: #ddd; }
+#favorites .favorite_entry {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  float: left;
+  position: relative;
+  padding-left: 10px; }
   #favorites .favorite_entry .title, #favorites .favorite_entry .artist, #favorites .favorite_entry .by, #favorites .favorite_entry .album, #favorites .favorite_entry .upby, #favorites .favorite_entry .uploader, #favorites .favorite_entry .from {
     margin-right: 4px; }
   #favorites .favorite_entry .title, #favorites .favorite_entry .artist {
     font-size: .9em; }
+
+.clearer {
+  clear: both; }
 
 /* modal overlay */
 #basic-modal-content {

@@ -127,6 +127,85 @@
 	       $('#about').click(function(){
           $('#aboutmodal').modal( {closeHtml:"", overlayClose:true});
          }); 
+         function loadFavGenerator(pn){
+           return function(){
+             loadFavorites(pn);
+           }
+         }
+         function loadFavorites(pageNum, doSlide){
+           $('#favelist').html('')
+           $('#favepages').html('');
+           $.getJSON('/favorites/', {p:pageNum}, function(data){
+             if(!data.faves || data.numFavorites == 0){
+               $('#nofaves').show();
+             }else{
+               var numfavorites = data.numFavorites;
+               var numPages = Math.ceil(data.numFavorites / 10 );
+               if( numPages > 1){
+                 if( data.page > 0 ){
+                   var prevlink = $('<li class="favepagelink">&larr;</li>');
+                   prevlink.click(loadFavGenerator(data.page-1));
+                   $('#favepages').append(prevlink);
+                 }else{
+                   $('#favepages').append($('<li class="favepagelink">&nbsp;</li>'));
+                 }
+                 for(var i=0;i<numPages;i++){
+                   var nli = $('<li class="favepagelink">' + (i+1) + '</li>')
+                   if( i==data.page ) nli.attr('id',"curpage");
+                   else{
+                    nli.click(loadFavGenerator(i));
+                   }
+                   $('#favepages').append(nli);
+                 }
+                 if( data.page != numPages-1 ){
+                   var nextlink = $('<li class="favepagelink">&rarr;</li>');
+                   nextlink.click(loadFavGenerator(numPages-1));
+                   $('#favepages').append(nextlink);
+                 }
+               }
+               
+               $('#nofaves').hide();
+               var count = 0;
+               $.each(data.faves, function(key, message){
+                 count++;
+                 if(!message) return;
+                 var wrapper = $('<div class="favwrapper' + (count%2>0 ? ' odd':'') + '"></div>');
+                 var newli = $('<div class="favorite_entry"></div>');
+                 if( count == 1 ) wrapper.addClass("first");
+                 if( count == 10 ) wrapper.addClass("last");
+                 //var unfavorite = $('<div class="unfavorite"><img src="/static/heart.png"/></div>');
+                 var unfavorite = $('<div class="heartbox on">&nbsp;</div>');
+                 $(unfavorite).data('songId', message['songId']);
+                 if( 'Title' in message){
+                   newli.append($('<div class="fav_line"></div>').append(
+                     $('<span></span>').attr("class","title").text(message['Title']))
+                   )
+                 }
+                 if( 'Artist' in message){
+                   newli.append($('<div class="fav_line"></div>').append(
+                     $('<span></span>').attr("class","by").text("by")).append(
+                     $('<span></span>').attr("class","artist").text(message['Artist'])))
+                 }
+                 if( 'Album' in message){
+                   newli.append($('<div class="fav_line"></div>').append(
+                    $('<span>from</span>').attr("class","from")).append(
+                    $('<span></span>').attr("class","artist").text(message['Album'])
+                   ))
+                 }
+                 unfavorite.appendTo(wrapper)
+                 newli.appendTo(wrapper);
+                 wrapper.appendTo('#favelist');
+                 $('<div class="clearer"></div>').appendTo(wrapper);
+               })
+             }
+             if( doSlide ){
+               $('#favorites').show('slide', 'fast', function(){
+                 favoritesopen = true;
+               });
+             }
+           })
+         }
+
          $('#favoriteslink').click(function(){
            if(favoritesopen){
              $('#favorites').hide('slide', 'fast',function(){
@@ -135,49 +214,8 @@
              });
              return;
            }
-
            $('#player').hide('slide', 'fast',function(){
-
-             $('#favelist').html('')
-             $.getJSON('/favorites/', function(data){
-               if(!data.faves || data.numFavorites == 0){
-                 $('#nofaves').show();
-               }else{
-                 $('#nofaves').hide();
-                 var count = 0;
-                 $.each(data.faves, function(key, message){
-                   count++;
-                   if(!message) return;
-                   var wrapper = $('<div class="favwrapper' + (count%2>0 ? ' odd':'') + '"></div>');
-                   var newli = $('<div class="favorite_entry"></div>');
-                   //var unfavorite = $('<div class="unfavorite"><img src="/static/heart.png"/></div>');
-                   var unfavorite = $('<div class="heartbox on">&nbsp;</div>');
-                   $(unfavorite).data('songId', message['songId']);
-                   if( 'Title' in message){
-                     newli.append($('<div class="fav_line"></div>').append(
-                       $('<span></span>').attr("class","title").text(message['Title']))
-                     )
-                   }
-                   if( 'Artist' in message){
-                     newli.append($('<div class="fav_line"></div>').append(
-                       $('<span></span>').attr("class","by").text("by")).append(
-                       $('<span></span>').attr("class","artist").text(message['Artist'])))
-                   }
-                   if( 'Album' in message){
-                     newli.append($('<div class="fav_line"></div>').append(
-                      $('<span>from</span>').attr("class","from")).append(
-                      $('<span></span>').attr("class","artist").text(message['Album'])
-                     ))
-                   }
-                   unfavorite.appendTo(wrapper)
-                   newli.appendTo(wrapper);
-                   wrapper.appendTo('#favelist');
-                 })
-               }
-               $('#favorites').show('slide', 'fast', function(){
-                 favoritesopen = true;
-               });
-             })
+             loadFavorites(0, true);
            });
          });
          $('#restartaudio').click(function(){
@@ -288,6 +326,7 @@
             <div id="favorites" style="display:none">
               <button id="closefavorites">&larr; Back to Player</button>
               <div id="favesheader">Favorites</div>
+              <div id="favepages"></div>
               <div id="nofaves">
                 You haven't added any songs to your favorites list yet.<br/>
                 To add a song to this list so you can find it later,<br/>
