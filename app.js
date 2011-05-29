@@ -187,6 +187,7 @@ var favorites = function(req, res, qs){//{{{
       if( data != undefined ){
         responseJson.numFavorites = data;
       }
+      responseJson.page = pageNum;
 
       redisClient.zrevrange("fave_" + uidkey, lowerBound, upperBound,function(err, data){
         if(data){
