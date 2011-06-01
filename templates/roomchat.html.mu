@@ -133,6 +133,7 @@
            }
          }
          function loadFavorites(pageNum, doSlide){
+           pageNum = parseInt(pageNum);
            $('#favelist').html('')
            $('#favepages').html('');
            $.getJSON('/favorites/', {p:pageNum}, function(data){
@@ -144,6 +145,7 @@
                if(!numfavorites) numfavorites = 0;
                $('#favesheader').text("Favorites (" + numfavorites + ")")
                var numPages = Math.ceil(data.numFavorites / 10 );
+               data.page = parseInt(data.page);
                if( numPages > 1){
                  if( data.page > 0 ){
                    var prevlink = $('<li class="favepagelink">&larr;</li>');
@@ -162,7 +164,7 @@
                  }
                  if( data.page != numPages-1 ){
                    var nextlink = $('<li class="favepagelink">&rarr;</li>');
-                   nextlink.click(loadFavGenerator(numPages-1));
+                   nextlink.click(loadFavGenerator(parseInt(data.page)+1));
                    $('#favepages').append(nextlink);
                  }
                }
