@@ -5,6 +5,7 @@ var util = require('util')
 var path = require('path')
 
 exports.validateRoomName = function(roomname){
+  if(!roomname) return false;
   if(roomname.length<6 || roomname.length>15) return false;
   if( roomname == 'login' || roomname == 'upload' || roomname == 'logout' || roomname == 'authdone' || roomname == 'like' || roomname == 'unlike' ) return false;
   if(roomname.match(/^[a-zA-Z0-9]+$/) ) return true;
