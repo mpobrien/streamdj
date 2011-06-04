@@ -433,18 +433,23 @@ var vote_unvote = function(req, res, qs, matches){//{{{
   if( isNaN(parseInt(songId)) ) return;
   songId = parseInt(songId)
   getUserInfo(sessionId, function(err, userinfo){
+    console.log("err?", err);
+    console.log("userinfo?", userinfo);
     if(err) return; //TODO handle/log error.  //TODO make sure user name is valid, + not empyy
     var uidkey = userinfo.service + "_" + userinfo.user_id
+    console.log(uidkey,"is voting", songId);
     if( matches[2] == 'vote'){
       redisClient.multi([
         ["get","nowplaying_" + roomname],
         ["hexists","listeners_" + roomname, uidkey],
         ["hlen","listeners_" + roomname]
       ]).exec(function(errz, replies){
+        console.log("currentsong", nowplaying ,"islistening?", islistener, "numlisteners", numlisteners);
         if(err) return;
         var nowplaying = replies[0];
         var islistener = replies[1];
         var numlisteners = replies[2];
+
         if( !islistener || !nowplaying ) return;
         var songInfo = JSON.parse(nowplaying)
         if(songInfo.songId != songId ) return; // song ID doesn't match currently playing song.
