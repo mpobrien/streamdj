@@ -226,14 +226,40 @@ $(document).ready(//{{{
     
     oddify();
     $('.heartbox').live({
+      mouseenter: function(){
+        if( !$(this).hasClass('on') ){ // not liked yet
+          $(this).addClass("hover");
+        }else{}
+      },
+      mouseleave: function(){
+        if( !$(this).hasClass('on') ){ // not liked yet
+          $(this).removeClass("hover");
+        }
+      }, 
+
+      click: function(){
+        var me = this;
+        if( !$(this).hasClass('on') ){
+          $.get( '/like/', {s:$.data(this,"songId")}, function(){
+            $(me).removeClass('off').removeClass('hover').addClass('on');
+          });
+        }else{
+          $.get( '/unlike/', {s:$.data(this,"songId")}, function(){
+            $(me).removeClass('on').removeClass('hover').addClass('off');
+          });
+        }
+      }
+    });
+
+    $('.thumbs').live({
        mouseenter: function(){
-          if( !$(this).hasClass('on') ){ // not liked yet
-            $(this).addClass("hover");
+          if( !$(this).hasClass('t_on') ){ // not liked yet
+            $(this).addClass("t_hover");
           }else{}
        },
        mouseleave: function(){
-        if( !$(this).hasClass('on') ){ // not liked yet
-          $(this).removeClass("hover");
+        if( !$(this).hasClass('t_on') ){ // not liked yet
+          $(this).removeClass("t_hover");
         }
        }, 
 
@@ -241,25 +267,20 @@ $(document).ready(//{{{
          var me = this;
          console.log("this",this);
          console.log("songid",$.data(this,"songId"));
-         if( !$(this).hasClass('on') ){
-           $.get( '/like/', {s:$.data(this,"songId")}, 
+         if( !$(this).hasClass('t_on') ){
+           $.get( '/' + roomname + '/vote/', {s:$.data(this,"songId")}, 
                function(){
-                 $(me).removeClass('off').removeClass('hover').addClass('on');
+                 $(me).removeClass('t_off').removeClass('t_hover').addClass('t_on');
                });
          }else{
-           $.get( '/unlike/', {s:$.data(this,"songId")},
+           $.get( '/' + roomname + '/unvote/', {s:$.data(this,"songId")},
                function(){
-                 console.log("callback");
-                 $(me).removeClass('on').removeClass('hover').addClass('off');
+                 $(me).removeClass('t_on').removeClass('t_hover').addClass('t_off');
                });
          }
        }
+    });
 
-       });
 
-  }
-
-  
-  
-)//}}}
+})//}}}
 

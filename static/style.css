@@ -228,8 +228,7 @@ body {
 #currentfile {
   line-height: 1.5em;
   position: relative;
-  top: -24px;
-  left: 34px;
+  left: 4px;
   padding-left: 5px;
   padding-right: 15px;
   font-family: Verdana,  sans-serif;
@@ -246,6 +245,26 @@ body {
   padding-left: 10px;
   width: 24px;
   cursor: pointer; }
+
+#currentfile_opts {
+  background: white;
+  /* for non-css3 browsers */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to');
+  /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(white), to(#eeeeee));
+  /* for webkit browsers */
+  background: -moz-linear-gradient(top, white, #eeeeee);
+  /* for firefox 3.6+ */
+  border-bottom-right-radius: 15px;
+  -moz-border-radius-bottomright: 15px;
+  -webkit-border-bottom-right-radius: 15px;
+  position: relative;
+  background-color: #eee;
+  padding: 5px; }
+
+.fileopt {
+  margin-left: 16px;
+  margin-right: 16px; }
 
 .progressBar {
   width: 0%;
@@ -354,6 +373,23 @@ body {
 
 .hover {
   background: url("/static/heart_hover.png") no-repeat; }
+
+#thumbsdown {
+  width: 24px;
+  height: 24px;
+  cursor: pointer; }
+
+.t_on {
+  background: url("/static/thumbsdown_on.png") no-repeat; }
+
+.t_off {
+  background: url("/static/thumbsdown_off.png") no-repeat; }
+
+.t_hover {
+  background: url("/static/thumbsdown_hover.png") no-repeat; }
+
+#currentfile_opts .fileopt {
+  float: left; }
 
 #favorites #nofaves {
   display: none;
