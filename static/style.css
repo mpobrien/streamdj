@@ -335,6 +335,12 @@ body {
     height: 1px;
     border-bottom: 1px dotted #cccccc; }
 
+.countlike {
+  float: right;
+  position: relative;
+  top: -5px;
+  margin-right: 3px; }
+
 .heartbox {
   width: 24px;
   height: 24px;
@@ -410,6 +416,7 @@ body {
   /* for firefox 3.6+ */
   background-color: #ddd; }
 #favorites .favorite_entry {
+  width: 300px;
   padding-top: 7px;
   padding-bottom: 7px;
   float: left;

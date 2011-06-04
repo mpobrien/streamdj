@@ -181,7 +181,7 @@ var favorites = function(req, res, qs){//{{{
     var pageNum = qs.query['p']
     if( !pageNum ) pageNum = 0;
     var lowerBound = (pageNum*pagesize);
-    var upperBound = lowerBound + pagesize
+    var upperBound = lowerBound + pagesize-1
     responseJson.page = pageNum;
     redisClient.zcard("fave_" + uidkey, function(err, data){
       if( data != undefined ){
