@@ -88,7 +88,7 @@ var MessageHandlers = {
     $('#albumart').hide();
     $('#nowplayingtext').text('');
     $('#currentfile').removeClass("playing").html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
-    $('#likebox').hide()
+    $('#currentfile_opts').hide()
     $('#visualization').hide();
     $('#song_' + songId).hide('slide', function(){$(this).remove()} );
     nowplayingId = null;
@@ -98,6 +98,7 @@ var MessageHandlers = {
 
   "started": function(message, isStatic){//{{{
     $('#nowplayingheart').removeClass("on").addClass("off");
+    $('#thumbsdown').removeClass("t_on").addClass("t_off");
     var innerWrapper = $('<div></div>').attr("class","startplaywrapper")
     var enqDiv = $('<div></div>')
                    .attr("class","playstart")
@@ -162,12 +163,13 @@ var MessageHandlers = {
     enqDiv.appendTo("#chat");
     var songId = message["songId"]
     $('#nowplayingheart').data("songId", songId);
+    $('#thumbsdown').data("songId", songId);
     nowplayingId = songId
 
                       
     if(!isStatic){
       $('#currentfile').addClass("playing");
-      $('#likebox').show();
+      $('#currentfile_opts').show();
       $('#visualization').show();
       $('#nowplayingtext').text(message['body']);
       $('#song_' + songId).hide('slide', function(){$(this).remove()});

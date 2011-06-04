@@ -187,7 +187,7 @@ var favorites = function(req, res, qs){//{{{
     var pageNum = qs.query['p']
     if( !pageNum ) pageNum = 0;
     var lowerBound = (pageNum*pagesize);
-    var upperBound = lowerBound + pagesize-1
+    var upperBound = lowerBound + pagesize - 1
     responseJson.page = pageNum;
     redisClient.zcard("fave_" + uidkey, function(err, data){
       if( data != undefined ){
@@ -259,11 +259,11 @@ var room = function(req, res){//{{{
     });
   }else{
     getUserInfo(sessionId, function(err, userinfo){
-      if(err){  // user not found
+      if(err || !userinfo){  // user not found
         utilities.sendTemplate(res, "login.html", {}, true, settings.devtemplates)
         return;
       }
-      utilities.sendTemplate(res, "login.html", {userinfo:userinfo, roomname:roomName, invalid:true}, true, settings.devtemplates)
+      utilities.sendTemplate(res, "login.html", {userinfo:userinfo, invalid:true}, true, settings.devtemplates)
     });
     return;
   }
@@ -422,6 +422,51 @@ var remove_from_queue = function(req, res, qs, matches){
   //redisClient.zremrangebyscore("roomqueue_" + roomName, songId, songId, function(err2, reply2){
 }
 
+var vote_unvote = function(req, res, qs, matches){//{{{
+  var cookies = new Cookies(req, res);
+  if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
+  var sessionId = cookies.get("session");
+  var songId = qs.query['s']
+  res.end("{}");
+  roomname = matches[1];
+  if( !utilities.validateRoomName(roomname) ) return;
+  if( isNaN(parseInt(songId)) ) return;
+  songId = parseInt(songId)
+  getUserInfo(sessionId, function(err, userinfo){
+    if(err) return; //TODO handle/log error.  //TODO make sure user name is valid, + not empyy
+    var uidkey = userinfo.service + "_" + userinfo.user_id
+    if( matches[2] == 'vote'){
+      redisClient.multi([
+        ["get","nowplaying_" + roomname],
+        ["hexists","listeners_" + roomname, uidkey],
+        ["hlen","listeners_" + roomname]
+      ]).exec(function(errz, replies){
+        if(err) return;
+        var nowplaying = replies[0];
+        var islistener = replies[1];
+        var numlisteners = replies[2];
+        if( !islistener || !nowplaying ) return;
+        var songInfo = JSON.parse(nowplaying)
+        if(songInfo.songId != songId ) return; // song ID doesn't match currently playing song.
+        redisClient.multi([
+          ["sadd","votes_" + songId, uidkey],
+          ["scard","votes_" + songId]
+        ]).exec(function(err2, replies2){
+          var added = replies2[0];
+          var numvotes = replies2[1];
+          console.log(numvotes, numlisteners);
+          if( numvotes > (numlisteners/2) ){
+            redisClient.publish("voteskip", roomname + " " + songId);
+          }
+        });
+        
+      });
+    }else{
+      redisClient.srem("votes_" + songId, uidkey);
+    }
+  });
+}//}}}
+
 var like_unlike = function(req, res, qs, matches){//{{{
   var cookies = new Cookies(req, res);
   if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
@@ -512,9 +557,16 @@ var roomdisplay = function(req, res, qs, matches){//{{{
       console.log(replies[2], "loaded page for room", roomName);
       var uidkey = userinfo.service + "_" + userinfo.user_id;
       if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
-        redisClient.zscore("fave_" + uidkey, nowplaying, function(err3, reply){
-          display_form(req, res, userinfo, roomName, nowplaying, reply);
-        });
+        redisClient.multi([
+         ["zscore",   "fave_" + uidkey,      nowplaying],
+         ["sismember","votes_" + nowplaying, uidkey]
+        ]).exec(
+          function(err3, reply){
+            var isLiked = reply[0];
+            var isVoted = reply[1];
+            display_form(req, res, userinfo, roomName, nowplaying, isLiked, isVoted);
+          }
+        );
       }else{
         display_form(req, res, userinfo, roomName, nowplaying);
       }
@@ -531,6 +583,7 @@ var router = new routing.Router([
   ["^/room/?$", room],
   ["^/authdone/tw/?$", authdone_twitter],
   ["^/authdone/fb/?$", authdone_facebook],
+  ["^/([\\w\-]+)/(vote|unvote)/?$", vote_unvote],
   ["^/(like|unlike)/?$", like_unlike],
   ["^/([\\w\-]+)/remove/?$", remove_from_queue],
   ["^/([\\w\-]+)/upload/?$", upload],
@@ -661,7 +714,7 @@ net.createServer(
   }
 ).listen(843);
 
-function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
+function display_form(req, res, userinfo, roomname, nowplaying, liked, voted) {//{{{
   res.statusCode = 200
   var uidkey = userinfo.service + '_' + userinfo.user_id;
   var result = { username:JSON.stringify(userinfo.name),
@@ -717,6 +770,7 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked) {//{{{
         }
         result.nowPlaying = (nowplaying!=null) ? true : false;
         if( liked ) result.liked = true;
+        if( voted ) result.voted = true;
         utilities.sendTemplate(res, "roomchat.html", result, settings.devtemplates)
       });
     });
