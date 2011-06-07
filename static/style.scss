@@ -474,6 +474,12 @@ body {
 
 }
 
+.countlike{
+  float:right;
+  position:relative;
+  top:-5px;
+  margin-right:3px;
+}
 
 .heartbox{
   width:24px;
@@ -559,6 +565,8 @@ body {
   }
 
   .favorite_entry{
+
+    width:300px;
     padding-top: 7px;
     padding-bottom: 7px;
     float:left;
