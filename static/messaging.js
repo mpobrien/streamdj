@@ -1,5 +1,6 @@
 /* Utility function for padding zeros into numeric strings. */
 var nowplayingId = null;
+var nowplayingMeta = null;
 var makeTimestamp = function(rawtime){
   var timestamp = new Date(rawtime);
   var pad = function(num, length){ var str = '' + num; while (str.length < length) str = '0' + str; return str; }
@@ -91,6 +92,7 @@ var MessageHandlers = {
     $('#visualization').hide();
     $('#song_' + songId).hide('slide', function(){$(this).remove()} );
     nowplayingId = null;
+    nowplayingMeta = null;
     oddify(); //TODO clean up
   },//}}}
 
@@ -105,6 +107,7 @@ var MessageHandlers = {
 
     $('#currentfile').html('')
     var nowPlayingInfo;
+    nowplayingMeta = message.meta;
     if( message.meta ){
       if( 'Title' in message.meta){
         $('#currentfile').append($('<div></div>').attr("id","np_title").text(message.meta['Title']));
@@ -138,7 +141,7 @@ var MessageHandlers = {
     if( message.meta && ('pic' in message.meta)){
       $('#albumart').html('')
       var aimg = $('<img></img>');
-      aimg.attr('src','/static/art/' + message.meta.pic);
+      //aimg.attr('src','/static/art/' + message.meta.pic);
       aimg.attr('width','32')
       aimg.appendTo('#albumart');
       $('#albumart').show();

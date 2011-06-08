@@ -1,38 +1,37 @@
 <html>
   <head>
-  <link href='/static/login.css' rel='stylesheet' type='text/css'/>
-  <style>
-    .error{
-      font-size:12px;
-      color:red;
-      text-align:center;
-      padding:15px;
-    }
-  </style>
-<script type="text/javascript">
+    <link href='/static/login.css' rel='stylesheet' type='text/css'/>
+    <style>
+      .error{
+        font-size:12px;
+        color:red;
+        text-align:center;
+        padding:15px;
+      }
+    </style>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-23607493-1']);
+      _gaq.push(['_trackPageview']);
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-23607493-1']);
-  _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
+    </script>
   </head>
   <body>
-
     <div id="container">
       <div id="leftside">
        <img src="/static/ol_med.png">
       </div>
-      </div>
+    </div>
 
-      </div>
-	<div id="rightside">
+
+	    <div id="rightside">
+
         {{#userinfo}}
           <div>
             <div class="userinfo" style="float:left; width:100%">
@@ -66,40 +65,42 @@
           {{/invalid}}
         {{/userinfo}}
 
+
         {{^userinfo}}
-
-    <div id="headline">
-        The coolest way to share</br>
-        music with your friends.
-      </div>
-      <div id="blurb">
-      OUTLOUD.FM lets you create rooms where you can chat <br> and listen to music with your friends with a real time <br>collaborative playlist. Just sign in, pick a room name, and<br> start uploading music! </div>
-      <div class="slideshow" id="flavor_1"></div>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
-<script src="static/agile_carousel.a1.js"></script>
-
-<script>
-    $.getJSON("static/agile_carousel_data.php", function(data) {
-        $(document).ready(function(){
-            $("#flavor_1").agile_carousel({
-                carousel_data: data,
-                carousel_outer_height: 330,
-                carousel_height: 330,
-                slide_height: 230,
-                carousel_outer_width: 510,
-                slide_width: 510,
-                transition_time: 300,
-                timer: 4000,
-                continuous_scrolling: true,
-                control_set_1: "numbered_buttons",
-                no_control_set: "hover_previous_button,hover_next_button"
+          <div id="headline">
+          
+            The coolest way to share</br> music with your friends.  
+          </div>
+          <div id="blurb">
+            OUTLOUD.FM lets you create rooms where you can chat <br> and listen to music with your friends with a real time <br>collaborative playlist. Just sign in, pick a room name, and<br> start uploading music! 
+          </div>
+          <div class="slideshow" id="flavor_1"></div>
+          <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
+          <script src="/static/agile_carousel.a1.js"></script>
+          <script>
+            $.getJSON("/static/agile_carousel_data.php", function(data) {
+                $(document).ready(function(){
+                    $("#flavor_1").agile_carousel({
+                        carousel_data: data,
+                        carousel_outer_height: 330,
+                        carousel_height: 330,
+                        slide_height: 230,
+                        carousel_outer_width: 510,
+                        slide_width: 510,
+                        transition_time: 300,
+                        timer: 4000,
+                        continuous_scrolling: true,
+                        control_set_1: "numbered_buttons",
+                        no_control_set: "hover_previous_button,hover_next_button"
+                    });
+                });
             });
-        });
-    });
-</script>
-    <div id="start"> Get Started!  </div> 
-       <div id="login">
-
+          </script>
+          <div id="start"> Get Started!  </div> 
+            {{#errors}}
+              <div style="color:red;text-align:center;font-size:16px;">{{msg}}</div>
+            {{/errors}}
+          <div id="login">
             <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a> -or- <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
           </div>
           <div id="disclaimer">
@@ -107,7 +108,6 @@
           </div>
         {{/userinfo}}
       </div>
-
 
     <div style="text-align:center; color:#efffd3; font-size:44px; padding-top:2cm;">
     </div>

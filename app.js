@@ -34,6 +34,12 @@ Array.prototype.remove = function(e) {//{{{
   }
 };//}}}
 
+
+process.on('uncaughtException', function (err) {
+  console.log('FATAL - caught exception:' + err);
+});
+
+
 sys.puts(util.inspect(settings))
 
 pubsubClient.subscribe("file-ended");
@@ -151,7 +157,7 @@ var login = function(req, res, qs, matches){//{{{
     }else{
       callbackurl = settings.CALLBACK_URL + "/fb/"
     }
-    res.writeHead(302, { 'Location': 'https://www.facebook.com/dialog/oauth?client_id=' + settings.facebook_app_id + "&redirect_uri=" + escape(callbackurl) + "&scope=publish_stream" });
+    res.writeHead(302, { 'Location': 'https://www.facebook.com/dialog/oauth?client_id=' + settings.facebook_app_id + "&redirect_uri=" + escape(callbackurl)  });
     res.end()
   }
 }//}}}
@@ -305,6 +311,10 @@ var authdone_twitter = function(req, res, qs){//{{{
   });
 }//}}}
 
+var postdone = function(req, res, qs){
+  res.end('<html><head><script type="text/javascript">window.close()</script></head><body></body></html>');
+}//}}}
+
 var authdone_facebook = function(req, res, qs){//{{{
   console.log("facebook authdone");
   var roomname = qs.query['r']
@@ -328,7 +338,7 @@ var authdone_facebook = function(req, res, qs){//{{{
       var authtoken = querystring.parse(raw)
       https.get({ host: 'graph.facebook.com', path: "/me?access_token=" + authtoken.access_token}, function(client_res2) { 
         client_res2.on('data', function(d) {
-            //TODO catch bad json here
+
           var me_data;
           try{
             me_data = JSON.parse(d.toString())
@@ -341,17 +351,6 @@ var authdone_facebook = function(req, res, qs){//{{{
         
           console.log(me_data);
           console.log(me_data.name, " logged in with facebook");
-          /*{ id: '8801758',
-            name: 'Michael O\'Brien',
-            first_name: 'Michael',
-            last_name: 'O\'Brien',
-            link: 'http://www.facebook.com/mpobrien',
-            username: 'mpobrien',
-            gender: 'male',
-            timezone: -4,
-            locale: 'en_US',
-            verified: true,
-            updated_time: '2011-04-24T23:45:39+0000' }*/
 
           var session_id = utilities.randomString(128);
           redisClient.mset("session_"+session_id+"_user_id", me_data.id,
@@ -367,16 +366,24 @@ var authdone_facebook = function(req, res, qs){//{{{
               res.end();
             });
         }).on("error", function(e2){
-          console.error(e2);
+          console.log("error:", e2);
+          utilities.sendTemplate(res, "login.html", {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}, settings.devtemplates); 
         })
 
+      }).on("error", function(ee7){
+        console.log("error:", ee7);
+        utilities.sendTemplate(res, "login.html", {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}, settings.devtemplates); 
       })
       authtoken.access_token;
 
     })
-    .on('error', function(e) {
-      console.error(e);
+    .on('error', function(e12) {
+      console.log("FB error:", e12);
+      utilities.sendTemplate(res, "login.html", {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}, settings.devtemplates); 
     });
+  }).on("error", function(e9){
+    console.log("FB error:", e9);
+    utilities.sendTemplate(res, "login.html", {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}, settings.devtemplates); 
   });
 }//}}}
 
@@ -517,6 +524,7 @@ var roomdisplay = function(req, res, qs, matches){//{{{
 
 var router = new routing.Router([
   ["^/$", homepage],
+  ["^/postdone/?$", postdone],
   ["^/login/(fb|tw)/?$", login],
   ["^/logout/?$", logout],
   ["^/favorites/?$", favorites],

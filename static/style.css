@@ -298,7 +298,7 @@ body {
   border: 1px dashed #000; }
 
 #listenerslist {
-  padding-left: 5px; }
+  padding-left: 10px; }
   #listenerslist li {
     list-style: none;
     line-height: 20px; }
@@ -429,6 +429,22 @@ body {
 
 .clearer {
   clear: both; }
+
+#invites {
+  border--radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background: #eeeeee;
+  /* for non-css3 browsers */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to');
+  /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#eeeeee), to(white));
+  /* for webkit browsers */
+  background: -moz-linear-gradient(top, #eeeeee, white);
+  /* for firefox 3.6+ */
+  padding: 10px;
+  font-style: italic;
+  font-size: 12px; }
 
 /* modal overlay */
 #basic-modal-content {

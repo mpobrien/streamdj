@@ -17,6 +17,31 @@ function timeSince(date) {//{{{
   return Math.floor(seconds) + " seconds";
 }//}}}
 
+var pendinguploads = 0;
+var generateTwitterMsg = function(songInfo){
+  description = "Come play music with us in " + roomname + "! "
+  if( songInfo.Title && songInfo.Title!='(Unknown)'){
+    description += songInfo.Title;
+    if( songInfo.Artist && songInfo.Artist != '(Unknown)'){
+      description += ' - ' + songInfo.Artist;
+    }
+  }
+  return description;
+}   
+
+function bit_url(url, callback) { 
+  var url=url;
+  var username="outloudfm";
+  var key="R_9f80d2bb72c762594c204fa44ca836c8";
+  $.ajax({ url:"http://api.bit.ly/v3/shorten", data:{longUrl:url,apiKey:key,login:username}, dataType:"jsonp",           
+           success:function(v){
+             var bit_url=v.data.url;
+             callback(bit_url)
+           }
+  });
+}
+
+
 var droptarget ;
 var likedIds = {};
 /* Drag and drop */
@@ -35,17 +60,32 @@ var ProgressBar = function(){//{{{
       that.inner.animate({'width':pct + '%'}, 100) 
     }
   }
-  this.finish = function(){
-      if (!done){
-        done = true;
-        that.outer.fadeOut(function(){$(this).remove()});
-      }
+  this.finish = function(x){
+    if (!done){
+      pendinguploads--;
+      done = true;
+      that.outer.fadeOut(function(){$(this).remove()});
+    }
   }
 }//}}}
 var handleFiles = function(files){//{{{
+  if( files.length + pendinguploads > 5 ){
+    alert("Sorry, you're limited to upload up to 5 files at once.");
+    return;
+  }
+  numinqueue = $('.delsong').length;
+  if( numinqueue >= 5){
+    alert("Sorry, you've already got 5 songs in the queue already! Let one play before uploading more.");
+    return;
+  }
   for( var fn in files ){
     var file = files[fn];
     if( !file.fileSize ) continue;
+    if( file.fileSize > 1024 * 1024 * 20){
+      alert("Files may be no larger than 20 megs each.");
+      continue;
+    }
+    pendinguploads++;
     var qxhr = new XMLHttpRequest();
     var progbar = new ProgressBar();
     $('#progress').append(progbar.outer)
@@ -239,8 +279,6 @@ $(document).ready(//{{{
 
        click: function(){
          var me = this;
-         console.log("this",this);
-         console.log("songid",$.data(this,"songId"));
          if( !$(this).hasClass('on') ){
            $.get( '/like/', {s:$.data(this,"songId")}, 
                function(){
@@ -249,7 +287,6 @@ $(document).ready(//{{{
          }else{
            $.get( '/unlike/', {s:$.data(this,"songId")},
                function(){
-                 console.log("callback");
                  $(me).removeClass('on').removeClass('hover').addClass('off');
                });
          }
