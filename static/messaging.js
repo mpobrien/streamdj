@@ -145,7 +145,7 @@ var MessageHandlers = {
     if( message.meta && ('pic' in message.meta) && (!isStatic || (songId==nowplayingstart) )){
       $('#albumart').html('')
       var aimg = $('<img></img>');
-      aimg.attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + nowplayingMeta.pic);
+      aimg.attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(nowplayingMeta.pic));
       aimg.attr('width','128')
       aimg.appendTo('#albumart');
       $('#albumart').show();
