@@ -385,15 +385,18 @@
               </h1>
 
               <div id="nowplayingwrapper">
-                <div id="likebox"><div id="nowplayingheart" class="heartbox off"></div></div>
+              <!-- <div id="likebox"><div id="nowplayingheart" class="heartbox off"></div></div>-->
                 <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
                 <div id="albumart" style="margin:5px;text-align:left;display:none"> </div>
                 <div id="currentfile_opts">
-              <!-- <div id="nowplayingheart" class="fileopt heartbox off"></div>-->
+                <div class="clearer"></div>
+                <div id="nowplayingheart" class="fileopt heartbox off"></div>
+	          <div id="addtofaves">add to Favorites</div>
                   <div id="thumbsdown" style="display:none" class="fileopt thumbs t_off"></div>
                   <div class="clearer"></div>
                 </div>
               </div>
+	      <div class="clearer"></div>
               <h1 class="colheading">Queue</h1>
               <div id="queue">
                 <div id="progress"></div>
