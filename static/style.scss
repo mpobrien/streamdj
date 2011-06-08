@@ -588,6 +588,12 @@ body {
   clear:both;
 }
 
+#invites{
+  @include rounded(5px);
+  @include gradient(#eee, lighten(#eee, 10%));
+    padding:10px;
+}
+
 
 /* modal overlay */
 #basic-modal-content {display:none;}

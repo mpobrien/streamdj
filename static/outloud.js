@@ -17,6 +17,30 @@ function timeSince(date) {//{{{
   return Math.floor(seconds) + " seconds";
 }//}}}
 
+var generateTwitterMsg = function(songInfo){
+  description = "Come play music with us in " + roomname + "! "
+  if( songInfo.Title && songInfo.Title!='(Unknown)'){
+    description += songInfo.Title;
+    if( songInfo.Artist && songInfo.Artist != '(Unknown)'){
+      description += ' - ' + songInfo.Artist;
+    }
+  }
+  return description;
+}   
+
+function bit_url(url, callback) { 
+  var url=url;
+  var username="outloudfm";
+  var key="R_9f80d2bb72c762594c204fa44ca836c8";
+  $.ajax({ url:"http://api.bit.ly/v3/shorten", data:{longUrl:url,apiKey:key,login:username}, dataType:"jsonp",           
+           success:function(v){
+             var bit_url=v.data.url;
+             callback(bit_url)
+           }
+  });
+}
+
+
 var droptarget ;
 var likedIds = {};
 /* Drag and drop */
