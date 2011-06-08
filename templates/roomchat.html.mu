@@ -162,7 +162,7 @@
                fburl += '&caption=' + escape(nowplayingMeta.Title)
                fburl += '&description=' + escape('by ' + nowplayingMeta.Artist)
              }
-             fburl += '&redirect_uri=http://dev.outloud.fm/postdone'
+             fburl += '&redirect_uri=http://outloud.fm/postdone'
              var windowOptions = 'scrollbars=yes,resizable=yes,toolbar=no,location=yes'
             var width = 960
             var height = 420
