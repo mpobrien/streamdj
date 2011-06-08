@@ -140,9 +140,7 @@
            $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
          });
          $('#twinvite').click(
-           function(){
-             twitterinvite()
-           }
+           function(){ twitterinvite() }
          );
          $('#fbinvite').click(
            function(){
