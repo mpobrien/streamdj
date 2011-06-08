@@ -410,7 +410,7 @@
           </div><!-- end leftcol -->
           <div id="rightcol"><!-- begin rightcol -->
             <div id="invites">
-              Invite friends with: <span id="fbinvite"><img src="/static/facebook_small.png"/></span> <span id="twinvite"><img src="/static/twitter_small.png"/></span> 
+              Invite friends with: <span id="fbinvite" style="cursor:pointer;"><img src="/static/facebook_small.png"/></span> <span id="twinvite" style="cursor:pointer;"><img src="/static/twitter_small.png"/></span> 
             </div>
             <h1 class="colheading">Listeners</h1>
             <ul id="listenerslist" style="line-height:24px">
