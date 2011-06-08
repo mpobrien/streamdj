@@ -773,7 +773,7 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked, voted) {/
         }else{
           result.queue = [];
         }
-        result.nowPlaying = (nowplaying!=null) ? true : false;
+        result.nowPlaying = (nowplaying!=null) ? nowplaying : 0;
         if( liked ) result.liked = true;
         if( voted ) result.voted = true;
         utilities.sendTemplate(res, "roomchat.html", result, settings.devtemplates)

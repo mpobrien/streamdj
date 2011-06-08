@@ -93,6 +93,8 @@ var MessageHandlers = {
     $('#song_' + songId).hide('slide', function(){$(this).remove()} );
     nowplayingId = null;
     nowplayingMeta = null;
+    $('#albumart').html('')
+    $('#albumart').hide();
     oddify(); //TODO clean up
   },//}}}
 
@@ -139,13 +141,17 @@ var MessageHandlers = {
                              .append($('<span></span>').attr('class','upby').html('added&nbsp;by'))
                              .append($('<span></span>').attr('class','uploader').text(message['from'])))
 
-    if( message.meta && ('pic' in message.meta)){
+    var songId = message["songId"]
+    if( message.meta && ('pic' in message.meta) && (!isStatic || (songId==nowplayingstart) )){
       $('#albumart').html('')
       var aimg = $('<img></img>');
-      //aimg.attr('src','/static/art/' + message.meta.pic);
-      aimg.attr('width','32')
+      aimg.attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + nowplayingMeta.pic);
+      aimg.attr('width','128')
       aimg.appendTo('#albumart');
       $('#albumart').show();
+    }else{
+      $('#albumart').html('')
+      $('#albumart').hide();
     }
 
     if(message.meta && 'Title' in message.meta){
@@ -161,7 +167,6 @@ var MessageHandlers = {
     innerWrapper.append($('<span></span>').attr('class','uploader').text(message['from']))
     innerWrapper.append($('<span></span>').attr('class','startedplaying').html("started playing"))
     enqDiv.appendTo("#chat");
-    var songId = message["songId"]
     $('#nowplayingheart').data("songId", songId);
     $('#thumbsdown').data("songId", songId);
     nowplayingId = songId

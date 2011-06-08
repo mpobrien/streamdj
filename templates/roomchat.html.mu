@@ -19,6 +19,7 @@
     <script type="text/javascript" src="/static/soundmanager2.js"></script>
 
     <script type="text/javascript">
+      var nowplayingstart = {{nowPlaying}};
       function confirm(message, callback) {
         $('#confirm').modal({
           closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
@@ -312,9 +313,7 @@
              $('#nowplayingheart').removeClass("off").addClass("on");
            }
          {{/liked}}
-         // voted: {{voted}}
          {{#voted}}
-         //HEATEA
            if(nowplayingId){
              $('#thumbsdown').removeClass("t_off").addClass("t_on");
            }
@@ -386,10 +385,11 @@
               <div id="nowplayingwrapper">
                 <!--<div id="likebox"><div id="nowplayingheart" class="heartbox off"></div></div>-->
                 <div id="currentfile" {{#nowPlaying}}class="playing"{{/nowPlaying}}></div>
-                <!--<div id="albumart" style="display:none"> </div>-->
+                <div id="albumart" style="margin:5px;text-align:center;display:none"> </div>
                 <div id="currentfile_opts">
                   <div id="nowplayingheart" class="fileopt heartbox off"></div>
-                  <div id="thumbsdown" class="fileopt thumbs t_off"></div>
+                  <span>Add to Favorites</span>
+                  <div id="thumbsdown" style="display:none" class="fileopt thumbs t_off"></div>
                   <div class="clearer"></div>
                 </div>
               </div>
