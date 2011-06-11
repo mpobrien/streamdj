@@ -11,10 +11,43 @@ var SAMPLERATE1 = [44100, 48000, 32000]
 var SAMPLERATE2 = [22050, 24000, 16000]
 var SAMPLERATE25 = [11025, 12000, 8000]
 
+var parseSize = function(data){//{{{
+  if( data.length == 4 ){
+    var size = data[0] << 0x15;
+    size += data[1] << 14;
+    size += data[2] << 7;
+    size += data[3];
+    return size;
+  }else{
+		var size = data[0] << 16;
+		size += data[1] << 8;
+		size += data[2];
+    return size
+  }
+}//}}}
+
 Buffer.prototype.reset = function(newpos){ this.pointer = newpos }
 Buffer.prototype.rewind = function(numBytes){//{{{
     this.pointer -= numBytes;
     if( this.pointer < 0 ) this.pointer = 0;
+}//}}}
+Buffer.prototype.find = function(data, after, max){//{{{
+  var index;
+  if( after ){
+    index = after;
+  }else{
+    index = 0;
+  }
+  var limit;
+  if(max) limit = max
+  else limit = this.length;
+  while(index<limit){
+    if(this[index] == data){
+      return index;
+    }else{
+      index++;
+    }
+  }
 }//}}}
 
 var Bitmask = function(bytes){//{{{
@@ -39,7 +72,7 @@ Bitmask.prototype.get = function(from, to){//{{{
   return dec;
 }//}}}
 
-exports.Mp3Stream = function Mp3Stream(){
+var Mp3Stream = function Mp3Stream(){
   var that = this;
   this.syncTime = 0;
   this.accumulatedTime = 0;
@@ -124,6 +157,26 @@ exports.Mp3Stream = function Mp3Stream(){
   this.streamFile = function streamFile(fd){//{{{
     that.stopStream();
     fd.reset(0);
+    var headerOffset;
+    var headerCheck = fd.getChunk(3);
+    //If possible, skip an id3v2 tag to reach first mpeg3 frame
+    if(headerCheck.toString() == 'ID3'){
+      var versionInfo = fd.getChunk(2)
+      var majorVer = versionInfo[0]
+      var revision = versionInfo[1]
+      var headerFlags = fd.getChunk(1)
+      var headerSize = parseSize(fd.getChunk(4));
+      headerOffset = headerSize;
+    }else{
+      headerOffset = 0;
+    }
+
+    var startingPos = fd.find(0xff, headerOffset, headerOffset + 32678);
+    if(startingPos){
+      fd.reset(startingPos);
+    }else{
+      fd.reset(0);
+    }
     that.processFrame(fd);
   }//}}}
 
@@ -153,7 +206,8 @@ exports.Mp3Stream = function Mp3Stream(){
   }//}}}
 
 }
-exports.Mp3Stream.prototype = new process.EventEmitter()
+Mp3Stream.prototype = new process.EventEmitter()
+exports.Mp3Stream = Mp3Stream;
 
 //Example + Test:
 /*
@@ -170,3 +224,22 @@ fs.readFile('/home/mike/Music/kettel - through friendly waters (sending orbs 200
 );
 setTimeout( function(){stream.stopStream()} , 5000); // stop the stream after 1 second.
 */
+/*var x = new Buffer([]);*/
+/*console.log(x.find('b'))*/
+
+/*var sys = require("sys");*/
+/*var fs = require('fs')*/
+/*var stream  = new Mp3Stream();*/
+/*stream.on("frameready", function(x,y,z){*/
+/*sys.puts("y: " + y + ",z:"+z);*/
+/*})*/
+/*fs.readFile('/home/mike/Downloads/07 Hey Buddy.mp3',*/
+/*function(err, fd){*/
+/*console.log("length", fd.length)*/
+/*var firstFrame = fd.find(0xFF)*/
+/*console.log("finding",firstFrame, fd.length)*/
+/*fd.reset(firstFrame)*/
+/*stream.streamFile(fd)*/
+/*}*/
+/*);*/
+/*setTimeout( function(){stream.stopStream()} , 5000); // stop the stream after 1 second.*/
