@@ -183,9 +183,9 @@ var favorites = function(req, res, qs){//{{{
     if(err){ res.end(); return; }
     console.log(userinfo.name, "loaded favorites list.");
     var uidkey = userinfo.service + "_" + userinfo.user_id
-    responseJson = {numFavorites:0, faves:[]};
     var pageNum = qs.query['p']
     if( !pageNum ) pageNum = 0;
+    responseJson = {numFavorites:0, faves:[], page:pageNum};
     var lowerBound = (pageNum*pagesize);
     var upperBound = lowerBound + pagesize - 1
     responseJson.page = pageNum;
@@ -217,11 +217,11 @@ var favorites = function(req, res, qs){//{{{
               }
               res.end(JSON.stringify(responseJson));
             }else{
-              res.end("{\"faves\":[],\"page\":0,\"numFavorites\":0}");
+              res.end(JSON.stringify(responseJson));
             }
           });
         }else{
-          res.end("{\"faves\":[],\"page\":0,\"numFavorites\":0}");
+          res.end(JSON.stringify(responseJson));
         }
       });
     });

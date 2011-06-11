@@ -340,10 +340,12 @@ body {
   line-height:1.5em;
   position:relative;
   left:4px;
+  float:left;
+  width: 190px;
   padding-left: 5px;
   padding-right: 15px;
   font-family:Verdana,  sans-serif;
-  font-size:14px;
+  font-size:13px;
   .by, .from, .upby{
     font-size:.8em;
     margin-right:5px;
@@ -360,18 +362,28 @@ body {
   width:24px;
   cursor:pointer;
 }
+#albumart{
+  float: left;
+  width: 70px;
+}
+
+#addtofaves{
+  float: left;
+  font-size:12px;
+  font-style:italic;
+
+}
+
 
 #currentfile_opts{
-  @include gradient(#fff, #eee);
-  @include rounded-botright(15px);
   position:relative;
-  background-color:#eee;
   padding:5px;
+  padding-right:20px;
 }
 
 .fileopt{
-  margin-left:16px;
-  margin-right:16px;
+  margin-left:2px;
+  margin-right:6px;
 }
 
 .progressBar{
@@ -433,6 +445,7 @@ body {
 
 #queue{
   border:1px dashed transparent;
+  float:left;
 }
 
 #queue.highlight{
