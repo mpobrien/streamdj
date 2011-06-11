@@ -1,6 +1,8 @@
 /* Utility function for padding zeros into numeric strings. */
 var nowplayingId = null;
 var nowplayingMeta = null;
+var lastStoppedTime = null;
+
 var makeTimestamp = function(rawtime){
   var timestamp = new Date(rawtime);
   var pad = function(num, length){ var str = '' + num; while (str.length < length) str = '0' + str; return str; }
@@ -83,6 +85,7 @@ var MessageHandlers = {
   },//}}}
 
   "stopped": function(message, isStatic){//{{{
+    lastStoppedTime = new Date();
     //isStatic is ignored for now because server does not log these events
     var songId = message["songId"]
     $('#albumart').hide();
@@ -99,6 +102,11 @@ var MessageHandlers = {
   },//}}}
 
   "started": function(message, isStatic){//{{{
+    var nowtime = new Date().getTime();
+    if(!isStatic && (lastStoppedTime == null || (nowtime - lastStoppedTime > 10000))){
+      soundManager.destroySound('mySound');
+      startStream();
+    }
     $('#nowplayingheart').removeClass("on").addClass("off");
     $('#thumbsdown').removeClass("t_on").addClass("t_off");
     var innerWrapper = $('<div></div>').attr("class","startplaywrapper")
