@@ -91,12 +91,20 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
   if 'audio/mp3' not in mime: #it's not an mp3! convert this bitch
     inputpath = songInfo['path']
     outputpath = songInfo['path'] + ".out.mp3"
-    retcode = subprocess.call(["ffmpeg", "-i", inputpath, "-b", "48k", outputpath])
+    retcode = subprocess.call(["ffmpeg", "-i", inputpath, "-b", "96k", "-ar","44100", outputpath])
     if retcode == 0:
       os.remove(inputpath)
     print "converted", retcode, outputpath
   else:
-    outputpath = songInfo['path']
+    if isinstance(mutagenInfo, mutagen.mp3.MP3) and mutagenInfo.info.sample_rate != 44100:
+      inputpath = songInfo['path']
+      outputpath = songInfo['path'] + ".out.mp3"
+      retcode = subprocess.call(["ffmpeg", "-i", inputpath, "-b", "128k", "-ar","44100", outputpath])
+      if retcode == 0:
+        os.remove(inputpath)
+      print "converted", retcode, outputpath
+    else:
+      outputpath = songInfo['path']
   
 
 
