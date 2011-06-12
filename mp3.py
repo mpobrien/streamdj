@@ -50,6 +50,23 @@ def read_frames( fp, verbose=False):
       h = unpack('>L', x)[0]
       #print "h:",h
       #print "here:", (h & 0xffe00000)
+
+      version1 = (h >> 19) & 0x3
+      version2 = (h & 0x00180000) >> 19
+
+      layer = (h >> 17) & 0x3
+      protection = (h >> 16) & 0x1
+      bitrate = (h >> 12) & 0xF
+      sample_rate = (h >> 10) & 0x3
+      padding = (h >> 9) & 0x1
+      private = (h >> 8) & 0x1
+      mode = (h >> 6) & 0x3
+      mode_extension = (h >> 4) & 0x3
+      copyright = (h >> 3) & 0x1
+      original = (h >> 2) & 0x1
+      emphasis = (h >> 0) & 0x3
+      print "layer", layer, "protection", protection,"bitrate", bitrate,"sample_rate", sample_rate,"padding",padding,"private", private,"mode",mode,"mode_extension", mode_extension,"copyright", copyright,"original",original,"emphasis", emphasis
+
       assert (h & 0xffe00000) == 0xffe00000, '!Frame Sync: %r' % x
       version = (h & 0x00180000) >> 19
       assert version != 1
@@ -57,6 +74,7 @@ def read_frames( fp, verbose=False):
       protected = not (h & 0x00010000)
       b = (h & 0xf000) >> 12
       assert b != 0 and b != 15, '!Bitrate'
+      #print version, b
       if version == 3:                      # V1
         bitrate = BITRATE1[b]
       else:                                 # V2 or V2.5
@@ -72,6 +90,7 @@ def read_frames( fp, verbose=False):
       nsamples = 1152
       if samplerate <= 24000:
         nsamples = 576
+      print samplerate
       pad = (h & 0x0200) >> 9
       channel = (h & 0xc0) >> 6
       joint = (h & 0x30) >> 4
@@ -95,7 +114,8 @@ def main(args):
     x = 0
     f = open(args[0], 'r')
     for s, r, d in read_frames(f, False):
-        print str(s)+",",r
+      pass
+        #print str(s)+",",r
         #x = x +1
         #if x > 10: break;
         #print s, r
