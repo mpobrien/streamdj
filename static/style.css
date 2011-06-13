@@ -180,18 +180,33 @@ body {
       color: black;
       padding-top: 15px;
       padding-bottom: 15px; }
+    #chatwrapper #chat .feedplayart {
+      float: left;
+      width: 60px;
+      border: 1px solid transparent;
+      margin-right: 10px;
+      margin-left: 10px; }
     #chatwrapper #chat .startplaywrapper {
-      text-align: center; }
+      position: relative;
+      float: left;
+      text-align: left; }
       #chatwrapper #chat .startplaywrapper .title, #chatwrapper #chat .startplaywrapper .artist {
         font-size: 1.1em;
         font-weight: bold; }
       #chatwrapper #chat .startplaywrapper .by, #chatwrapper #chat .startplaywrapper .title, #chatwrapper #chat .startplaywrapper .artist, #chatwrapper #chat .startplaywrapper .upby, #chatwrapper #chat .startplaywrapper .uploader, #chatwrapper #chat .startplaywrapper .startedplaying {
         margin-left: 2px;
         margin-right: 2px; }
+      #chatwrapper #chat .startplaywrapper .artistinfo {
+        margin-bottom: 2px; }
+      #chatwrapper #chat .startplaywrapper .title {
+        margin-bottom: 2px; }
       #chatwrapper #chat .startplaywrapper .upby {
         color: black;
-        font-size: .8em; }
+        font-size: .9em; }
       #chatwrapper #chat .startplaywrapper .uploader {
+        font-weight: bold;
+        font-size: .9em; }
+      #chatwrapper #chat .startplaywrapper .startedplaying {
         font-size: .8em; }
   #chatwrapper #sender #newchat {
     width: 100%; }

@@ -268,8 +268,19 @@ body {
       padding-bottom:15px;
     }
 
+    .feedplayart{
+      float:left;
+      width:60px;
+      border:1px solid transparent;
+      margin-right:10px;
+      margin-left:10px;
+    }
+
     .startplaywrapper{
-      text-align:center;
+      position:relative;
+      float:left;
+      //left:40px;
+      text-align:left;
       .title, .artist {
         font-size:1.1em;
         font-weight:bold;
@@ -281,13 +292,25 @@ body {
         margin-right:2px;
       }
 
+      .artistinfo{
+        margin-bottom:2px;
+      }
+      .title{
+        margin-bottom:2px;
+      }
+
+
       .upby{
         color:$uploadedByColor;
+        font-size:.9em;
+      }
+      .uploader{
+        font-weight:bold;
+        font-size:.9em;
+      }
+      .startedplaying{
         font-size:.8em;
       }
-        .uploader{
-          font-size:.8em;
-        }
 
     }
 
