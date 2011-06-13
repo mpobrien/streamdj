@@ -19,9 +19,9 @@ var parseSize = function(data){//{{{
     size += data[3];
     return size;
   }else{
-		var size = data[0] << 16;
-		size += data[1] << 8;
-		size += data[2];
+    var size = data[0] << 16;
+    size += data[1] << 8;
+    size += data[2];
     return size
   }
 }//}}}
@@ -166,12 +166,13 @@ var Mp3Stream = function Mp3Stream(){
       var revision = versionInfo[1]
       var headerFlags = fd.getChunk(1)
       var headerSize = parseSize(fd.getChunk(4));
-      headerOffset = headerSize;
+      headerOffset = headerSize + 10;
     }else{
       headerOffset = 0;
     }
 
     var startingPos = fd.find(0xff, headerOffset, headerOffset + 32678);
+    console.log("offset", headerOffset,"finding and got", startingPos);
     if(startingPos){
       fd.reset(startingPos);
     }else{
@@ -202,7 +203,7 @@ var Mp3Stream = function Mp3Stream(){
     //that.timeoutId = setTimeout(function(){processFrame(fd)}, 0) 
 
     //sys.puts(parseInt(frameInfo[2]) + ", " + parseInt(frameInfo[1]));
-    that.timeoutId = setTimeout(function(){processFrame(fd)}, parseInt(delay-1)) 
+    that.timeoutId = setTimeout(function(){processFrame(fd)}, parseInt(delay)) 
   }//}}}
 
 }
@@ -224,8 +225,6 @@ fs.readFile('/home/mike/Music/kettel - through friendly waters (sending orbs 200
 );
 setTimeout( function(){stream.stopStream()} , 5000); // stop the stream after 1 second.
 */
-/*var x = new Buffer([]);*/
-/*console.log(x.find('b'))*/
 
 /*var sys = require("sys");*/
 /*var fs = require('fs')*/
@@ -240,6 +239,5 @@ setTimeout( function(){stream.stopStream()} , 5000); // stop the stream after 1 
 /*console.log("finding",firstFrame, fd.length)*/
 /*fd.reset(firstFrame)*/
 /*stream.streamFile(fd)*/
-/*}*/
-/*);*/
+/*});*/
 /*setTimeout( function(){stream.stopStream()} , 5000); // stop the stream after 1 second.*/
