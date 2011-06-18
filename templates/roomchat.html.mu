@@ -142,7 +142,6 @@
        $(document).ready(function(){
          console.log(msgs, messagecount)
          if(messagecount == 0){
-           console.log("appending")
            appendGreeting()
          }
          var favoritesopen = false;
