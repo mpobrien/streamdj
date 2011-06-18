@@ -12,7 +12,7 @@
   "HASH_VERSION" : "HMAC-SHA1",
   "CALLBACK_URL" : "http://outloud.fm/authdone",
   "devtemplates" : true,
-  "streamingport" : 3001,
+  "streamingport" : 81,
   "streamserver_domain": "stream.outloud.fm",
   "facebook_app_id":"123006794442539",
   "facebook_api_key":"99d91f8fa28e4b73f3a9253d199334b2",
