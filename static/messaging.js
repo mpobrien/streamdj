@@ -61,11 +61,16 @@ var MessageHandlers = {
     }
     if($('#user_' + message['uid']).length==0){
       var newlistener = $('<li></li>');
-      var newlistener_pic = $('<img src="' + message['body'] + '" width="24px" height="24px"></img>');
+      var listenerInfo = message['uid'].split('_')
+      if(listenerInfo[0] == 'tw'){
+        var picpath = message['body']
+      }else{
+        var picpath = 'http://graph.facebook.com/' + listenerInfo[1] + '/picture/?type=square'
+      }
+      var newlistener_pic = $('<img src="' + picpath + '" width="24px" height="24px"></img>');
       var newlistener_name = $('<span class="username"></span');
       newlistener_name.text(message['from'])
 
-      var listenerInfo = message['uid'].split('_')
       var listenerLink = $('<a></a>')
       listenerLink.attr('href', listenerInfo[0] =='tw' ? 'http://twitter.com/account/redirect_by_id?id=' + listenerInfo[1]
                                                       : 'http://facebook.com/profile.php?id=' + listenerInfo[1] )
