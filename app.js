@@ -244,6 +244,7 @@ var room = function(req, res){//{{{
           return;
         }
         console.log(userinfo.name, " is creating/joining room", roomName);
+        roomName = utilities.slugify(roomName);
         if( utilities.validateRoomName(roomName) ){
           redisClient.sadd("rooms", roomName, function(err, reply){
             if(reply==1){ //room is newly created

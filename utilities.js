@@ -4,11 +4,22 @@ var sys = require('sys')
 var util = require('util')
 var path = require('path')
 
+exports.slugify = function(text){
+  text = text.replace(/[^-a-zA-Z0-9,&\s]+/ig, '');
+  text = text.replace(/-/gi, "_");
+  text = text.replace(/\s/gi, "-");
+  text = text.replace(/_{2,}/, "_");
+  text = text.replace(/-{2,}/, "-");
+  text = text.replace(/^-+/, "");
+  text = text.replace(/^_+/, "");
+  return text;
+}
+
 exports.validateRoomName = function(roomname){
   if(!roomname) return false;
-  if(roomname.length<6 || roomname.length>15) return false;
+  if(roomname.length<4 || roomname.length>25) return false;
   if( roomname == 'login' || roomname == 'upload' || roomname == 'logout' || roomname == 'authdone' || roomname == 'like' || roomname == 'unlike' ) return false;
-  if(roomname.match(/^[a-zA-Z0-9]+$/) ) return true;
+  if(roomname.match(/^[a-zA-Z0-9_\-]+$/) ) return true;
   else return false;
 }
 

@@ -59,8 +59,8 @@
           {{#invalid}}
             <div class="error">
               The room name you chose is not valid.<br/><br/>
-              Pick something with only letters and numbers, between </br>
-              6 and 15 characters long.
+              Pick something with letters and numbers, between </br>
+              4 and 25 characters long.
             </div>
           {{/invalid}}
         {{/userinfo}}
