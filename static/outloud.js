@@ -18,6 +18,7 @@ function timeSince(date) {//{{{
 }//}}}
 
 var pendinguploads = 0;
+var muted;
 var generateTwitterMsg = function(songInfo){
   description = "Come play music with us in " + roomname + "! "
   if( songInfo.Title && songInfo.Title!='(Unknown)'){
@@ -39,6 +40,18 @@ function bit_url(url, callback) {
              callback(bit_url)
            }
   });
+}
+
+extractCookie = function(cstring, c_name){
+  var i,x,y,ARRcookies=cstring.split(";");
+  for (i=0;i<ARRcookies.length;i++){
+    x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+    y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+    x=x.replace(/^\s+|\s+$/g,"");
+    if (x==c_name){
+      return unescape(y);
+    }
+  }
 }
 
 
@@ -192,17 +205,46 @@ $(document).ready(//{{{
       }
     };
 
-    var muted;
     currentVolume = 90;
     function setVol(v){
       soundManager.setVolume('mySound', v);
       $('#volinside').css('width', v + '%')
+      document.cookie = "olvol_" + roomname + "=" + v;
     }
+
+    var muteToggle = function(setOn){
+      if( setOn === undefined){
+        muted = !muted;
+      }else{
+        muted = setOn>0;// ? true : false;
+      }
+      document.cookie = "olmute_" + roomname + "=" + (muted ? 1 : 0)
+      $('#volinside').css('width', muted ? '0%' : currentVolume + '%');
+      if (muted) {
+        $('#volicon').addClass( muted ? "muted" : "notmuted").removeClass(muted ? "notmuted" : "muted");
+      } else {
+        $('#volicon').addClass("notmuted").removeClass("muted");
+      }
+    }
+
+
+    var roomvolinitial = extractCookie(document.cookie, "olvol_" + roomname);
+    if(roomvolinitial != undefined){
+      currentVolume = roomvolinitial;
+      setVol(roomvolinitial);
+    }
+
+    var mutedInitial = extractCookie(document.cookie, "olmute_" + roomname);
+    if(mutedInitial){
+      muteToggle(mutedInitial);
+    }
+
     $('#volcontrol').click(
       function(e){
         var x = e.pageX - $(this).offset().left;
         var pct = parseInt((x * 100) / 140)
         currentVolume = pct;
+        if(muted) muteToggle(false)
         setVol(pct);
       }
     ).mousewheel(function(e,delta){
@@ -214,15 +256,9 @@ $(document).ready(//{{{
     });
 
     $('#volicon').click(function(){
-      muted = !muted;
-      soundManager.setVolume('mySound', muted ? 0 : currentVolume);
-      $('#volinside').css('width', muted ? '0%' : currentVolume + '%');
-      if (muted) {
-        $(this).addClass("muted").removeClass("notmuted");
-      } else {
-        $(this).addClass("notmuted").removeClass("muted");
-      }
+      muteToggle();
     });
+
 
     function dragEnter(evt){
       evt.stopPropagation();
