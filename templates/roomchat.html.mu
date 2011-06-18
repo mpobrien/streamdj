@@ -408,8 +408,8 @@
                   {{#queue}}
                     <li class="queuedsong" id="song_{{songId}}">
                     {{#mine}}<div class="delsong" id="delsong_{{songId}}">&nbsp;</div>{{/mine}}
-                      {{#meta}}<span class="title">{{Title}}</span><span class="by">by</span><span class="artist">{{Artist}}</span>{{/meta}}
-                      {{^meta}}<span class="title">{{name}}</span>{{/meta}}<span class="upby">added&nbsp;by</span><span class="uploader">{{uploader}}</span>
+                      {{#meta}}<span class="title">{{Title}}</span> <span class="by">by</span> <span class="artist">{{Artist}}</span>{{/meta}}
+                      {{^meta}}<span class="title">{{name}}</span>{{/meta}} <span class="upby">added&nbsp;by</span> <span class="uploader">{{uploader}}</span>
                     </li>
                   {{/queue}}
                 </ul>
