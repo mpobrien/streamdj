@@ -757,7 +757,7 @@ function display_form(req, res, userinfo, roomname, nowplaying, liked, voted) {/
     redisClient.zrevrange("roomlog_" + roomname, 0, 99, function(err, reply2){
       if(reply2 == null) result.msgs = []
       else result.msgs = reply2;
-      redisClient.zrange("roomqueue_" + roomname, 0, 10, function(err, reply3){ //TODO check for err
+      redisClient.zrange("roomqueue_" + roomname, 0, 30, function(err, reply3){ //TODO check for err
         if( reply3 ){
           var queueinfo = [];
           var i=0;
