@@ -35,17 +35,18 @@ var MessageHandlers = {
     if(message.meta && 'Title' in message.meta){
       if( uidkey == message['uid'])
       songLi.append($('<div class="delsong">&nbsp;</div>').attr("id","delsong_" + songId))
-      songLi.append($('<span></span>').attr("class","title").text(message.meta['Title']))
+      songLi.append($('<span></span> ').attr("class","title").text(message.meta['Title'])).append(document.createTextNode(' '))
       if(message.meta && 'Artist' in message.meta){
-        songLi.append($('<span></span>').attr("class","by").text("by"))
-        songLi.append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
+        songLi.append($('<span></span> ').attr("class","by").text("by")).append(document.createTextNode(' '))
+        songLi.append($('<span></span> ').attr("class","artist").text(message.meta['Artist'])).append(document.createTextNode(' '))
       }
     }else{
-      songLi.append($('<span></span>').attr("class","title").text(message['body']))
+      songLi.append($('<span></span> ').attr("class","title").text(message['body'])).append(document.createTextNode(' '))
     }
-    songLi.append($('<span></span>').attr('class','upby').html('added&nbsp;by'))
-    songLi.append($('<span></span>').attr('class','uploader').text(message['from']))
+    songLi.append($('<span></span> ').attr('class','upby').html('added&nbsp;by')).append(document.createTextNode(' '))
+    songLi.append($('<span></span> ').attr('class','uploader').text(message['from'])).append(document.createTextNode(' '))
     songLi.hide().appendTo("#queueList").show("slide").show("highlight",3000);
+    oddify();
   },//}}}
 
   "join"   : function(message, isStatic){//{{{
@@ -102,7 +103,7 @@ var MessageHandlers = {
     nowplayingMeta = null;
     $('#albumart').html('')
     $('#albumart').hide();
-    oddify(); //TODO clean up
+    oddify();
   },//}}}
 
   "started": function(message, isStatic){//{{{
@@ -195,6 +196,7 @@ var MessageHandlers = {
   "qdel": function(message, isStatic){//{{{
     var songId = message["songId"]
     $('#song_' + songId).hide('slide', function(){$(this).remove()});
+    oddify();
   }//}}}
 
 }
