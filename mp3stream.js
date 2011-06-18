@@ -160,7 +160,7 @@ var Mp3Stream = function Mp3Stream(){
     var headerOffset;
     var headerCheck = fd.getChunk(3);
     //If possible, skip an id3v2 tag to reach first mpeg3 frame
-    if(headerCheck.toString() == 'ID3'){
+    if(headerCheck && headerCheck.toString() == 'ID3'){
       var versionInfo = fd.getChunk(2)
       var majorVer = versionInfo[0]
       var revision = versionInfo[1]
