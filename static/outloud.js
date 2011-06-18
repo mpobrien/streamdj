@@ -221,8 +221,10 @@ $(document).ready(//{{{
       document.cookie = "olmute_" + roomname + "=" + (muted ? 1 : 0)
       $('#volinside').css('width', muted ? '0%' : currentVolume + '%');
       if (muted) {
+        soundManager.setVolume('mySound', 0);
         $('#volicon').addClass( muted ? "muted" : "notmuted").removeClass(muted ? "notmuted" : "muted");
       } else {
+        soundManager.setVolume('mySound', currentVolume);
         $('#volicon').addClass("notmuted").removeClass("muted");
       }
     }

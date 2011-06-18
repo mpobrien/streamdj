@@ -83,6 +83,9 @@
           useEQData: true, 
           whileplaying : whilePlaying
         });
+        if( muted ){
+          soundManager.setVolume('mySound', 0);
+        }
       }
       soundManager.onready(startStream);
     </script>
