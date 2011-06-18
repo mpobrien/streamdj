@@ -93,6 +93,7 @@
        var wsurl = '{{wsurl}}'
        var msgs = [{{{msgs}}}]
        var username = {{{username}}}
+       var messagecount = msgs.length;
      </script>
     <script type="text/javascript" src="/static/jqwheel.js"></script>
     <script type="text/javascript" src="/static/outloud.js"></script>
@@ -139,14 +140,19 @@
         }
       }
        $(document).ready(function(){
+         console.log(msgs, messagecount)
+         if(messagecount == 0){
+           console.log("appending")
+           appendGreeting()
+         }
          var favoritesopen = false;
          $('#options').click(function(){
            $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
          });
-         $('#twinvite').click(
+         $('.twinvite').click(
            function(){ twitterinvite() }
          );
-         $('#fbinvite').click(
+         $('.fbinvite').click(
            function(){
              var fburl = 'http://www.facebook.com/dialog/feed?';
              fburl += 'link=' + escape('http://outloud.fm/' + roomname)
@@ -429,7 +435,7 @@
           </div><!-- end leftcol -->
           <div id="rightcol"><!-- begin rightcol -->
             <div id="invites">
-              Invite friends with: <span id="fbinvite" style="cursor:pointer;"><img src="/static/facebook_small.png"/></span> <span id="twinvite" style="cursor:pointer;"><img src="/static/twitter_small.png"/></span> 
+              Invite friends with: <span class="fbinvite"><img src="/static/facebook_small.png"/></span> <span class="twinvite" style="cursor:pointer;"><img src="/static/twitter_small.png"/></span> 
             </div>
             <h1 class="colheading">Listeners</h1>
             <ul id="listenerslist" style="line-height:24px">

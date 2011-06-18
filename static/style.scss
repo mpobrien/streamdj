@@ -225,6 +225,28 @@ body {
 	color:#9343B9;
 }
 
+.fbinvite{
+  cursor:pointer;
+}
+.twinvite{
+  cursor:pointer;
+}
+
+.roomlink{
+  @include rounded(5px);
+  background-color:#efefef;
+  border:1px solid #ccc;
+  padding:3px;
+}
+
+.greeting{
+  width:100%;
+  text-align:center;
+  margin-top:2px;
+  font-size:16px;
+  line-height:28px;
+}
+
 #chatwrapper{
   width:100%;
   
