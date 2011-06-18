@@ -159,7 +159,8 @@ body {
   width: 100%;
   text-align: center;
   margin-top: 2px;
-  font-size: 16px;
+  font-size: 12px;
+  font-weight: bold;
   line-height: 28px; }
 
 #chatwrapper {
@@ -281,7 +282,7 @@ body {
 
 #likebox {
   padding-left: 10px;
-  width: 24px;
+  width: 22px;
   cursor: pointer; }
 
 #albumart {
@@ -289,14 +290,14 @@ body {
   width: 70px; }
 
 #addtofaves {
-  float: left;
+  float: right;
   font-size: 12px;
   font-style: italic; }
 
 #currentfile_opts {
   position: relative;
   padding: 5px;
-  padding-right: 20px; }
+  padding-right: 10px; }
 
 .fileopt {
   margin-left: 2px;
