@@ -326,7 +326,8 @@ body {
 
 #queue {
   border: 1px dashed transparent;
-  float: left; }
+  float: left;
+  width: 350px; }
 
 #queue.highlight {
   background-color: #ffffa2;
