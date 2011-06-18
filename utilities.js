@@ -12,6 +12,8 @@ exports.slugify = function(text){
   text = text.replace(/-{2,}/, "-");
   text = text.replace(/^-+/, "");
   text = text.replace(/^_+/, "");
+  text = text.replace(/-+$/, "");
+  text = text.replace(/_+$/, "");
   return text;
 }
 
