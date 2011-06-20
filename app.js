@@ -599,8 +599,8 @@ var router = new routing.Router([
 var server = ws.createServer();
 
 
-server.addListener("error", function(req, res) {
-  console.log("something went wrong");
+server.addListener("error", function(err) {
+  console.log("something went wrong", err);
 })
 
 server.addListener("request", function(req, res) {
