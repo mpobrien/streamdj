@@ -282,7 +282,7 @@ body {
 
 #likebox {
   padding-left: 10px;
-  width: 22px;
+  width: 24px;
   cursor: pointer; }
 
 #albumart {
@@ -290,7 +290,7 @@ body {
   width: 70px; }
 
 #addtofaves {
-  float: right;
+  float: left;
   font-size: 12px;
   font-style: italic; }
 
