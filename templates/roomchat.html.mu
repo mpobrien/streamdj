@@ -44,7 +44,14 @@
         });
       }
     </script>
-
+    <script type="text/javascript">
+       var wsurl = '{{wsurl}}'
+       var msgs = [{{{msgs}}}]
+       var username = {{{username}}}
+       var messagecount = msgs.length;
+     </script>
+    <script type="text/javascript" src="/static/jqwheel.js"></script>
+    <script type="text/javascript" src="/static/outloud.js"></script>
     <script type="text/javascript">
       var roomname = '{{roomname}}'
       var uidkey = '{{uidkey}}'
@@ -75,28 +82,22 @@
       //soundManager.waitForWindowLoad = true;
       soundManager.useFlashBlock = false; 
       var startStream = function(){
-        x = soundManager.createSound({
-          id: 'mySound',
-          url: '{{listenurl}}',
-          autoPlay: true,
-          stream: true,
-          useEQData: true, 
-          whileplaying : whilePlaying
-        });
+        var soundOpts = { id: 'mySound',
+                          url: '{{listenurl}}',
+                          autoPlay: true,
+                          stream: true,
+                          useEQData: true, 
+                          whileplaying : whilePlaying
+                        }
+        if( currentVolume>0 ){
+          soundOpts.volume = currentVolume;
+        }
+        x = soundManager.createSound(soundOpts);
         if( muted ){
           soundManager.setVolume('mySound', 0);
         }
       }
-      soundManager.onready(startStream);
     </script>
-    <script type="text/javascript">
-       var wsurl = '{{wsurl}}'
-       var msgs = [{{{msgs}}}]
-       var username = {{{username}}}
-       var messagecount = msgs.length;
-     </script>
-    <script type="text/javascript" src="/static/jqwheel.js"></script>
-    <script type="text/javascript" src="/static/outloud.js"></script>
      <script>
        var newMessageCount = 0;
        var countmsgs = false;
@@ -140,7 +141,7 @@
         }
       }
        $(document).ready(function(){
-         console.log(msgs, messagecount)
+         soundManager.onready(startStream);
          if(messagecount == 0){
            appendGreeting()
          }

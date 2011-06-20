@@ -19,6 +19,7 @@ function timeSince(date) {//{{{
 
 var pendinguploads = 0;
 var muted;
+var currentVolume;
 var generateTwitterMsg = function(songInfo){
   description = "Come play music with us in " + roomname + "! "
   if( songInfo.Title && songInfo.Title!='(Unknown)'){
