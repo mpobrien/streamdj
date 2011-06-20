@@ -398,7 +398,7 @@
                 <div id="albumart" style="margin:5px;text-align:left;display:none"> </div>
                 <div id="currentfile_opts">
                 <div class="clearer"></div>
-                <div id="nowplayingheart" class="fileopt heartbox off"></div>
+                <div id="nowplayingheart" class="fileopt heartbox off" style="padding:0px;margin-left:63%;margin-right:0%;"></div>
 	          <div id="addtofaves">add to Favorites</div>
                   <div id="thumbsdown" style="display:none" class="fileopt thumbs t_off"></div>
                   <div class="clearer"></div>

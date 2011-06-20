@@ -42,7 +42,7 @@ function bit_url(url, callback) {
   });
 }
 var appendGreeting = function(){
-  $('#chat').append($('<div class="greeting"><div>Nice, you\'re in a new room!</div><div>Invite some people: <span class="fbinvite"><img src="/static/facebook_small.png"/></span> <span class="twinvite" style="cursor:pointer;"><img src="/static/twitter_small.png"/></span></div><div>Or copy and paste to friends: <span class="roomlink">http://outloud.fm/' + roomname +'</span></div></div>'))
+  $('#chat').append($('<div class="greeting"><div style="font-style:bold;">Welcome to your shiny new room!</div><div>Invite some friends! <span class="fbinvite"><img src="/static/facebook_small.png"/></span> <span class="twinvite" style="cursor:pointer;"><img src="/static/twitter_small.png"/></span></div><div>Or copy and paste this URL: <span class="roomlink">http://outloud.fm/' + roomname +'</span></div></div>'))
 }
 
 var extractCookie = function(cstring, c_name){
