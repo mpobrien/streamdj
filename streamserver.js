@@ -64,7 +64,7 @@ var fileEnd = function(roomName, fileinfo){
   redisClient2.del("nowplayingid_" + roomName);
   redisClient2.incr("roommsg_" + roomName, function(err, reply){
     fileinfo.msgId = reply;
-    redisClient2.publish("file-ended", JSON.stringify(fileinfo));
+    redisClient2.publish("file-ended", roomName + " " + fileinfo.msgId + " " + JSON.stringify(fileinfo));
   });
 
   if( fileinfo && fileinfo.path){
@@ -81,11 +81,16 @@ var fileEnd = function(roomName, fileinfo){
 var fileChanged = function(roomName, oldfile, newfile){
   redisClient2.set("nowplaying_" + roomName, JSON.stringify(newfile));
   redisClient2.set("nowplayingid_" + roomName, newfile.songId);
-  redisClient2.incrby("roommsg_" + roomName, 2, function(er, reply){ //TODO check errors
+  redisClient2.incr("roommsg_" + roomName, function(er, reply){ //TODO check errors
+    console.log("reply",reply)
     var msgId = reply;
     var message = JSON.stringify( {messages:[msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta, msgId)]})
     var msg = {"oldfile":oldfile, "newfile":newfile, "roomname":roomName, "msgId":msgId};
-    redisClient2.publish("file-changed", JSON.stringify(msg));
+    redisClient2.publish("file-changed", roomName + " " + msgId + " " + JSON.stringify(msg));
+    redisClient2.multi([
+     ["zadd","roomlog_" + roomName, msgId, message],
+     ["zadd","songs_" + roomName, msgId, message]
+    ]).exec();
     redisClient2.zadd("roomlog_" + roomName, msgId, message, function(){ 
       //TODO trim the log?
       //redisClient2.ltrim("chatlog_"+ roomName, 100, function(){});

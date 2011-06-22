@@ -28,10 +28,7 @@
        <img src="/static/ol_med.png">
       </div>
     </div>
-
-
 	    <div id="rightside">
-
         {{#userinfo}}
           <div>
             <div class="userinfo" style="float:left; width:100%">

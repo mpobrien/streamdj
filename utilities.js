@@ -1,4 +1,4 @@
-var Mu = require('Mu')
+var mustache = require('mustache')
 var fs = require('fs')
 var sys = require('sys')
 var util = require('util')
@@ -84,18 +84,8 @@ exports.serveFromStaticDir = function(req,res,uri){
   });
 }
 
-exports.sendTemplate = function(res, template, context, devmode){//{{{
-  var options = {}
-  if( devmode ){
-    options['cached'] = false;
-  }
-  Mu.render(template, context, options, function(err, output){
-    if(err){
-      throw err;
-    }
-    output.addListener('data', function (c) {res.write(c)})
-          .addListener('end', function () { res.end() });
-  })
+exports.sendTemplate = function(res, template, context){//{{{
+  res.end( mustache.to_html(template, context) );
 }//}}}
 
 exports.getInteger24At = function(buf, bigEndian) {//{{{

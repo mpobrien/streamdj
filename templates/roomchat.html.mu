@@ -2,7 +2,6 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
     <link href="/static/style.css" rel="stylesheet" />
-    <link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
     <link rel="icon" type="image/gif" href="/static/favicon.gif" />
     <script type="text/javascript">
       if(!(window.console)){
@@ -11,7 +10,6 @@
     </script>
     <title> outloud.fm </title>
     <script type="text/javascript" src="/static/swfobject.js"></script>
-    <script type="text/javascript" src="/static/web_socket.js"></script>
     <script type="text/javascript" src="/static/jquery.min.js"></script>
     <script type="text/javascript" src="/static/jquery-ui-custom.js"></script>
     <script type="text/javascript" src="/static/simplemodal.js"></script>
@@ -20,6 +18,7 @@
 
     <script type="text/javascript">
       var nowplayingstart = {{nowPlaying}};
+      var lastMsgId = {{lastMsgId}};
       function confirm(message, callback) {
         $('#confirm').modal({
           closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
@@ -55,8 +54,6 @@
     <script type="text/javascript">
       var roomname = '{{roomname}}'
       var uidkey = '{{uidkey}}'
-      WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
-      WEB_SOCKET_DEBUG = true;
       var numbars = 16;
       var whilePlaying = function(){
         var bars =[];

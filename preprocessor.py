@@ -116,7 +116,9 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
   #r.rpush("roomqueue_" + songInfo['room'], streamMessage);
   r.zadd("roomqueue_" + songInfo['room'], streamMessage, newSongId ) #key, score, member 
   #r.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member 
-  r.publish('file-queued', json.dumps(outgoingMessage));
+  roomMsgId = r.incr("roommsg_" + songInfo['room'])
+  print "msg id", roomMsgId
+  r.publish('file-queued', songInfo['room'] + ' ' + str(roomMsgId) + " " + json.dumps(outgoingMessage));
   r.publish("newQueueReady",songInfo['room']);
   metadata['room']= songInfo['room']
   metadata['uid'] = songInfo['uid']
