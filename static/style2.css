@@ -64,6 +64,7 @@
 #favorites .nolink {
   cursor: default; }
 #favorites .favepagelink {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
   list-style: none;
   cursor: pointer;
   display: inline;

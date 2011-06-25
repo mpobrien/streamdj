@@ -171,6 +171,11 @@ function setVol(v){
   document.cookie = "olvol_" + roomname + "=" + v;
 }
 
+function loadFavGenerator(pn){
+ return function(){
+   loadFavorites(pn);
+ }
+}
 function loadFavorites(pageNum, doSlide){
  var pageNum = parseInt(pageNum);
  $('#favelist').html('')
@@ -293,6 +298,7 @@ $(document).ready(//{{{
        });
      });
 
+     /*
     function getMessages() {
       $.getJSON('/' + roomname + '/listen', {"c":cursor}, function(json){
         if(json.m){
@@ -313,6 +319,7 @@ $(document).ready(//{{{
       })
     }
     setTimeout( getMessages, 500);
+
     /*ws = new WebSocket(wsurl);*/
     /*ws.onopen = function(){*/
     /*ws.send("auth:" + document.cookie);*/
@@ -455,3 +462,67 @@ $(document).ready(//{{{
 
 })//}}}
 
+function doFbInvite(){
+  var fburl = 'http://www.facebook.com/dialog/feed?';
+  fburl += 'link=' + escape('http://outloud.fm/' + roomname)
+  fburl += '&app_id=123006794442539&'
+  if(nowplayingMeta && 'pic' in nowplayingMeta){
+    fburl += '&picture=' + 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(nowplayingMeta.pic)
+  }else{
+    fburl += '&picture=' + escape('http://outloud.fm/static/ol_med.png');
+  }
+  if( nowplayingMeta ){
+    fburl += '&name=%E2%99%AB%20' + escape( " Now playing in " + roomname + ": ") + '%E2%99%AB%20'
+  }else{
+    fburl += '&name=' + escape(roomname + " on outloud.fm")
+  }
+  fburl += '&message=' + escape('Come play music with me in ' + roomname + ' on outloud.fm!')
+  if( nowplayingMeta ){
+    fburl += '&caption=' + escape(nowplayingMeta.Title)
+    fburl += '&description=' + escape('by ' + nowplayingMeta.Artist)
+  }
+  fburl += '&redirect_uri=http://outloud.fm/postdone'
+  var windowOptions = 'scrollbars=yes,resizable=yes,toolbar=no,location=yes'
+  var width = 960
+  var height = 420
+  var winHeight = screen.height
+  var winWidth = screen.width;
+  left = Math.round((winWidth / 2) - (width / 2));
+  top = 0;
+  if (winHeight > height) {
+    top = Math.round((winHeight / 2) - (height / 2));
+  }
+  window.open(fburl, 'intent', windowOptions + ',width=' + width + ',height=' + height + ',left=' + left + ',top=' + top); 
+}
+
+var doTwitterinvite = function(){
+  var windowOptions = 'scrollbars=yes,resizable=yes,toolbar=no,location=yes'
+  var width = 550
+  var height = 420
+  var winHeight = screen.height
+  var winWidth = screen.width;
+  left = Math.round((winWidth / 2) - (width / 2));
+  top = 0;
+
+  if (winHeight > height) {
+    top = Math.round((winHeight / 2) - (height / 2));
+  }
+  var message;
+  if( nowplayingMeta ){
+    var message = "Come play music with me! ";
+    var nowplayingmessage = "Now playing in " + roomname + ": " + nowplayingMeta.Title + ' by ' + nowplayingMeta.Artist
+    bit_url('http://outloud.fm/' + roomname, function(shorturl){
+      var totalmsg = message + nowplayingmessage + " " + shorturl
+      if(totalmsg.length > 140){
+        var outmsg = message + nowplayingmessage
+        outmsg = escape(outmsg.substring(0, outmsg.length - (totalmsg.length - 135) )) + "%E2%80%A6" + escape(" " + shorturl);
+        window.open('http://twitter.com/intent/tweet?text=' + outmsg, 'intent', windowOptions + ',width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+      }else{
+        window.open('http://twitter.com/intent/tweet?text=' + escape(totalmsg), 'intent', windowOptions + ',width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+      }
+    })
+  }else{
+    var message = "Come play music with me in " + roomname + " on #outloudfm - http://outloud.fm/" + roomname
+    window.open('http://twitter.com/intent/tweet?text=' + escape(message), 'intent', windowOptions + ',width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+  }
+}

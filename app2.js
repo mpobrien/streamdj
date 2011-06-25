@@ -52,6 +52,11 @@ function getUserInfo(sessionId, callback){//{{{
   });
 }//}}}
 
+process.on('uncaughtException', function (err) {
+  console.log('FATAL - caught exception:' + err);
+});
+sys.puts(util.inspect(settings))
+
 pubsubClient.subscribe("chatmessage");
 pubsubClient.subscribe("file-changed");
 pubsubClient.subscribe("file-ended");
@@ -675,11 +680,16 @@ var favorites = function(req, res, qs){//{{{
   })
 }//}}}
 
+var postdone = function(req, res, qs){
+  res.end('<html><head><script type="text/javascript">window.close()</script></head><body></body></html>');
+}//}}}
+
+
 var router = new routing.Router([
   ["^/$", homepage],
   ['^/([\\w\-]+)/listen/?$', listen],
   ['^/([\\w\-]+)/send/?$', send],
-  /*["^/postdone/?$", postdone],*/
+  ["^/postdone/?$", postdone],
   ["^/login/(fb|tw)/?$", login],
   ["^/logout/?$", logout],
   ["^/favorites/?$", favorites],

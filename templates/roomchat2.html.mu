@@ -39,11 +39,8 @@
           {{/nowPlaying}}
         </script>
 
-
         <script type="text/javascript" src="/static/outloud.js"></script>
         <script type="text/javascript">
-
-
           $(document).ready(function(){
             setTimeout(function(){
                 soundManager.onready(startStream);
@@ -52,6 +49,8 @@
             $('#options').click(function(){
               $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
             });
+            $('.fbinvite').click(doFbInvite);
+            $('.twinvite').click(doTwitterinvite);
          {{^nowPlaying}}
          $('#currentfile').html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>').addClass("notplaying").removeClass("playing");;
          $('#visualization').hide();

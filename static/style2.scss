@@ -96,6 +96,7 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
     cursor:default;
   }
   .favepagelink{
+    @include seriffont;
     list-style:none;
     cursor:pointer;
     display:inline;
