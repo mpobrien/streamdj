@@ -29,6 +29,11 @@ var error404path = path.join(process.cwd(), "/static/404.html");
 var templates = new TemplateManager('./templates',['login.html.mu', 'roomchat2.html.mu']);
 templates.initializeTemplates();
 
+function reloadTemplates(req, res){
+  templates.initializeTemplates();
+  res.end();
+}
+
 function getUserInfo(sessionId, callback){//{{{
   redisClient.mget("session_"+sessionId+"_user_id",
                    "session_"+sessionId+"_screen_name",
@@ -687,6 +692,7 @@ var postdone = function(req, res, qs){
 
 var router = new routing.Router([
   ["^/$", homepage],
+  ["^/admin/reloadtemplates$", reloadTemplates],
   ['^/([\\w\-]+)/listen/?$', listen],
   ['^/([\\w\-]+)/send/?$', send],
   ["^/postdone/?$", postdone],
