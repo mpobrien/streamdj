@@ -26,7 +26,7 @@ var msggen = new msgs.MessageGenerator();
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
 var error404path = path.join(process.cwd(), "/static/404.html");   
 
-var templates = new TemplateManager('./templates',['login.html.mu', 'roomchat.html.mu']);
+var templates = new TemplateManager('./templates',['login.html.mu', 'roomchat2.html.mu']);
 templates.initializeTemplates();
 
 function getUserInfo(sessionId, callback){//{{{
@@ -78,7 +78,7 @@ pubsubClient.on("message", function(channel, msg){
     var startedmsg = msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta, msgId)
     startedmsg.id = msgId;
     var outgoingMsg = JSON.stringify(startedmsg) 
-    console.log("file chaged");
+    console.log("file changed");
     room.broadcast(outgoingMsg, msgId);
   }else if(channel == 'file-queued'){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
@@ -579,7 +579,9 @@ function display_form(req, res, context){//{{{
         if( liked ) result.liked = true;
         result.lastMsgId = lastMsgId;
         //if( voted ) result.voted = true;
-        utilities.sendTemplate(res, templates.getTemplate("roomchat.html.mu"), result, settings.devtemplates)
+        console.log(result);
+        console.log(result.nowPlaying);
+        utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
       });
     });
   });
@@ -618,6 +620,61 @@ var like_unlike = function(req, res, qs, matches){//{{{
   });
 }//}}}
 
+var favorites = function(req, res, qs){//{{{
+  var cookies = new Cookies(req, res);
+  var sessionId = cookies.get("session");
+  if( !sessionId ){ res.end(); return; }// not logged in
+  var faved = []
+  var pagesize = 10;
+  getUserInfo(sessionId, function(err, userinfo){
+    if(err){ res.end(); return; }
+    console.log(userinfo.name, "loaded favorites list.");
+    var uidkey = userinfo.service + "_" + userinfo.user_id
+    var pageNum = qs.query['p']
+    if( !pageNum ) pageNum = 0;
+    responseJson = {numFavorites:0, faves:[], page:pageNum};
+    var lowerBound = (pageNum*pagesize);
+    var upperBound = lowerBound + pagesize - 1
+    responseJson.page = pageNum;
+    redisClient.zcard("fave_" + uidkey, function(err, data){
+      if( data != undefined ){
+        responseJson.numFavorites = data;
+      }
+      responseJson.page = pageNum;
+
+      redisClient.zrevrange("fave_" + uidkey, lowerBound, upperBound,function(err, data){
+        if(data){
+          var keys = []
+          for(var i=0;i<data.length;i++){
+            keys.push("s_" + data[i]);
+          }
+          redisClient.mget(keys, function(err2, data2){
+            if(data2){
+              for(var i=0;i<data2.length;i++){
+                if(data2[i]){
+                  try{
+                    var fave_info = JSON.parse(data2[i]);
+                    fave_info.songId = data[i];
+                    responseJson.faves.push(fave_info);
+                  }catch(exception){
+                    console.log("bad json?", data2[i]);
+                    continue;
+                  }
+                }
+              }
+              res.end(JSON.stringify(responseJson));
+            }else{
+              res.end(JSON.stringify(responseJson));
+            }
+          });
+        }else{
+          res.end(JSON.stringify(responseJson));
+        }
+      });
+    });
+  })
+}//}}}
+
 var router = new routing.Router([
   ["^/$", homepage],
   ['^/([\\w\-]+)/listen/?$', listen],
@@ -625,7 +682,7 @@ var router = new routing.Router([
   /*["^/postdone/?$", postdone],*/
   ["^/login/(fb|tw)/?$", login],
   ["^/logout/?$", logout],
-  /*["^/favorites/?$", favorites],*/
+  ["^/favorites/?$", favorites],
   ["^/room/?$", room],
   ["^/authdone/tw/?$", authdone_twitter],
   ["^/authdone/fb/?$", authdone_facebook],
@@ -651,4 +708,4 @@ http.createServer(function (req, res) {//{{{
   }else{
     res.end('404!');
   }
-}).listen(80, "127.0.0.1");//}}}
+}).listen(settings.port, "127.0.0.1");//}}}

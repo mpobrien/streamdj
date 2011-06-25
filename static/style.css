@@ -1,630 +1,159 @@
-/* CSS Document */
-body {
-  text-align: center;
-  margin: 0px;
-  padding: 0;
-  font-family: Verdana,sans-serif;
-  /*	font:normal 0.8em/1.2em verdana,aria,sans-serif;*/
-  color: #666; }
-
-#wrapper1 {
-  height: 90%;
-  position: relative;
-  text-align: left;
-  width: 100%;
-  background: #FFF; }
-
-#wrapper2 {
-  height: 90%;
-  position: relative;
-  text-align: left;
-  width: 100%; }
-
 #header {
-  background-color: #2a2c31;
-  padding: 10px;
-  margin: 0;
-  height: 45px;
-  padding-top: 15px;
-  font-family: Verdana, sans-serif;
-  color: #fffedf; }
-  #header img {
-    border: 0; }
-  #header #links .link {
-    margin-left: 20px;
-    margin-right: 20px;
-    font-size: 14px; }
-    #header #links .link a:hover {
-      color: #fffedf;
-      text-decoration: none; }
-    #header #links .link a:link {
-      color: #fffedf;
-      text-decoration: none; }
-    #header #links .link a:visited, #header #links .link a:active {
-      color: #fffedf; }
-  #header #branding {
-    padding-top: 0px;
-    float: left;
-    margin-left: 20px;
-    font-size: 35px; }
-    #header #branding a:hover, #header #branding a:link, #header #branding a:visited, #header #branding a:active {
-      color: #fffedf;
-      text-decoration: none; }
-    #header #branding .org {
-      color: #dfba69; }
-  #header #volwrapper {
-    top: 20px;
-    float: right;
-    height: 40px;
-    margin-right: 30px; }
-  #header #links {
-    margin-top: 20px;
-    margin-right: 50px;
-    float: left; }
-  #header .muted {
-    background: url("/static/volumeorgmute.png"); }
-  #header #volicon {
-    cursor: pointer;
-    height: 20px;
-    width: 20px;
-    float: left;
-    top: 20px;
-    margin-top: 5px;
-    margin-right: 5px; }
-  #header .notmuted {
-    background: url("/static/volumeorg.png"); }
-  #header #volcontrol {
-    width: 140px;
-    border: 1px solid #a3a7ae;
-    height: 14px;
-    float: left;
-    margin-top: 8px;
-    margin-bottom: 13px; }
-  #header #volinside {
-    width: 90%;
-    background-color: #dfba69;
-    height: 100%;
-    padding: 0px;
-    margin: 0px; }
+  height: 50px;
+  background-color: #2A2C31;
+  z-index: 1000; }
 
-#header h1 {
-  font-size: 200%; }
+#main {
+  margin: 0px; }
 
-#maincol {
-  height: 100%;
-  position: relative;
-  margin: 0;
-  padding: 10px; }
-
-#leftcol {
-  height: 100%;
-  position: relative;
-  top: -10px;
-  left: -10px;
-  float: left;
-  width: 220px;
-  /* for IE5/WIN */
-  voice-family: "\"}\"";
-  voice-family: inherit;
-  width: 350px;
-  /* actual value */
-  margin: 0 0 -10px 0;
-  background-color: white;
-  z-index: 100; }
-
-#rightcol {
-  height: 100%;
-  position: relative;
-  top: -10px;
-  right: -10px;
-  float: right;
-  width: 220px;
-  /* for IE5/WIN */
-  voice-family: "\"}\"";
-  voice-family: inherit;
-  width: 250px;
-  /* actual value */
-  margin: 0 0 -10px 0;
-  background-color: white;
-  z-index: 99; }
-
-#centercol {
-  height: 100%;
-  position: relative;
-  padding-left: 350px;
-  padding-right: 250px; }
-
-#centercol a {
-  color: #666; }
-
-#centercol a:hover {
-  border-bottom: 1px solid;
-  color: #9343B9; }
-
-.fbinvite {
-  cursor: pointer; }
-
-.twinvite {
-  cursor: pointer; }
-
-.roomlink {
-  border--radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  background-color: #efefef;
-  border: 1px solid #ccc;
-  padding: 3px; }
-
-.greeting {
-  width: 100%;
-  text-align: center;
-  margin-top: 2px;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 28px; }
-
-#chatwrapper {
-  width: 100%; }
-  #chatwrapper #chat {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: 95%; }
-    #chatwrapper #chat .timestamp {
-      font-size: .8em;
-      padding-right: 5px;
-      color: #aaa; }
-    #chatwrapper #chat .from {
-      font-size: 12px;
-      font-weight: bold;
-      color: black; }
-    #chatwrapper #chat .message, #chatwrapper #chat .join, #chatwrapper #chat .playstart {
-      padding-left: 8px;
-      font-size: 12px; }
-    #chatwrapper #chat .message {
-      margin-top: 2px;
-      font-size: 12px;
-      color: black; }
-    #chatwrapper #chat .playstart {
-      border--radius: 5px;
-      -moz-border-radius: 5px;
-      -webkit-border-radius: 5px;
-      background: #ffe6e6;
-      /* for non-css3 browsers */
-      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to');
-      /* for IE */
-      background: -webkit-gradient(linear, left top, left bottom, from(#ffe6e6), to(#fef2f2));
-      /* for webkit browsers */
-      background: -moz-linear-gradient(top, #ffe6e6, #fef2f2);
-      /* for firefox 3.6+ */
-      margin-top: 5px;
-      margin-right: 5px;
-      border: 1px solid #ffcccc;
-      color: black;
-      padding-top: 15px;
-      padding-bottom: 15px; }
-    #chatwrapper #chat .feedplayart {
-      float: left;
-      width: 60px;
-      border: 1px solid transparent;
-      margin-right: 10px;
-      margin-left: 10px; }
-    #chatwrapper #chat .startplaywrapper {
-      position: relative;
-      float: left;
-      text-align: left; }
-      #chatwrapper #chat .startplaywrapper .title, #chatwrapper #chat .startplaywrapper .artist {
-        font-size: 1.1em;
-        font-weight: bold; }
-      #chatwrapper #chat .startplaywrapper .by, #chatwrapper #chat .startplaywrapper .title, #chatwrapper #chat .startplaywrapper .artist, #chatwrapper #chat .startplaywrapper .upby, #chatwrapper #chat .startplaywrapper .uploader, #chatwrapper #chat .startplaywrapper .startedplaying {
-        margin-left: 2px;
-        margin-right: 2px; }
-      #chatwrapper #chat .startplaywrapper .artistinfo {
-        margin-bottom: 2px; }
-      #chatwrapper #chat .startplaywrapper .title {
-        margin-bottom: 2px; }
-      #chatwrapper #chat .startplaywrapper .upby {
-        color: black;
-        font-size: .9em; }
-      #chatwrapper #chat .startplaywrapper .uploader {
-        font-weight: bold;
-        font-size: .9em; }
-      #chatwrapper #chat .startplaywrapper .startedplaying {
-        font-size: .8em; }
-  #chatwrapper #sender #newchat {
-    width: 100%; }
-
-.colheading {
-  padding-left: 20px;
-  font-family: Verdana;
-  color: #3e4147;
-  font-size: 20px; }
-
-#footer {
-  position: relative;
-  top: 1px;
-  width: 100%;
-  clear: both;
-  margin: 0;
-  padding: 1% 0;
-  text-align: center;
-  color: #CCC; }
-
-#visualization {
-  border-top: 1px solid black; }
-  #visualization .bar {
-    display: inline;
-    height: 1px;
-    width: 8px;
-    background-color: #a1d8a8;
-    float: left;
-    border: 1px solid #59ba66; }
-
-#nowplayingwrapper {
-  padding-top: 30px; }
+/* Left Column Shit */
+#leftside {
+  top: 50px;
+  padding-left: 10px;
+  width: 425px;
+  background-color: #fff;
+  -webkit-box-shadow: 5px 0px 5px -3px #bbbbbb;
+  -moz-box-shadow: 5px 0px 5px -3px #bbbbbb;
+  box-shadow: 5px 0px 5px -3px #bbbbbb; }
 
 #currentfile {
-  line-height: 1.5em;
-  position: relative;
-  left: 4px;
-  float: left;
-  width: 190px;
-  padding-left: 5px;
-  padding-right: 15px;
-  font-family: Verdana,  sans-serif;
-  font-size: 13px; }
-  #currentfile .by, #currentfile .from, #currentfile .upby {
-    font-size: .8em;
-    margin-right: 5px; }
-  #currentfile .uploader {
-    font-size: .9em; }
-  #currentfile #np_title, #currentfile #np_artist, #currentfile #np_album {
-    font-size: 1.2em; }
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-size: 16px;
+  line-height: 18px;
+  padding-top: 10px; }
+  #currentfile .meta {
+    font-style: italic;
+    color: #888;
+    font-size: .75em; }
+  #currentfile .albumart {
+    position: absolute;
+    top: 55px;
+    left: 292px; }
 
-#likebox {
-  padding-left: 10px;
-  width: 24px;
-  cursor: pointer; }
+.progress_container {
+  width: 100px;
+  height: 5px;
+  border: 1px solid #bbb; }
 
-#albumart {
-  float: left;
-  width: 70px; }
+.progress_inner {
+  width: 60%;
+  height: 100%;
+  background-color: #bbb; }
 
-#addtofaves {
-  float: left;
-  font-size: 12px;
-  font-style: italic; }
+#albuminfo {
+  font-size: .9em; }
 
-#currentfile_opts {
-  position: relative;
-  padding: 5px;
-  padding-right: 10px; }
+#uploaderinfo {
+  font-size: .8em; }
 
-.fileopt {
-  margin-left: 2px;
-  margin-right: 6px; }
+.uploader {
+  padding-right: 6px; }
 
-.progressBar {
-  width: 0%;
-  height: 10px;
-  background-color: black; }
-
-.progressContainer {
-  width: 300px;
-  height: 10px;
-  border: 1px solid black; }
-
-#queuelist {
-  height: 380px;
-  font-size: .9em;
+#queueholder {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-size: 16px;
+  line-height: 18px;
   overflow-y: auto;
-  padding-left: 5px; }
-  #queuelist .odd {
-    background-color: #ddd; }
-  #queuelist .delsong {
-    z-index: 100;
-    display: inline;
-    height: 11px;
-    width: 11px;
-    background: url("/static/delsong.png") no-repeat;
-    padding-right: 8px;
-    cursor: pointer; }
-  #queuelist li {
-    line-height: 14px;
-    list-style: none;
-    margin-top: 5px;
-    padding: 5px;
-    padding-left: 5px; }
-    #queuelist li .title, #queuelist li .artist, #queuelist li .by, #queuelist li .upby, #queuelist li .uploader {
-      margin-right: 4px; }
-    #queuelist li .title, #queuelist li .artist {
-      font-weight: bold; }
-    #queuelist li .by, #queuelist li .upby {
-      font-size: .9em; }
+  bottom: 0px;
+  max-height: 500px; }
+  #queueholder .odd {
+    background-color: #EEE; }
 
-.desc {
-  text-align: center;
-  font-family: Verdana,sans-serif;
-  font-size: 1.2em; }
+.queuedsong {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px dotted #BBB;
+  font-size: 16px; }
 
-#queue {
-  border: 1px dashed transparent;
-  float: left;
-  width: 350px; }
-
-#queue.highlight {
-  background-color: #ffffa2;
-  border: 1px dashed #000; }
-
-#listenerslist {
-  padding-left: 10px; }
-  #listenerslist li {
-    list-style: none;
-    line-height: 20px; }
-    #listenerslist li img {
-      padding-right: 10px;
-      border: none; }
-
-#optionsmodal {
-  border--radius: 10px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  font-family: Verdana, Georgia;
-  position: absolute;
-  width: 450px;
-  height: 350px;
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-  display: none; }
-  #optionsmodal .heading {
-    width: 300px;
-    margin-left: auto;
-    margin-right: auto;
-    color: black;
-    font-weight: bold;
-    padding-top: 10px;
-    border-bottom: 1px solid black; }
-  #optionsmodal .optionrow {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-family: Georgia, serif;
-    font-size: 14px; }
-  #optionsmodal .divider {
-    height: 1px;
-    border-bottom: 1px dotted #cccccc; }
-
-.countlike {
-  float: right;
-  position: relative;
-  top: -5px;
-  margin-right: 3px; }
-
-.heartbox {
-  width: 24px;
-  height: 24px;
-  cursor: pointer; }
-
-.on {
-  background: url("/static/heart.png") no-repeat; }
-
-.off {
-  background: url("/static/heart_deactive.png") no-repeat; }
-
-.hover {
-  background: url("/static/heart_hover.png") no-repeat; }
-
-#thumbsdown {
-  width: 24px;
-  height: 24px;
-  cursor: pointer; }
-
-.t_on {
-  background: url("/static/thumbsdown_on.png") no-repeat; }
-
-.t_off {
-  background: url("/static/thumbsdown_off.png") no-repeat; }
-
-.t_hover {
-  background: url("/static/thumbsdown_hover.png") no-repeat; }
-
-#currentfile_opts .fileopt {
+.queuedsong > .title, .artistinfo {
+  padding-right: 3px;
+  font-size: 14px;
+  line-height: 14px;
   float: left; }
 
-#favorites #nofaves {
-  display: none;
-  font-size: 12px;
-  line-height: 24px;
-  text-align: center;
-  padding: 30px 80px 50px; }
-#favorites #favesheader {
-  font-size: 1.2em;
-  text-align: center;
-  font-weight: bold;
-  padding: 5px; }
-#favorites #favepages {
-  margin-left: 20px;
-  margin-bottom: 15px;
-  text-align: center; }
-#favorites #curpage {
-  cursor: default;
-  font-weight: bold;
-  border: 1px solid #ccc; }
-#favorites .nolink {
-  cursor: default; }
-#favorites .favepagelink {
-  list-style: none;
-  cursor: pointer;
-  display: inline;
-  margin-right: 5px;
-  padding-top: 3px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px; }
-#favorites .odd {
-  background-color: #ddd; }
-#favorites .favwrapper {
-  position: relative;
-  clear: both;
-  border-bottom: 1px solid #ccc;
-  border-right: 1px solid #ccc; }
-  #favorites .favwrapper .heartbox {
-    margin-left: 5px;
-    margin-top: 10px;
-    float: left; }
-#favorites .first {
-  border-top-right-radius: 5px;
-  -moz-border-radius-topright: 5px;
-  -webkit-border-top-right-radius: 5px;
-  border-top: 1px solid #ccc; }
-#favorites .last {
-  border-bottom-right-radius: 5px;
-  -moz-border-radius-bottomright: 5px;
-  -webkit-border-bottom-right-radius: 5px; }
-#favorites .odd {
-  background: #dddddd;
-  /* for non-css3 browsers */
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to');
-  /* for IE */
-  background: -webkit-gradient(linear, left top, left bottom, from(#dddddd), to(#f7f7f7));
-  /* for webkit browsers */
-  background: -moz-linear-gradient(top, #dddddd, #f7f7f7);
-  /* for firefox 3.6+ */
-  background-color: #ddd; }
-#favorites .favorite_entry {
-  width: 300px;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  float: left;
-  position: relative;
-  padding-left: 10px; }
-  #favorites .favorite_entry .title, #favorites .favorite_entry .artist, #favorites .favorite_entry .by, #favorites .favorite_entry .album, #favorites .favorite_entry .upby, #favorites .favorite_entry .uploader, #favorites .favorite_entry .from {
-    margin-right: 4px; }
-  #favorites .favorite_entry .title, #favorites .favorite_entry .artist {
-    font-size: .9em; }
+.queuedsong > .uploaderinfo {
+  font-size: 11px;
+  float: right;
+  padding-left: 5px; }
+
+/* Center column shit */
+#centercolumn {
+  top: 50px;
+  background-color: white;
+  left: 450px;
+  border-left: 1px solid #eee;
+  /*border:1px solid black;*/
+  position: absolute;
+  width: 650px;
+  bottom: 0px; }
+
+#chat {
+  overflow-y: auto;
+  position: absolute;
+  top: 0px;
+  bottom: 45px;
+  border-bottom: 1px solid #ccc; }
+  #chat .chatmessage {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    padding: 3px; }
+  #chat .timestamp {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    color: #888;
+    float: left;
+    padding-right: 6px; }
+  #chat .sendername {
+    font-weight: bold;
+    padding-right: 7px; }
+  #chat .songmessage {
+    margin-top: 3px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    padding-left: 3px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #f6fafa;
+    border-top: 1px dotted #BBB;
+    border-bottom: 1px dotted #BBB;
+    line-height: 19px; }
+    #chat .songmessage .feed_title {
+      font-weight: bold; }
+    #chat .songmessage .feed_artist {
+      font-weight: bold; }
+    #chat .songmessage .feed_artist > .meta {
+      color: #888;
+      padding-right: 5px; }
+    #chat .songmessage .feed_uploader_info .meta {
+      color: #888;
+      padding-right: 5px;
+      font-size: .9em; }
+    #chat .songmessage .feed_uploader_info .uploader {
+      font-size: .9em; }
+  #chat .albumart {
+    float: left;
+    padding-right: 6px; }
+  #chat .albumartspacer {
+    float: left;
+    width: 60px;
+    height: 60px; }
+
+/* Right Column */
+#rightside {
+  top: 50px;
+  left: 1105px;
+  position: absolute; }
+
+#listeners {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-size: 12px; }
+
+/* Other */
+.sectionheading {
+  letter-spacing: 3px;
+  color: #333;
+  text-transform: uppercase;
+  border-bottom: 1px dotted #BBB; }
 
 .clearer {
   clear: both; }
-
-#invites {
-  border--radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  background: #eeeeee;
-  /* for non-css3 browsers */
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to');
-  /* for IE */
-  background: -webkit-gradient(linear, left top, left bottom, from(#eeeeee), to(white));
-  /* for webkit browsers */
-  background: -moz-linear-gradient(top, #eeeeee, white);
-  /* for firefox 3.6+ */
-  padding: 10px;
-  font-style: italic;
-  font-size: 12px; }
-
-/* modal overlay */
-#basic-modal-content {
-  display: none; }
-
-#aboutmodal {
-  display: none; }
-
-#favorites {
-  display: none;
-  width: 350px; }
-
-#simplemodal-overlay {
-  background-color: #000; }
-
-#simplemodal-container {
-  height: 250px;
-  width: 500px;
-  color: #black;
-  background-color: #fff;
-  border: 4px solid #444;
-  padding: 12px;
-  font-family: Georgia; }
-
-#simplemodal-container .simplemodal-data {
-  padding: 8px; }
-
-#simplemodal-container a {
-  color: #ddd; }
-
-#simplemodal-container a.modalCloseImg {
-  background: url(/static/x.png) no-repeat;
-  width: 25px;
-  height: 29px;
-  display: inline;
-  z-index: 3200;
-  position: absolute;
-  top: -15px;
-  right: -16px;
-  cursor: pointer; }
-
-#simplemodal-container h3 {
-  color: #84b8d9; }
-
-#confirm {
-  display: none;
-  font-family: Georgia; }
-
-/* Overlay */
-#confirm-overlay {
-  background-color: #eee;
-  cursor: wait; }
-
-/* Container */
-#confirm-container {
-  height: 140px;
-  width: 420px;
-  text-align: left;
-  background: #fff;
-  border: 2px solid #336699; }
-
-#confirm-container .header {
-  height: 30px;
-  line-height: 30px;
-  width: 100%;
-  color: #fff;
-  font-weight: bold; }
-
-#confirm-container .header span {
-  padding-left: 8px; }
-
-#confirm-container .message {
-  color: #333;
-  font-size: 14px;
-  margin: 0;
-  padding: 12px 4px 12px 8px; }
-
-#confirm-container .buttons {
-  line-height: 26px;
-  width: 160px;
-  float: right;
-  padding: 10px 8px 0; }
-
-#confirm-container .buttons div {
-  float: right;
-  margin-left: 4px;
-  width: 70px;
-  height: 26px;
-  color: #666;
-  font-weight: bold;
-  text-align: center;
-  background: url(../img/confirm/button.gif) repeat-x;
-  border: 1px solid #bbb;
-  cursor: pointer; }
-
-#confirm-container a.modal-close,
-#confirm-container a.modal-close:link,
-#confirm-container a.modal-close:active,
-#confirm-container a.modal-close:visited {
-  text-decoration: none;
-  font-weight: bold;
-  position: absolute;
-  right: 10px;
-  top: 2px;
-  color: #fff; }
-
-#confirm-container a.modal-close:hover {
-  color: #ccc; }

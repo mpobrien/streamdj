@@ -198,7 +198,6 @@
              favoritesopen = false;
              $('#player').show('slide', 'fast');
            });
-
          });
 	       $('#about').click(function(){
           $('#aboutmodal').modal( {closeHtml:"", overlayClose:true});

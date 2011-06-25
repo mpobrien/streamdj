@@ -1,0 +1,415 @@
+$headerHeight: 50px;
+$leftColWidth: 425px;
+$volumebarColor: black;
+$leftColPadding: 10px;
+$centerColLeftPad: 25px;
+$centerColWidth: 650px;
+$playingThumbnailWidth: 128px;
+$volumebarBorderColor: lighten(#3e4147, 40%);
+
+@mixin seriffont{
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+}
+
+@mixin sansseriffont{
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+@mixin boxshadow($a, $b, $c, $d, $color) {
+  -webkit-box-shadow:$a $b $c $d $color;
+  -moz-box-shadow:$a $b $c $d $color; 
+  box-shadow:$a $b $c $d $color;  
+}
+
+@mixin rounded($radius: 10px) {
+  border--radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+}
+
+#header{ height:$headerHeight; background-color: #2A2C31; z-index:1000; }
+#main{ margin:0px; }
+.headerlink{
+  @include seriffont;
+  color:white;
+}
+.headerlink:hover{
+  color: white;
+  text-decoration: none;
+}
+.headerlink:link{
+  color: white;
+  text-decoration: none;
+}
+.headerlink:visited{
+  color: white;
+  text-decoration: none;
+}
+.headerlink:active{
+  color: white;
+  text-decoration: none;
+}
+
+
+/* Left Column Shit */
+
+#leftside{
+  @include boxshadow(5px, 0px, 5px, -3px, #bbb);
+  top:$headerHeight;
+  padding-left:$leftColPadding;
+  width:$leftColWidth;
+  background-color:#fff;
+}
+
+#favorites{
+  .meta{
+    font-style:italic;
+    color:#888;
+    font-size:.75em;
+    padding-right:4px;
+  }
+  #nofaves{
+    display:none;
+    font-size:12px;
+    line-height:24px;
+    text-align:center;
+    padding: 30px 80px 50px;
+  }
+  #favesheader{
+    @include seriffont;
+    font-size:1.2em;
+    text-align:center;
+    font-weight:bold;
+    padding:5px;
+  }
+  #favepages{
+    margin-left:20px;
+    margin-bottom:15px;
+    text-align:center;
+  }
+  #curpage{
+    cursor:default;
+    font-weight:bold;
+    border:1px solid #ccc;
+  }
+  .nolink{
+    cursor:default;
+  }
+  .favepagelink{
+    list-style:none;
+    cursor:pointer;
+    display:inline;
+    margin-right:5px;
+    padding-top:3px;
+    padding-bottom:4px;
+    padding-left:5px;
+    padding-right:5px;
+  }
+
+
+  .favwrapper{
+    @include seriffont;
+    position:relative;
+    clear:both;
+    border-bottom:1px solid #ccc;
+    border-right:1px solid #ccc;
+    .heartbox{
+      margin-left:5px;
+      margin-top:10px;
+      float:left;
+    }
+  }
+  .first{
+    border-top:1px solid #ccc;
+  }
+  .last{
+  }
+  .odd{
+    background-color:#eee;
+  }
+
+  .favorite_entry{
+
+    width:300px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    float:left;
+    position:relative;
+    padding-left:10px;
+    .fav_line{
+    }
+
+    .title, .artist, .by, .album, .upby, .uploader, .from{
+      margin-right:4px;
+    }
+    .title, .artist{
+      font-size:.9em;
+    }
+  }
+}
+#currentfile_opts{
+  float:right;
+
+  .optcontrol{
+    width:24px;
+    margin-left:6px;
+    margin-right:6px;
+    float:left;
+  }
+}
+
+#currentfile{
+  @include seriffont;
+  font-size:20px;
+  line-height:18px;
+  padding-bottom:10px;
+
+  #nowPlayingInfo{
+    width:$leftColWidth - $playingThumbnailWidth;
+  }
+
+  .meta{
+    font-style:italic;
+    color:#888;
+    font-size:.75em;
+  }
+  #albumartcol{
+    float:right;
+    top: $headerHeight + 5px;
+    width:$playingThumbnailWidth;
+  }
+
+  .artistinfo, .title, .albuminfo{
+    margin-top:6px;
+    margin-bottom:6px;
+  }
+
+  .artistinfo, .albuminfo{
+    font-size:.8em;
+  }
+}
+.notplaying{
+  text-align:center;
+}
+.playing{
+  text-align:left;
+}
+
+#progress{
+  text-align:center;
+}
+.progressBar{ width:0%; height:5px; background-color:black; }
+.progressContainer{ width:300px; height:5px;border:1px solid black; }
+
+.progress_container{ width:100px; height:5px; border:1px solid #bbb; }
+
+.progress_inner{ width:60%; height:100%; background-color:#bbb;   }
+
+#albuminfo{ font-size:.9em; }
+#uploaderinfo{ font-size:.8em; }
+.uploader{ padding-right:6px; }
+
+.heartbox{
+  width:24px;
+  height:24px;
+  cursor:pointer;
+}
+.on{
+   background: url('/static/heart.png') no-repeat;
+}
+.off{
+   background: url('/static/heart_deactive.png') no-repeat;
+}
+#volcontrol{
+  width:24px;
+  height:24px;
+}
+
+#volicon{ cursor:pointer; height:20px; width:20px; float:left; top:20px; margin-top:5px; margin-right:5px; }
+.muted{ background: url('/static/volumeorgmute.png') ; }
+
+#volwrapper{
+  float:right;
+  height:20px; 
+}  
+
+#volcontrol{
+   width:140px; border:1px solid $volumebarBorderColor; height:14px; float:left; margin-top:8px;  }
+
+#volinside{ 
+  width:90%; background-color: $volumebarColor; height:100%; padding:0px; margin:0px; }
+
+.notmuted{
+  background: url('/static/volume_on.png') ;
+}
+
+#queueholder{
+  margin-top:15px;
+  @include seriffont;
+  font-size:16px;
+  line-height:18px;
+  bottom:0px;
+  max-height:500px;
+  .odd{ background-color:#EEE; }
+}
+
+.songinfo{
+  float:left;
+  width:300px;
+  font-size:14px;
+}
+
+.queuedsong{
+  padding-top:5px;
+  padding-bottom:5px;
+  border-bottom:1px dotted #BBB;
+  .meta{
+    font-style:italic;
+    color:#888;
+    font-size:.75em;
+  }
+}
+
+  .queuedsong > .title, .artistinfo{
+    padding-right:3px;
+    font-size:14px;
+    line-height:14px;
+  }
+
+  .queuedsong >.uploaderinfo{
+    font-size:11px;
+    float:right;
+    padding-left:8px;
+  }
+
+/* Center column shit */
+
+#centercolumn{
+  top:$headerHeight;
+  background-color:white;
+  left:$leftColWidth + $centerColLeftPad;
+  border-left:1px solid #eee;
+  /*border:1px solid black;*/
+  position:absolute;
+  width:$centerColWidth;
+  bottom:10px;
+}
+#chatbox{
+  position:absolute;
+  bottom:15px;
+  width:100%;
+}
+#newchat{
+  width:100%;
+  font-size:1.1em;
+}
+
+#chat{
+  @include boxshadow(5px, 0px, 5px, -3px, #bbb);
+  width:100%;
+  overflow-y:auto;
+  position:absolute;
+  top:0px;
+  bottom:45px;
+  border-bottom:1px solid #ccc;
+
+  .chatmessage{
+    @include sansseriffont;
+    font-size:14px;
+    padding:3px;
+  }
+
+  .timestamp{
+    font-family: Helvetica, Arial, sans-serif;
+    font-size:12px;
+    color:#888;
+    float:left;
+    padding-right:6px;
+  }
+  .sendername{
+    font-weight:bold;
+    padding-right:7px;
+  }
+
+  .songmessage{
+    margin-top:7px;
+    @include seriffont;
+    font-size:16px;
+    padding-left:3px;
+    padding-top:5px;
+    padding-bottom:5px;
+    background-color: lighten(#86B8B1, 35%);
+    border-top:1px dotted #BBB;
+    border-bottom:1px dotted #BBB;
+    line-height:19px;
+
+    .feed_title{ font-weight:normal; }
+    .feed_artist{ font-weight:normal; }
+    .feed_artist > .meta { color:#888; font-size:.8em; font-style:italic; }
+    .feed_uploader_info{
+      .meta { color:#888; font-size:.8em; font-style:italic; } 
+      .uploader{
+        font-size:.9em;
+      }
+    }
+  }
+
+  .albumart{
+    float:left;
+    padding-right:6px;
+  }
+  .albumartspacer{
+    float:left;
+    width:60px;
+    height:60px;
+  }
+
+}
+
+
+/* Right Column */
+
+#invitelinks{
+  @include seriffont;
+  padding-top:5px;
+  text-align:center;
+  font-size:14px;
+  line-height:20px;
+  .fbinvite, .twinvite{
+    cursor:pointer;
+  }
+}
+.roomlink{
+  @include rounded(5px);
+  background-color:#efefef;
+  border:1px solid #ccc;
+  padding:2px;
+}
+
+#rightside{
+  top:$headerHeight;
+  left:$leftColWidth + $leftColPadding + $centerColWidth + 30px;
+  right:0px;
+  position:absolute;
+}
+
+#listeners{
+  @include seriffont;
+  font-size:12px;
+}
+
+/* Other */
+
+.sectionheading{
+  letter-spacing:3px;
+  color:#333;
+  font-size:1.1em;
+  text-transform:uppercase;
+  border-bottom:1px dotted #BBB;
+  padding-bottom:5px;
+}
+
+
+.clearer{
+  clear:both;
+}

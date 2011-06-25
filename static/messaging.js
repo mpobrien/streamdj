@@ -1,7 +1,9 @@
 /* Utility function for padding zeros into numeric strings. */
-var nowplayingId = null;
 var nowplayingMeta = null;
 var lastStoppedTime = null;
+var makeText = function(){
+  return document.createTextNode(' ');
+}
 
 var strip = function(s){
   return s.replace(/^\s+|\s+$/g, '') ;
@@ -16,36 +18,33 @@ var makeTimestamp = function(rawtime){
 var MessageHandlers = {
 
   "chat"   : function(message, isStatic) {//{{{
+
     var from = message['from']
     var body = message['body']
     var time = message['time']
-    var newMessageHtml = $('<div class="message"></div>"').attr("id",message["id"])
-                          .append( $('<span class="timestamp"></span>').text(makeTimestamp(time)) )
-                          .append( $('<span class="from"></span>').text(from + ":") )
-                          .append( $('<span class="message"></span>').html(linkify(body)) )
+    var newMessageHtml = $('<div class="chatmessage"></div>"').attr("id",message["id"])
+                          .append( $('<div class="timestamp"></div>').text(makeTimestamp(time)) )
+                          .append( $('<span class="sendername"></span>').text(from + ":") )
+                          .append( $('<span class="messagebody"></span>').html(linkify(body)) )
                           .appendTo("#chat");
   },//}}}
 
   "enq"    : function(message, isStatic){//{{{
-    //isStatic is ignored for now because server does not log these events
+
     var songId = message["songId"]
-    //newmsghtml = $('<div class="enqueued" id="' + message["id"] + '">' + timestampHtml + '<b>' + safefrom + ' </b> added <span class="filename">' +  safebody + '</span> to the queue.</div>')
-    var songLi = $('<li></li>').attr("class","queuedsong").attr('id','song_' + songId)
-    var useFilename = true;
-    if(message.meta && 'Title' in message.meta){
-      if( uidkey == message['uid'])
-      songLi.append($('<div class="delsong">&nbsp;</div>').attr("id","delsong_" + songId))
-      songLi.append($('<span></span> ').attr("class","title").text(message.meta['Title'])).append(document.createTextNode(' '))
-      if(message.meta && 'Artist' in message.meta){
-        songLi.append($('<span></span> ').attr("class","by").text("by")).append(document.createTextNode(' '))
-        songLi.append($('<span></span> ').attr("class","artist").text(message.meta['Artist'])).append(document.createTextNode(' '))
-      }
-    }else{
-      songLi.append($('<span></span> ').attr("class","title").text(message['body'])).append(document.createTextNode(' '))
-    }
-    songLi.append($('<span></span> ').attr('class','upby').html('added&nbsp;by')).append(document.createTextNode(' '))
-    songLi.append($('<span></span> ').attr('class','uploader').text(message['from'])).append(document.createTextNode(' '))
-    songLi.hide().appendTo("#queueList").show("slide").show("highlight",3000);
+    var songLi = $('<div class="queuedsong"></div>').attr('id','song_' + songId)
+    songLi.append($('<div class="songinfo"></div>')
+      .append($('<div class="title"></div>').text(message.meta['Title']))
+        .append($('<div class="artistinfo"></div>')
+          .append($('<span class="meta">by</span>'))
+          .append(makeText())
+          .append($('<span class="artistname"></span>').text(message.meta['Artist']))
+          .append(makeText())))
+      .append($('<div class="uploaderinfo"></div>')
+        .append($('<span class="uploader"></span>').text(message['from']))
+        .append(makeText()))
+      .append($('<div class="clearer"> </div>'))
+    songLi.hide().appendTo("#queuelisting").show("slide").show("highlight",1000);
     oddify();
   },//}}}
 
@@ -100,10 +99,11 @@ var MessageHandlers = {
     var songId = message["songId"]
     $('#albumart').hide();
     $('#nowplayingtext').text('');
-    $('#currentfile').removeClass("playing").html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
+    $('#currentfile').removeClass("playing").addClass("notplaying").html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
     $('#currentfile_opts').hide()
     $('#visualization').hide();
     $('#song_' + songId).hide('slide', function(){$(this).remove()} );
+    console.log("nulling");
     nowplayingId = null;
     nowplayingMeta = null;
     $('#albumart').html('')
@@ -118,84 +118,125 @@ var MessageHandlers = {
       startStream();
     }
     $('#nowplayingheart').removeClass("on").addClass("off");
-    $('#thumbsdown').removeClass("t_on").addClass("t_off");
-    var innerWrapper = $('<div></div>').attr("class","startplaywrapper")
-    var feedart = $('<div class="feedplayart"></div>');
-    var enqDiv = $('<div></div>')
-                   .attr("class","playstart")
-                   .attr("id",message["id"])
-                   .append( $('<div class="timestamp" style="float:left"></div>').text(makeTimestamp(message['time'])) )
-                   .append(feedart) 
-                   .append(innerWrapper)
-                   .append($('<div class="clearer"></div>'))
-
-    $('#currentfile').html('')
+    //$('#thumbsdown').removeClass("t_on").addClass("t_off");
+    var albumartDiv;
+    if( message.meta && ('pic' in message.meta)){
+      albumartDiv = $('<div id="albumartcol"></div>"')
+                       .append($('<div class="albumart"></div>')
+                        .append($('<img></img>').attr("width","60").attr("height","60")
+                        .attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic))))
+    }else{
+      albumartDiv = $('<div class="albumartspacer">&nbsp;</div>"')
+    }
+    albumartDiv.appendTo('#currentfile')
+    $('<div class="songmessage">')
+      .append($('<div class="timestamp"></div>"').text(makeTimestamp(message['time'])))
+      .append(albumartDiv)
+      .append($('<div></div>')
+        .append($('<div class="feed_title"></div>').text(message.meta['Title']))
+        .append($('<div class="feed_artist"></div>')
+          .append($('<span class="meta">by</span>').append(makeText()))
+          .append($('<span class="artist"></span>').text(message.meta['Artist'])))
+        .append($('<div class="feed_uploader_info"></div>')
+          .append($('<span class="meta">added by</span>').append(makeText()))
+          .append($('<span class="uploader"></span>').text(message['from']).append(makeText())))
+        .append($('<div class="clearer"></div>'))).appendTo("#chat");
     var nowPlayingInfo;
     nowplayingMeta = message.meta;
-    if( message.meta ){
-      $('#currentfile').append($('<div></div>').attr("id","np_title").text(message.meta['Title']));
-      var npartist = $('<div></div>')
-      npartist.attr("id","np_artist").append($('<span></span>').attr("class","by").text("by"))
-              .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
-      $('#currentfile').append(npartist)
-      var npalbum = $('<div></div>')
-      npalbum.attr("id","np_album").append($('<span></span>').attr("class","from").text("from"))
-                                   .append($('<span></span>').attr("class","album").text(message.meta['Album'])); 
-      $('#currentfile').append(npalbum)
-    }else{
-      $('#currentfile').append($('<div></div>').attr("id","np_title").text(message['body']));
-    }
-    $('#currentfile').append($('<div></div>').attr("id","uploaderinfo")
-                             .append($('<span></span>').attr('class','upby').html('added&nbsp;by'))
-                             .append($('<span></span>').attr('class','uploader').text(message['from'])))
-
     var songId = message["songId"]
-    if( message.meta && ('pic' in message.meta)){
-      feedart.append($('<img></img>').attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic)).attr('width','60').attr('height','60'))
-    }
-    if( message.meta && ('pic' in message.meta) && (!isStatic || (songId==nowplayingstart) )){
-      $('#albumart').html('')
-      var aimg = $('<img></img>');
-      aimg.attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(nowplayingMeta.pic));
-      aimg.attr('width','128')
-      aimg.appendTo('#albumart');
-      $('#albumart').show();
-    }else{
-      $('#albumart').html('')
-      $('#albumart').hide();
-    }
-    //innerWrapper.append($('<div class="feedplayart"></div>'));
-
-    if(message.meta && 'Title' in message.meta){
-      innerWrapper.append($('<div></div>').attr("class","title").text(message.meta['Title']))
-      if(message.meta['Artist'] != '(Unknown)' && strip(message.meta['Artist']).length>0){
-        var artistInfo = $('<div class="artistinfo"></div>')
-        artistInfo.append($('<span></span>').attr("class","by").text("by"))
-                  .append($('<span></span>').attr("class","artist").text(message.meta['Artist']))
-        innerWrapper.append(artistInfo)
-      }
-                  //.append($('<br/>'));
-    }else{
-      innerWrapper.append($('<span></span>').attr("class","title").text(message['body']))
-                .append($('<br/>'));
-    }
-    innerWrapper.append($('<span></span>').attr('class','upby').html('added&nbsp;by'))
-    innerWrapper.append($('<span></span>').attr('class','uploader').text(message['from']))
-    innerWrapper.append($('<span></span>').attr('class','startedplaying').html("started playing"))
-    enqDiv.appendTo("#chat");
-    $('#nowplayingheart').data("songId", songId);
-    $('#thumbsdown').data("songId", songId);
     nowplayingId = songId
+    $('#currentfile').html('<div id="albumartcol"><div id="currentfile_opts"><div class="optcontrol heartbox off" id="nowplaying_favorite"></div><div class="optcontrol"><img src="/static/cog_unhover.png"/></div></div><div id="nowplayingart"></div></div>')
+    $('#nowplaying_favorite').data("songId", songId); 
 
-                      
-    if(!isStatic){
-      $('#currentfile').addClass("playing");
-      $('#currentfile_opts').show();
-      $('#visualization').show();
-      $('#nowplayingtext').text(message['body']);
-      $('#song_' + songId).hide('slide', function(){$(this).remove()});
-      oddify(); //TODO clean up
+    var nowPlayingInfo = $('<div id="nowplayinginfo"></div>');
+    $('#currentfile').append(nowPlayingInfo);
+    nowPlayingInfo
+      .append( $('<div class="title"></div>').text(message.meta['Title']) )
+      .append( $('<div class="artistinfo"></div>')
+        .append( $('<span class="meta">by</span>').append(makeText()))
+        .append( $('<span class="artistname"></span>').text(message.meta['Artist'])))
+    if('meta' in message && 'Album' in message.meta && message.meta['Album'] != '(Unknown)'){
+      nowPlayingInfo
+        .append( $('<div class="albuminfo"></div>')
+          .append( $('<span class="meta">from</span>').append(makeText()))
+          .append( $('<span class="albumname"></span>').text(message.meta['Album'])))
     }
+    if( !isStatic ){
+      if( message.meta && ('pic' in message.meta)){
+        albumartDiv = $('<img></img>').attr("width","128")
+                        .attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic))
+                      .appendTo('#nowplayingart')
+
+      }
+    }
+    $('#currentfile').addClass('playing').removeClass('notplaying');
+    $('#currentfile').append($('<div class="clearer"> </div>'));
+    $('#song_' + songId).hide('slide', function(){$(this).remove(); oddify()});
+
+        /*if( message.meta ){*/
+        /*$('#currentfile').append($('<div></div>').attr("id","np_title").text(message.meta['Title']));*/
+    /*var npartist = $('<div></div>')*/
+    /*npartist.attr("id","np_artist").append($('<span></span>').attr("class","by").text("by"))*/
+    /*.append($('<span></span>').attr("class","artist").text(message.meta['Artist']))*/
+    /*$('#currentfile').append(npartist)*/
+    /*var npalbum = $('<div></div>')*/
+    /*npalbum.attr("id","np_album").append($('<span></span>').attr("class","from").text("from"))*/
+    /*.append($('<span></span>').attr("class","album").text(message.meta['Album'])); */
+    /*$('#currentfile').append(npalbum)*/
+    /*}else{*/
+    /*$('#currentfile').append($('<div></div>').attr("id","np_title").text(message['body']));*/
+    /*}*/
+    /*$('#currentfile').append($('<div></div>').attr("id","uploaderinfo")*/
+    /*.append($('<span></span>').attr('class','upby').html('added&nbsp;by'))*/
+    /*.append($('<span></span>').attr('class','uploader').text(message['from'])))*/
+
+    /*var songId = message["songId"]*/
+    /*if( message.meta && ('pic' in message.meta)){*/
+    /*feedart.append($('<img></img>').attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic)).attr('width','60').attr('height','60'))*/
+    /*}*/
+    /*if( message.meta && ('pic' in message.meta) && (!isStatic || (songId==nowplayingstart) )){*/
+    /*$('#albumart').html('')*/
+    /*var aimg = $('<img></img>');*/
+    /*aimg.attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(nowplayingMeta.pic));*/
+    /*aimg.attr('width','128')*/
+    /*aimg.appendTo('#albumart');*/
+    /*$('#albumart').show();*/
+    /*}else{*/
+    /*$('#albumart').html('')*/
+    /*$('#albumart').hide();*/
+    /*}*/
+    /*//innerWrapper.append($('<div class="feedplayart"></div>'));*/
+
+    /*if(message.meta && 'Title' in message.meta){*/
+    /*innerWrapper.append($('<div></div>').attr("class","title").text(message.meta['Title']))*/
+    /*if(message.meta['Artist'] != '(Unknown)' && strip(message.meta['Artist']).length>0){*/
+    /*var artistInfo = $('<div class="artistinfo"></div>')*/
+    /*artistInfo.append($('<span></span>').attr("class","by").text("by"))*/
+    /*.append($('<span></span>').attr("class","artist").text(message.meta['Artist']))*/
+    /*innerWrapper.append(artistInfo)*/
+    /*}*/
+    /*//.append($('<br/>'));*/
+    /*}else{*/
+    /*innerWrapper.append($('<span></span>').attr("class","title").text(message['body']))*/
+    /*.append($('<br/>'));*/
+    /*}*/
+    /*innerWrapper.append($('<span></span>').attr('class','upby').html('added&nbsp;by'))*/
+    /*innerWrapper.append($('<span></span>').attr('class','uploader').text(message['from']))*/
+    /*innerWrapper.append($('<span></span>').attr('class','startedplaying').html("started playing"))*/
+    /*enqDiv.appendTo("#chat");*/
+    /*$('#nowplayingheart').data("songId", songId);*/
+    /*$('#thumbsdown').data("songId", songId);*/
+    /*nowplayingId = songId*/
+
+
+    /*if(!isStatic){*/
+    /*$('#currentfile').addClass("playing");*/
+    /*$('#currentfile_opts').show();*/
+    /*$('#visualization').show();*/
+    /*$('#nowplayingtext').text(message['body']);*/
+    /*$('#song_' + songId).hide('slide', function(){$(this).remove()});*/
+    /*oddify(); //TODO clean up*/
+    /*}*/
   },//}}}
 
   "qdel": function(message, isStatic){//{{{

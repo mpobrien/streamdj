@@ -1,5 +1,6 @@
 window.linkify =//{{{
 (function(){var k="[a-z\\d.-]+://",h="(?:(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])",c="(?:(?:[^\\s!@#$%^&*()_=+[\\]{}\\\\|;:'\",.<>/?]+)\\.)+",n="(?:ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|coop|com|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|xn--0zwm56d|xn--11b5bs3a9aj6g|xn--80akhbyknj4f|xn--9t4b11yi5a|xn--deba0ad|xn--g6w251d|xn--hgbk6aj7f53bba|xn--hlcj6aya9esc7a|xn--jxalpdlp|xn--kgbechtv|xn--zckzah|ye|yt|yu|za|zm|zw)",f="(?:"+c+n+"|"+h+")",o="(?:[;/][^#?<>\\s]*)?",e="(?:\\?[^#<>\\s]*)?(?:#[^<>\\s]*)?",d="\\b"+k+"[^<>\\s]+",a="\\b"+f+o+e+"(?!\\w)",m="mailto:",j="(?:"+m+")?[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"+f+e+"(?!\\w)",l=new RegExp("(?:"+d+"|"+a+"|"+j+")","ig"),g=new RegExp("^"+k,"i"),b={"'":"`",">":"<",")":"(","]":"[","}":"{","B;":"B+","b:":"b9"},i={callback:function(q,p){return p?'<a href="'+p+'" title="'+p+'" target="_blank">'+q+"</a>":q},punct_regexp:/(?:[!?.,:;'"]|(?:&|&amp;)(?:lt|gt|quot|apos|raquo|laquo|rsaquo|lsaquo);)$/};return function(u,z){z=z||{};var w,v,A,p,x="",t=[],s,E,C,y,q,D,B,r;for(v in i){if(z[v]===undefined){z[v]=i[v]}}while(w=l.exec(u)){A=w[0];E=l.lastIndex;C=E-A.length;if(/[\/:]/.test(u.charAt(C-1))){continue}do{y=A;r=A.substr(-1);B=b[r];if(B){q=A.match(new RegExp("\\"+B+"(?!$)","g"));D=A.match(new RegExp("\\"+r,"g"));if((q?q.length:0)<(D?D.length:0)){A=A.substr(0,A.length-1);E--}}if(z.punct_regexp){A=A.replace(z.punct_regexp,function(F){E-=F.length;return""})}}while(A.length&&A!==y);p=A;if(!g.test(p)){p=(p.indexOf("@")!==-1?(!p.indexOf(m)?"":m):!p.indexOf("irc.")?"irc://":!p.indexOf("ftp.")?"ftp://":"http://")+p}if(s!=C){t.push([u.slice(s,C)]);s=E}t.push([A,p])}t.push([u.substr(s)]);for(v=0;v<t.length;v++){x+=z.callback.apply(window,t[v])}return x||u}})();//}}}
+var favoritesopen = false;
 
 var cursor = lastMsgId;
 function timeSince(date) {//{{{
@@ -105,6 +106,7 @@ var handleFiles = function(files){//{{{
     pendinguploads++;
     var qxhr = new XMLHttpRequest();
     var progbar = new ProgressBar();
+    console.log("here");
     $('#progress').append(progbar.outer)
     qxhr.onreadystatechange = function(){}
     qxhr.upload.onerror = function(e){ /*console.debug("error", e);*/ }
@@ -163,6 +165,93 @@ var oddify = function(){
   }
 }
 
+function setVol(v){
+  soundManager.setVolume('mySound', v);
+  $('#volinside').css('width', v + '%')
+  document.cookie = "olvol_" + roomname + "=" + v;
+}
+
+function loadFavorites(pageNum, doSlide){
+ var pageNum = parseInt(pageNum);
+ $('#favelist').html('')
+ $('#favepages').html('');
+ $.getJSON('/favorites/', {p:pageNum}, function(data){
+   if(!data.faves || data.numFavorites == 0){
+     $('#nofaves').show();
+     $('#favesheader').text("Favorites (0)")
+   }else{
+     var numfavorites = data.numFavorites;
+     if(!numfavorites) numfavorites = 0;
+     $('#favesheader').text("Favorites (" + numfavorites + ")")
+     var numPages = Math.ceil(data.numFavorites / 10 );
+     data.page = parseInt(data.page);
+     if( numPages > 1){
+       if( data.page > 0 ){
+         var prevlink = $('<li class="favepagelink">&larr;</li>');
+         prevlink.click(loadFavGenerator(data.page-1));
+         $('#favepages').append(prevlink);
+       }else{
+         $('#favepages').append($('<li class="favepagelink">&nbsp;</li>'));
+       }
+       for(var i=0;i<numPages;i++){
+         var nli = $('<li class="favepagelink">' + (i+1) + '</li>')
+         if( i==data.page ) nli.attr('id',"curpage");
+         else{
+          nli.click(loadFavGenerator(i));
+         }
+         $('#favepages').append(nli);
+       }
+       if( data.page != numPages-1 ){
+         var nextlink = $('<li class="favepagelink">&rarr;</li>');
+         nextlink.click(loadFavGenerator(parseInt(data.page)+1));
+         $('#favepages').append(nextlink);
+       }
+     }
+     
+     $('#nofaves').hide();
+     var count = 0;
+     $.each(data.faves, function(key, message){
+       count++;
+       if(!message) return;
+       var wrapper = $('<div class="favwrapper' + (count%2>0 ? ' odd':'') + '"></div>');
+       var newli = $('<div class="favorite_entry"></div>');
+       if( count == 1 ) wrapper.addClass("first");
+       if( count == 10 ) wrapper.addClass("last");
+       //var unfavorite = $('<div class="unfavorite"><img src="/static/heart.png"/></div>');
+       var unfavorite = $('<div class="heartbox on">&nbsp;</div>');
+       $(unfavorite).data('songId', message['songId']);
+       if( 'Title' in message){
+         newli.append($('<div class="fav_line"></div>').append(
+           $('<span></span>').attr("class","title").text(message['Title']))
+         )
+       }
+       if( 'Artist' in message){
+         newli.append($('<div class="fav_line"></div>').append(
+           $('<span></span>').attr("class","meta").text("by")).append(
+           $('<span></span>').attr("class","artist").text(message['Artist'])))
+       }
+       if( 'Album' in message){
+         newli.append($('<div class="fav_line"></div>').append(
+          $('<span class="meta">from</span>')).append(
+          $('<span></span>').attr("class","artist").text(message['Album'])
+         ))
+       }
+       unfavorite.appendTo(wrapper)
+       newli.appendTo(wrapper);
+       wrapper.appendTo('#favelist');
+       $('<div class="clearer"></div>').appendTo(wrapper);
+     })
+   }
+   if( doSlide ){
+     //$('#favorites').show('slide', 'fast', function(){
+       //favoritesopen = true;
+     //});
+   }
+ })
+}
+
+
+
 /* GUI hooks setup */
 $(document).ready(//{{{
   function(){
@@ -173,6 +262,7 @@ $(document).ready(//{{{
         processMessage(y.messages[j], true);
       }
     }
+    $('#volume').slider();
     var objDiv = document.getElementById("chat");
     objDiv.scrollTop = objDiv.scrollHeight;
     $('#newchat').keypress( function(e){
@@ -180,6 +270,28 @@ $(document).ready(//{{{
         sendMessage();
       } 
     })
+
+    $('#faveslink').click(function(){
+      if( favoritesopen ){
+         $('#favorites').hide('slide', 'fast',function(){
+           favoritesopen = false;
+           $('#player').show('slide', 'fast');
+         });
+      }else{
+         $('#player').hide('slide', 'fast',function(){
+           favoritesopen = true;
+           loadFavorites(0, true);
+           $('#favorites').show('slide', 'fast');
+         });
+      }
+    });
+
+     $('#closefavorites').click(function(){
+       $('#favorites').hide('slide', 'fast',function(){
+         favoritesopen = false;
+         $('#player').show('slide', 'fast');
+       });
+     });
 
     function getMessages() {
       $.getJSON('/' + roomname + '/listen', {"c":cursor}, function(json){
@@ -200,7 +312,7 @@ $(document).ready(//{{{
         setTimeout( getMessages, 5000);
       })
     }
-    setTimeout( getMessages, 100);
+    setTimeout( getMessages, 500);
     /*ws = new WebSocket(wsurl);*/
     /*ws.onopen = function(){*/
     /*ws.send("auth:" + document.cookie);*/
@@ -229,11 +341,6 @@ $(document).ready(//{{{
     /*};*/
 
     currentVolume = 90;
-    function setVol(v){
-      soundManager.setVolume('mySound', v);
-      $('#volinside').css('width', v + '%')
-      document.cookie = "olvol_" + roomname + "=" + v;
-    }
 
     var muteToggle = function(setOn){
       if( setOn === undefined){
@@ -272,13 +379,7 @@ $(document).ready(//{{{
         if(muted) muteToggle(false)
         setVol(pct);
       }
-    ).mousewheel(function(e,delta){
-      var newvolume = currentVolume + delta;
-      if( newvolume >= 100 ) newvolume = 100;
-      if( newvolume <= 0 ) newvolume = 0;
-      currentVolume = newvolume;
-      setVol(newvolume);
-    });
+    );
 
     $('#volicon').click(function(){
       muteToggle();
@@ -351,35 +452,6 @@ $(document).ready(//{{{
         }
       }
     });
-
-    $('.thumbs').live({
-       mouseenter: function(){
-          if( !$(this).hasClass('t_on') ){ // not liked yet
-            $(this).addClass("t_hover");
-          }else{}
-       },
-       mouseleave: function(){
-        if( !$(this).hasClass('t_on') ){ // not liked yet
-          $(this).removeClass("t_hover");
-        }
-       }, 
-
-       click: function(){
-         var me = this;
-         if( !$(this).hasClass('t_on') ){
-           $.get( '/' + roomname + '/vote/', {s:$.data(this,"songId")}, 
-               function(){
-                 $(me).removeClass('t_off').removeClass('t_hover').addClass('t_on');
-               });
-         }else{
-           $.get( '/' + roomname + '/unvote/', {s:$.data(this,"songId")},
-               function(){
-                 $(me).removeClass('t_on').removeClass('t_hover').addClass('t_off');
-               });
-         }
-       }
-    });
-
 
 })//}}}
 
