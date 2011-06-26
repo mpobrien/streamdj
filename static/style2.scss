@@ -246,14 +246,23 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 }
 
 #queueholder{
-  margin-top:15px;
+  margin-top:35px;
   @include seriffont;
   font-size:16px;
   line-height:18px;
   bottom:0px;
   max-height:500px;
+  border:1px solid transparent;
   .odd{ background-color:#EEE; }
 }
+
+.highlight{
+  background-color:#ffffa2;
+  border:1px solid #000;
+  .queuedsong{
+    background-color:#ffffa2;
+  }
+}       
 
 .songinfo{
   float:left;

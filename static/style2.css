@@ -216,14 +216,21 @@
   background: url("/static/volume_on.png"); }
 
 #queueholder {
-  margin-top: 15px;
+  margin-top: 35px;
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
   font-size: 16px;
   line-height: 18px;
   bottom: 0px;
-  max-height: 500px; }
+  max-height: 500px;
+  border: 1px solid transparent; }
   #queueholder .odd {
     background-color: #EEE; }
+
+.highlight {
+  background-color: #ffffa2;
+  border: 1px solid #000; }
+  .highlight .queuedsong {
+    background-color: #ffffa2; }
 
 .songinfo {
   float: left;

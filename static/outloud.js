@@ -259,7 +259,7 @@ function loadFavorites(pageNum, doSlide){
 
 /* GUI hooks setup */
 $(document).ready(function(){
-  droptarget = document.getElementById("queue"); 
+  droptarget = document.getElementById("queueholder"); 
   var y;
   while(y = msgs.pop()){
     for( var j in y.messages ){
