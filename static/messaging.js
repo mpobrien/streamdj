@@ -27,6 +27,8 @@ var MessageHandlers = {
                           .append( $('<span class="sendername"></span>').text(from + ":") )
                           .append( $('<span class="messagebody"></span>').html(linkify(body)) )
                           .appendTo("#chat");
+    var objDiv = document.getElementById("chat");
+    objDiv.scrollTop = objDiv.scrollHeight;
   },//}}}
 
   "enq"    : function(message, isStatic){//{{{

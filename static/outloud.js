@@ -141,8 +141,8 @@ function processMessage(message, isStatic){//{{{
 var sendMessage = function(){//{{{
   var msgtext = $('#newchat').val()
   msgtext = $('<div/>').text(msgtext).html();
-  $.getJSON('/' + roomname + '/send/', {'m':msgtext}, function(json){});
-  //ws.send(msgtext);
+  //$.getJSON('/' + roomname + '/send/', {'m':msgtext}, function(json){});
+  ws.send(msgtext);
   var objDiv = document.getElementById("chat");
   objDiv.scrollTop = objDiv.scrollHeight;
   $('#newchat').val('');
@@ -258,207 +258,200 @@ function loadFavorites(pageNum, doSlide){
 
 
 /* GUI hooks setup */
-$(document).ready(//{{{
-  function(){
-    droptarget = document.getElementById("queue"); 
-    var y;
-    while(y = msgs.pop()){
-      for( var j in y.messages ){
-        processMessage(y.messages[j], true);
-      }
+$(document).ready(function(){
+  droptarget = document.getElementById("queue"); 
+  var y;
+  while(y = msgs.pop()){
+    for( var j in y.messages ){
+      processMessage(y.messages[j], true);
     }
-    $('#volume').slider();
-    var objDiv = document.getElementById("chat");
-    objDiv.scrollTop = objDiv.scrollHeight;
-    $('#newchat').keypress( function(e){
-      if(e.keyCode==13 && $(this).val().length > 0 ){
-        sendMessage();
-      } 
-    })
+  }
+  $('#volume').slider();
+  var objDiv = document.getElementById("chat");
+  objDiv.scrollTop = objDiv.scrollHeight;
+  $('#newchat').keypress( function(e){
+    if(e.keyCode==13 && $(this).val().length > 0 ){
+      sendMessage();
+    } 
+  })
 
-    $('#faveslink').click(function(){
-      if( favoritesopen ){
-         $('#favorites').hide('slide', 'fast',function(){
-           favoritesopen = false;
-           $('#player').show('slide', 'fast');
-         });
-      }else{
-         $('#player').hide('slide', 'fast',function(){
-           favoritesopen = true;
-           loadFavorites(0, true);
-           $('#favorites').show('slide', 'fast');
-         });
-      }
-    });
-
-     $('#closefavorites').click(function(){
+  $('#faveslink').click(function(){
+    if( favoritesopen ){
        $('#favorites').hide('slide', 'fast',function(){
          favoritesopen = false;
          $('#player').show('slide', 'fast');
        });
-     });
-
-     /*
-    function getMessages() {
-      $.getJSON('/' + roomname + '/listen', {"c":cursor}, function(json){
-        if(json.m){
-          for(var i=0;i<json.m.length;i++){
-            var item = $.parseJSON(json.m[i])
-            processMessage(item, false);
-          }
-        }else{
-          processMessage(json, false);
-        }
-        cursor = (parseInt(json.id)+1) + '';
-        getMessages();
-        var objDiv = document.getElementById("chat");
-        objDiv.scrollTop = objDiv.scrollHeight;
-      }).error(function(){
-        //retry in 5 seconds;
-        setTimeout( getMessages, 5000);
-      })
+    }else{
+       $('#player').hide('slide', 'fast',function(){
+         favoritesopen = true;
+         loadFavorites(0, true);
+         $('#favorites').show('slide', 'fast');
+       });
     }
-    setTimeout( getMessages, 500);
+  });
 
-    /*ws = new WebSocket(wsurl);*/
-    /*ws.onopen = function(){*/
-    /*ws.send("auth:" + document.cookie);*/
-    /*setInterval(function(){*/
-    /**//*console.debug("ping?");*/
-    /*ws.send("0")*/
-    /*}, 45000);*/
-    /*}*/
-    /*ws.onmessage = function(message){*/
-    /*if(message.data=='1'){*/
-    /**//*console.debug("pong.");*/
-    /*return;*/
-    /*}*/
-    /**//*console.debug("got message!", message)*/
-    /*var msgs = $.parseJSON(message.data);*/
-    /**//*console.debug("received", msgs)*/
-    /*for( var i in msgs.messages){*/
-    /*var message = msgs.messages[i]*/
-    /*var newmsghtml;*/
-    /*processMessage(message, false);*/
-    /*if( message.type == 'chat' && countmsgs){*/
+   $('#closefavorites').click(function(){
+     $('#favorites').hide('slide', 'fast',function(){
+       favoritesopen = false;
+       $('#player').show('slide', 'fast');
+     });
+   });
+
+   /*
+  function getMessages() {
+    $.getJSON('/' + roomname + '/listen', {"c":cursor}, function(json){
+      if(json.m){
+        for(var i=0;i<json.m.length;i++){
+          var item = $.parseJSON(json.m[i])
+          processMessage(item, false);
+        }
+      }else{
+        processMessage(json, false);
+      }
+      cursor = (parseInt(json.id)+1) + '';
+      getMessages();
+      var objDiv = document.getElementById("chat");
+      objDiv.scrollTop = objDiv.scrollHeight;
+    }).error(function(){
+      //retry in 5 seconds;
+      setTimeout( getMessages, 5000);
+    })
+  }
+  setTimeout( getMessages, 500);
+  */
+
+
+  currentVolume = 90;
+
+  var muteToggle = function(setOn){
+    if( setOn === undefined){
+      muted = !muted;
+    }else{
+      muted = setOn>0;// ? true : false;
+    }
+    document.cookie = "olmute_" + roomname + "=" + (muted ? 1 : 0)
+    $('#volinside').css('width', muted ? '0%' : currentVolume + '%');
+    if (muted) {
+      soundManager.setVolume('mySound', 0);
+      $('#volicon').addClass( muted ? "muted" : "notmuted").removeClass(muted ? "notmuted" : "muted");
+    } else {
+      soundManager.setVolume('mySound', currentVolume);
+      $('#volicon').addClass("notmuted").removeClass("muted");
+    }
+  }
+
+
+  var roomvolinitial = extractCookie(document.cookie, "olvol_" + roomname);
+  if(roomvolinitial != undefined){
+    currentVolume = roomvolinitial;
+    setVol(roomvolinitial);
+  }
+
+  var mutedInitial = extractCookie(document.cookie, "olmute_" + roomname);
+  if(mutedInitial){
+    muteToggle(mutedInitial);
+  }
+
+  $('#volcontrol').click(
+    function(e){
+      var x = e.pageX - $(this).offset().left;
+      var pct = parseInt((x * 100) / 140)
+      currentVolume = pct;
+      if(muted) muteToggle(false)
+      setVol(pct);
+    }
+  );
+
+  $('#volicon').click(function(){
+    muteToggle();
+  });
+
+
+  function dragEnter(evt){
+    evt.stopPropagation();
+    evt.preventDefault();
+    return false;
+  }
+
+  function dragExit(evt){
+    evt.preventDefault();
+    evt.stopPropagation();
+    $(droptarget).removeClass("highlight");
+    return false;
+  }
+
+  function dragOver(evt){
+    evt.preventDefault();
+    evt.stopPropagation();
+    $(droptarget).addClass("highlight");
+    return false;
+  }
+
+  function drop(evt){
+    evt.preventDefault();
+    evt.stopPropagation();
+    $(droptarget).removeClass("highlight");
+    var files = evt.dataTransfer.files;
+    var count = files.length;
+    if( count == 0 ) return;
+    handleFiles(files)
+    return false;
+  }
+
+  document.addEventListener("drop", drop, false);
+  document.addEventListener("dragenter", dragEnter, false);
+  document.addEventListener("dragleave", dragExit, false);
+  document.addEventListener("dragover", dragOver, false);
+  /*droptarget.addEventListener("drop", drop, false);*/
+  /*droptarget.addEventListener("dragenter", dragEnter, false);*/
+  /*droptarget.addEventListener("dragleave", dragExit, false);*/
+  /*droptarget.addEventListener("dragover", dragOver, false);*/
+  
+  oddify();
+  $('.heartbox').live({
+    mouseenter: function(){
+      if( !$(this).hasClass('on') ){ // not liked yet
+        $(this).addClass("hover");
+      }else{}
+    },
+    mouseleave: function(){
+      if( !$(this).hasClass('on') ){ // not liked yet
+        $(this).removeClass("hover");
+      }
+    }, 
+
+    click: function(){
+      var me = this;
+      if( !$(this).hasClass('on') ){
+        $.get( '/like/', {s:$.data(this,"songId")}, function(){
+          $(me).removeClass('off').removeClass('hover').addClass('on');
+        });
+      }else{
+        $.get( '/unlike/', {s:$.data(this,"songId")}, function(){
+          $(me).removeClass('on').removeClass('hover').addClass('off');
+        });
+      }
+    }
+  });
+
+  ws = new WebSocket(wsurl);
+
+  ws.onmessage = function(message){
+    if(message.data=='1'){ return; }
+    //var msgs = $.parseJSON(message.data);
+    var jsonMessage = $.parseJSON(message.data)
+    console.log(message,jsonMessage);
+    processMessage(jsonMessage, false);
+    /*if( jsonMessage.type == 'chat' && countmsgs){*/
     /*newMessageCount++;*/
     /*document.title = "(" + newMessageCount + ") outloud.fm";*/
     /*}*/
-    /*}*/
-    /*};*/
+  };
 
-    currentVolume = 90;
-
-    var muteToggle = function(setOn){
-      if( setOn === undefined){
-        muted = !muted;
-      }else{
-        muted = setOn>0;// ? true : false;
-      }
-      document.cookie = "olmute_" + roomname + "=" + (muted ? 1 : 0)
-      $('#volinside').css('width', muted ? '0%' : currentVolume + '%');
-      if (muted) {
-        soundManager.setVolume('mySound', 0);
-        $('#volicon').addClass( muted ? "muted" : "notmuted").removeClass(muted ? "notmuted" : "muted");
-      } else {
-        soundManager.setVolume('mySound', currentVolume);
-        $('#volicon').addClass("notmuted").removeClass("muted");
-      }
-    }
-
-
-    var roomvolinitial = extractCookie(document.cookie, "olvol_" + roomname);
-    if(roomvolinitial != undefined){
-      currentVolume = roomvolinitial;
-      setVol(roomvolinitial);
-    }
-
-    var mutedInitial = extractCookie(document.cookie, "olmute_" + roomname);
-    if(mutedInitial){
-      muteToggle(mutedInitial);
-    }
-
-    $('#volcontrol').click(
-      function(e){
-        var x = e.pageX - $(this).offset().left;
-        var pct = parseInt((x * 100) / 140)
-        currentVolume = pct;
-        if(muted) muteToggle(false)
-        setVol(pct);
-      }
-    );
-
-    $('#volicon').click(function(){
-      muteToggle();
-    });
-
-
-    function dragEnter(evt){
-      evt.stopPropagation();
-      evt.preventDefault();
-      return false;
-    }
-
-    function dragExit(evt){
-      evt.preventDefault();
-      evt.stopPropagation();
-      $(droptarget).removeClass("highlight");
-      return false;
-    }
-
-    function dragOver(evt){
-      evt.preventDefault();
-      evt.stopPropagation();
-      $(droptarget).addClass("highlight");
-      return false;
-    }
-
-    function drop(evt){
-      evt.preventDefault();
-      evt.stopPropagation();
-      $(droptarget).removeClass("highlight");
-      var files = evt.dataTransfer.files;
-      var count = files.length;
-      if( count == 0 ) return;
-      handleFiles(files)
-      return false;
-    }
-
-    document.addEventListener("drop", drop, false);
-    document.addEventListener("dragenter", dragEnter, false);
-    document.addEventListener("dragleave", dragExit, false);
-    document.addEventListener("dragover", dragOver, false);
-    /*droptarget.addEventListener("drop", drop, false);*/
-    /*droptarget.addEventListener("dragenter", dragEnter, false);*/
-    /*droptarget.addEventListener("dragleave", dragExit, false);*/
-    /*droptarget.addEventListener("dragover", dragOver, false);*/
-    
-    oddify();
-    $('.heartbox').live({
-      mouseenter: function(){
-        if( !$(this).hasClass('on') ){ // not liked yet
-          $(this).addClass("hover");
-        }else{}
-      },
-      mouseleave: function(){
-        if( !$(this).hasClass('on') ){ // not liked yet
-          $(this).removeClass("hover");
-        }
-      }, 
-
-      click: function(){
-        var me = this;
-        if( !$(this).hasClass('on') ){
-          $.get( '/like/', {s:$.data(this,"songId")}, function(){
-            $(me).removeClass('off').removeClass('hover').addClass('on');
-          });
-        }else{
-          $.get( '/unlike/', {s:$.data(this,"songId")}, function(){
-            $(me).removeClass('on').removeClass('hover').addClass('off');
-          });
-        }
-      }
-    });
+  ws.onopen = function(){
+    ws.send("auth:" + document.cookie);
+    setInterval(function(){ ws.send("0") }, 45000);
+  }
 
 })//}}}
 

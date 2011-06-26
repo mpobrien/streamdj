@@ -3,12 +3,15 @@
         <link href="/static/reset.css" rel="stylesheet" />
         <link href="/static/style2.css" rel="stylesheet" />
         <link rel="icon" type="image/gif" href="/static/favicon.gif" />
+        <script type="text/javascript" src="/static/web_socket.js"></script>
         <script type="text/javascript" src="/static/jquery.min.js"></script>
         <script type="text/javascript" src="/static/jqueryui.js"></script>
         <script type="text/javascript" src="/static/simplemodal.js"></script>
         <script type="text/javascript" src="/static/messaging.js"></script>
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
         <script type="text/javascript">
+          WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
+          var wsurl = '{{wsurl}}'
           var nowplayingId = null;
           var msgs = [{{{msgs}}}]
           var roomname = '{{roomname}}'

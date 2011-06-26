@@ -16,10 +16,11 @@ var redis     = require('redis');
 var msgs      = require('./messages')
 var chat      = require('./rooms')
 var TemplateManager = require('./templatemanager').TemplateManager
+domains = ["outloud.fm","dev.outloud.fm","stream.dev.outloud.fm:3001"];
 
 var querystring = require('querystring')
 var net = require("net")
-var chatConnections = {};
+var rooms = {};
 var redisClient = redis.createClient();
 var pubsubClient = redis.createClient();
 var msggen = new msgs.MessageGenerator();
@@ -33,6 +34,27 @@ function reloadTemplates(req, res){
   templates.initializeTemplates();
   res.end();
 }
+
+/*function broadcastToRoom(roomname, message, exclude){*/
+/*var chatroom = rooms[roomname]*/
+/*if(chatroom){*/
+/*for(var i=0;i<chatroom.length;i++){*/
+/*if(exclude && exclude == chatroom[i]) continue;*/
+/*chatroom[i].send(message);*/
+/*}*/
+/*}//TODO error if chatroom isn't found*/
+/*}*/
+
+function broadcastToRoom(room, message, excludeUid){
+  if(room){
+    console.log("sending to ", room.length);
+    for(var i=0;i<room.length;i++){
+      if(excludeUid && excludeUid == room[i].uid) continue;
+      room[i].send(message);
+    }
+  }
+}
+
 
 function getUserInfo(sessionId, callback){//{{{
   redisClient.mget("session_"+sessionId+"_user_id",
@@ -67,7 +89,10 @@ pubsubClient.subscribe("file-changed");
 pubsubClient.subscribe("file-ended");
 pubsubClient.subscribe("file-queued");
 pubsubClient.subscribe("queueremove");
+pubsubClient.subscribe("userjoined");
+pubsubClient.subscribe("userleft");
 pubsubClient.on("message", function(channel, msg){
+    console.log(channel, msg);
   var firstSpace =  msg.indexOf(" ");
   var secondSpace = msg.indexOf(" ", firstSpace+1);
   var roomname = msg.substring(0, firstSpace);
@@ -75,13 +100,18 @@ pubsubClient.on("message", function(channel, msg){
   var room = rooms[roomname];
   if( !room ) return;
   if(channel == 'chatmessage'){
-    room.broadcast(msg.substr(secondSpace+1), msgId);
+    broadcastToRoom(room, msg.substr(secondSpace+1));
+    //room.broadcast(msg.substr(secondSpace+1), msgId);
+  }else if(channel == 'userjoined'){
+    //room.broadcast(msg.substr(secondSpace+1), msgId);
+    //broadcastToRoom(room, msg.substr(secondSpace+1));
   }else if(channel == 'file-ended'){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
     var outgoingMsg = msggen.stopped(incomingMsg.songId, msgId);
     outgoingMsg.id = msgId;
     var outgoingMsgStr = JSON.stringify(outgoingMsg);
-    room.broadcast(outgoingMsgStr, msgId);
+    //room.broadcast(outgoingMsgStr, msgId);
+    broadcastToRoom(room, outgoingMsgStr);
   }else if(channel == 'file-changed'){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
     var messages = [];
@@ -89,19 +119,22 @@ pubsubClient.on("message", function(channel, msg){
     startedmsg.id = msgId;
     var outgoingMsg = JSON.stringify(startedmsg) 
     console.log("file changed");
-    room.broadcast(outgoingMsg, msgId);
+    //room.broadcast(outgoingMsg, msgId);
+    broadcastToRoom(room, outgoingMsg);
   }else if(channel == 'file-queued'){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
     var outgoingMsg = msggen.queued(incomingMsg.uploader, 'asfa', incomingMsg.songId, incomingMsg.meta, incomingMsg.uid) 
     outgoingMsg.id = msgId;
     console.log("file queued");
-    room.broadcast(JSON.stringify(outgoingMsg), msgId);
+    //room.broadcast(JSON.stringify(outgoingMsg), msgId);
+    broadcastToRoom(room, JSON.stringify(outgoingMsg));
   }else if(channel == 'queueremove'){
     var incomingMsg = msg.substr(secondSpace+1);
     //var outgoingMsg = msggen.queued(incomingMsg.uploader, 'asfa', incomingMsg.songId, incomingMsg.meta, incomingMsg.uid) 
     /*outgoingMsg.id = msgId;*/
     /*console.log("file queued");*/
-    room.broadcast(incomingMsg, msgId);
+    //room.broadcast(incomingMsg, msgId);
+    broadcastToRoom(room, incomingMsg);
   }
 });
 
@@ -589,8 +622,6 @@ function display_form(req, res, context){//{{{
         if( liked ) result.liked = true;
         result.lastMsgId = lastMsgId;
         //if( voted ) result.voted = true;
-        console.log(result);
-        console.log(result.nowPlaying);
         utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
       });
     });
@@ -685,16 +716,16 @@ var favorites = function(req, res, qs){//{{{
   })
 }//}}}
 
-var postdone = function(req, res, qs){
+var postdone = function(req, res, qs){//{{{
   res.end('<html><head><script type="text/javascript">window.close()</script></head><body></body></html>');
-}//}}}
+}//}}}//}}}
 
 
-var router = new routing.Router([
+var router = new routing.Router([//{{{
   ["^/$", homepage],
   ["^/admin/reloadtemplates$", reloadTemplates],
   ['^/([\\w\-]+)/listen/?$', listen],
-  ['^/([\\w\-]+)/send/?$', send],
+  //['^/([\\w\-]+)/send/?$', send],
   ["^/postdone/?$", postdone],
   ["^/login/(fb|tw)/?$", login],
   ["^/logout/?$", logout],
@@ -707,9 +738,125 @@ var router = new routing.Router([
   ["^/([\\w\-]+)/remove/?$", remove_from_queue],
   ["^/([\\w\-]+)/upload/?$", upload],  
   ["^/([\\w\-]+)/?$", roomdisplay],
-]);
+]);//}}}
+
+var server = ws.createServer();
+server.addListener("error", function(err) {//{{{
+  console.log("server caught 'error' event:", err);
+})//}}}
+
+server.addListener("request", function(req, res) {//{{{
+
+  req.on("clientError", function(exception){
+    console.log("request had client ERROR - ", exception);
+    res.end();
+  });
+
+  req.on("error", function(exception){
+    console.log("request had ERROR - ", exception);
+    res.end();
+  });
+
+  var qs = require('url').parse(req.url, true)
+  if( qs.pathname.indexOf('/static/') === 0 ){
+    var uri = qs.pathname
+    utilities.serveFromStaticDir(req, res, uri);
+    return;
+  }
+
+  var r = "unknown";
+  if('referer' in req.headers){
+    r = req.headers['referer']
+  }
+  console.log("Request at:", qs.pathname, qs.query, "from", req.connection.remoteAddress, r);
+  var func = router.route(qs.pathname);
+  if( func ){
+    func[0](req, res, qs, func[1])
+  }else{
+    res.end('404!');
+  }
+})//}}}
+
+server.addListener("connection", function(connection){
+  var qs = require('url').parse(connection._req.url, true)
+  var roomname = qs.pathname;
+  //TODO validate room name
+  //TODO make sure room exists?
+  roomname = roomname.substring(1); //TODO validate roomname
+  connection.authorized = false;
+  connection.roomname = roomname;
+  connection.addListener("message", function(msg){
+    if( !connection.authorized ){
+      if(msg.substr(0, 5)==="auth:"){
+        var authstring = msg.substr(5)
+        var sessionId = utilities.extractCookie(authstring, "session") //TODO check if present/valid?
+        getUserInfo(sessionId, function(err, userinfo){
+          //TODO check for err.
+          connection.name = userinfo.name
+          connection.uid = userinfo.service + '_' + userinfo.user_id;
+          connection.authorized = true;
+          if(roomname in rooms){
+            rooms[roomname].push(connection);
+          }else{
+            rooms[roomname] = [connection];
+          }
+          //var profilepic = replies[2] ? replies[2] : "_";
+          var listenerInfo = JSON.stringify([userinfo.name, userinfo.pic])
+          redisClient.hset("listeners_" + roomname, userinfo.service + '_' + userinfo.user_id, listenerInfo, function(err, reply){
+            redisClient.sadd("uniqlisteners_" + roomname, userinfo.service + '_' + userinfo.user_id, function(err2, reply2){
+              var message = JSON.stringify(msggen.join(connection.name,userinfo.service, userinfo.user_id, userinfo.pic, reply2==1))
+              if( reply == 1 ){
+                //redisClient.publish("userjoined", roomname + " " + msgId + " " + eventMsgString);
+              }else{} // already inside
+            });
+          })
+        })
+      }else{ // tried to send message on an unauthorized connection - disconnect it
+        //TODO actually disconnect it. im not sure how right now.
+        //TODO remove it from the chat connections handler
+      }
+    }else{
+      if(msg=='0'){ //ping! //TODO check timing of pings to prevent DOS
+        connection.send("1");
+      }else{
+        //TODO validate the message first?
+        redisClient.incr("roommsg_" + connection.roomname, function(err, reply){
+          //TODO check err
+          var username = connection.name;
+          var msgId = reply;
+          var eventMsg = msggen.chat(username, msg, msgId)
+          var eventMsgString = JSON.stringify(eventMsg)
+          redisClient.zadd("chats_" + roomname, msgId, eventMsgString ) //key, score, member 
+          redisClient.publish("chatmessage", roomname + " " + msgId + " " + eventMsgString);
+          //TODO events
+          console.log("[" + connection.roomname + "] ", connection.name + ":", msg);
+          //redisClient.zadd("roomlog_" + connection.roomname, msgId, message, function(err2, reply2){ });
+          //TODO trim sorted set? maybe sometimes?
+        });
+      }
+    }
+  });
+  connection.addListener("close", function(){
+    var chatroom = rooms[roomname];
+    if( chatroom ) rooms[roomname].remove(connection);
+    redisClient.hdel("listeners_" + roomname, connection.uid, function(err, reply){
+      if(reply==1){
+        var message = JSON.stringify( msggen.left(connection.name, connection.uid))
+        //redisClient.publish("userleft", roomname + " " + msgId + " " + message);
+      }
+    })
+  })
+});
+
+server.listen(settings.port);
 
 
+
+
+
+
+
+/*
 http.createServer(function (req, res) {//{{{
   var qs = require('url').parse(req.url, true)
   if( qs.pathname.indexOf('/static/') === 0 ){
@@ -725,3 +872,19 @@ http.createServer(function (req, res) {//{{{
     res.end('404!');
   }
 }).listen(settings.port, "127.0.0.1");//}}}
+*/
+
+net.createServer(//{{{
+  function(socket){
+    socket.write("<?xml version=\"1.0\"?>\n");
+    socket.write("<!DOCTYPE cross-domain-policy SYSTEM \"http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd\">\n");
+    socket.write("<cross-domain-policy>\n");
+    domains.forEach( function(domain) {
+      var parts = domain.split(':');
+      socket.write("<allow-access-from domain=\""+parts[0]+"\"to-ports=\""+(parts[1]||'80')+"\"/>\n");
+    });
+    socket.write("</cross-domain-policy>\n");
+    socket.end();   
+  }
+).listen(843);
+//}}}

@@ -111,6 +111,7 @@
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
   font-size: 20px;
   line-height: 18px;
+  padding-top: 10px;
   padding-bottom: 10px; }
   #currentfile #nowPlayingInfo {
     width: 297px; }

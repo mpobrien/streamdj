@@ -163,6 +163,7 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   @include seriffont;
   font-size:20px;
   line-height:18px;
+  padding-top:10px;
   padding-bottom:10px;
 
   #nowPlayingInfo{
