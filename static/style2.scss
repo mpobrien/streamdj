@@ -26,6 +26,12 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   -moz-border-radius: $radius;
   -webkit-border-radius: $radius;
 }
+.dragdropcopy{
+  font-size:.8em;
+  text-transform:none;
+  letter-spacing:1px;
+  padding-left: 10px;
+}
 
 #header{ height:$headerHeight; background-color: #2A2C31; z-index:1000; }
 #main{ margin:0px; }
@@ -159,6 +165,7 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   }
 }
 
+
 #currentfile{
   @include seriffont;
   font-size:20px;
@@ -245,6 +252,24 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   background: url('/static/volume_on.png') ;
 }
 
+#settingscog{
+  cursor:pointer;
+}
+
+#settingsmenu{
+  @include seriffont;
+  display:none;
+  position:absolute;
+  z-index:3000;
+  background-color:white;
+
+  @include boxshadow(0px, 0px, 2px, 2px, #bbb);
+
+  .menuitem{
+    margin:10px;
+  }
+}
+
 #queueholder{
   margin-top:35px;
   @include seriffont;
@@ -281,6 +306,25 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   }
 }
 
+.delsong{
+  color:blue;
+  display:block;
+  padding-right:3px;
+}
+
+a.delsong:link{
+  color:blue;
+  text-decoration:none;
+}
+a.delsong:hover{
+  color:blue;
+  text-decoration:underline;
+}
+a.delsong:inactive{
+  color:blue;
+  text-decoration:none;
+}
+
   .queuedsong > .title, .artistinfo{
     padding-right:3px;
     font-size:14px;
@@ -292,6 +336,13 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
     float:right;
     padding-left:8px;
   }
+
+  .queuedsong > .delsong{
+    clear:right;
+    font-size:11px;
+    float:right;
+  }
+
 
 /* Center column shit */
 
@@ -402,6 +453,11 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   left:$leftColWidth + $leftColPadding + $centerColWidth + 30px;
   right:0px;
   position:absolute;
+}
+
+.username{
+  padding-left:10px;
+  list-style:none;
 }
 
 #listeners{

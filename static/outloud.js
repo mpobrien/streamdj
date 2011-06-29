@@ -149,6 +149,7 @@ var sendMessage = function(){//{{{
 }//}}}
 
 var removeSongFromQueue = function(songId){
+  console.log("removing", songId);
   $.get( '/' + roomname + '/remove', {s:songId}, function(){})
 }
 
@@ -266,7 +267,6 @@ $(document).ready(function(){
       processMessage(y.messages[j], true);
     }
   }
-  $('#volume').slider();
   var objDiv = document.getElementById("chat");
   objDiv.scrollTop = objDiv.scrollHeight;
   $('#newchat').keypress( function(e){
@@ -274,6 +274,26 @@ $(document).ready(function(){
       sendMessage();
     } 
   })
+
+   $('.delsong').live('click',
+     function(div){
+       var songId = $(this).attr("id").split("_")[1];
+       var answer = confirm("Are you sure you want to delete this song from the queue?");
+       if(answer){
+         removeSongFromQueue(songId);
+       }
+     });
+
+  $('#settingscog').live('click', function(event){
+    var cogposition = $('#settingscog').position();
+    //$('#settingsmenu').position({left:cogposition.left + 'px', top:cogposition.top + 24 + 'px'});
+    $('#settingsmenu').css('left', cogposition.left + 'px').css('top', cogposition.top + 24 +  'px').show();
+    event.stopPropagation();
+  });
+
+  $('html').click(function() {
+    $('#settingsmenu').hide();
+  });
 
   $('#faveslink').click(function(){
     if( favoritesopen ){

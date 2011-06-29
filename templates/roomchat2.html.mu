@@ -3,14 +3,15 @@
         <link href="/static/reset.css" rel="stylesheet" />
         <link href="/static/style2.css" rel="stylesheet" />
         <link rel="icon" type="image/gif" href="/static/favicon.gif" />
-        <script type="text/javascript" src="/static/web_socket.js"></script>
+        <script type="text/javascript" src="/static/swfobject.js"></script>
         <script type="text/javascript" src="/static/jquery.min.js"></script>
         <script type="text/javascript" src="/static/jqueryui.js"></script>
         <script type="text/javascript" src="/static/simplemodal.js"></script>
         <script type="text/javascript" src="/static/messaging.js"></script>
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
+
         <script type="text/javascript">
-          WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
+          var WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
           var wsurl = '{{wsurl}}'
           var nowplayingId = null;
           var msgs = [{{{msgs}}}]
@@ -41,6 +42,7 @@
           nowplayingMeta = null;
           {{/nowPlaying}}
         </script>
+        <script type="text/javascript" src="/static/web_socket.js"></script>
 
         <script type="text/javascript" src="/static/outloud.js"></script>
         <script type="text/javascript">
@@ -79,6 +81,10 @@
         <img src="http://outloud.fm/static/ol.png" height="40px" style="padding-top:5px"/>
         <a href="#" class="headerlink" id="faveslink">favorites</a>
       </div>
+      <div id="settingsmenu">
+        <div class="menuitem">Skip this song</div>
+        <div class="menuitem">Mute until next song plays</div>
+      </div>
       <div id="main">
           <div id="leftside"><!--{{{-->
             <div id="favorites" style="display:none">
@@ -108,7 +114,7 @@
                   </div>
               </div>
              <div id="queueholder">
-                <div class="sectionheading">queue</div>
+               <div class="sectionheading">queue <span class="dragdropcopy">(drag and drop files to add)</span></div>
                 <div id="queuelisting">
                   {{#queue}}
                     <div class="queuedsong" id="song_{{songId}}">
@@ -117,7 +123,9 @@
                         <div class="artistinfo"> <span class="meta">by</span> <span class="artistname">{{Artist}}</span> </div>
                         {{/meta}}
                       </div>
-                      <div class="uploaderinfo"> <span class="uploader">{{uploader}}</span> </div>
+                      <div class="uploaderinfo"> <span class="uploader">{{uploader}}</span> 
+                      </div>
+                      {{#mine}}<a class="delsong" id="delsong_{{songId}}" href="javascript:void(0)">(remove)</a>{{/mine}}
                       <div class="clearer"> </div>
                     </div>
                   {{/queue}}
@@ -141,13 +149,12 @@
 
                 </div>
                 <div class="sectionheading" style="padding-top:10px;margin-bottom:5px;">listeners</div>
-                <div id="listeners">
-                    <div id="user_fb_3406523" style="line-height:12px">
-                        <a href="http://facebook.com/profile.php?id=3406523" target="_blank"><img src="http://graph.facebook.com/3406523/picture?type=square" width="24px" height="24px"></a>
-                        <span class="username">Brett Mendenhall</span>
-                    </div>
+                <ul id="listeners">
+                  {{#listeners}}
+                  <li id="user_{{uid}}" style="line-height:24px"><a href="{{link}}" target="_blank"><img src="{{pic}}" width="24px" height="24px"/></a><span class="username">{{name}}</name></li>
+                  {{/listeners}}
                   </div>
-                </div>
+                </ul>
             </div>
           </div>
 

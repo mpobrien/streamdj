@@ -35,6 +35,7 @@ var MessageHandlers = {
 
     var songId = message["songId"]
     var songLi = $('<div class="queuedsong"></div>').attr('id','song_' + songId)
+    var delsong = message['uid'] == uidkey ? $('<a class="delsong" id="delsong_' + songId + '" href="javascript:void(0)">(remove)</a>') : null;
     songLi.append($('<div class="songinfo"></div>')
       .append($('<div class="title"></div>').text(message.meta['Title']))
         .append($('<div class="artistinfo"></div>')
@@ -45,12 +46,14 @@ var MessageHandlers = {
       .append($('<div class="uploaderinfo"></div>')
         .append($('<span class="uploader"></span>').text(message['from']))
         .append(makeText()))
+      .append(delsong)
       .append($('<div class="clearer"> </div>'))
     songLi.hide().appendTo("#queuelisting").show("slide").show("highlight",1000);
     oddify();
   },//}}}
 
   "join"   : function(message, isStatic){//{{{
+    console.log("yoooooo joined");
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"')
     //newMessageHtml.attr("id",message["id"]);
@@ -80,7 +83,7 @@ var MessageHandlers = {
       newlistener.append(listenerLink);
       newlistener.append(newlistener_name);
       newlistener.attr('id', 'user_' + message['uid'])
-      newlistener.appendTo("#listenerslist");
+      newlistener.appendTo("#listeners");
     }
   },//}}}
 
@@ -147,7 +150,7 @@ var MessageHandlers = {
     nowplayingMeta = message.meta;
     var songId = message["songId"]
     nowplayingId = songId
-    $('#currentfile').html('<div id="albumartcol"><div id="currentfile_opts"><div class="optcontrol heartbox off" id="nowplaying_favorite"></div><div class="optcontrol"><img src="/static/cog_unhover.png"/></div></div><div id="nowplayingart"></div></div>')
+    $('#currentfile').html('<div id="albumartcol"><div id="currentfile_opts"><div class="optcontrol heartbox off" id="nowplaying_favorite"></div><div class="optcontrol" id="settingscog"><img src="/static/cog_unhover.png"/></div></div><div id="nowplayingart"></div></div>')
     $('#nowplaying_favorite').data("songId", songId); 
 
     var nowPlayingInfo = $('<div id="nowplayinginfo"></div>');
@@ -163,7 +166,7 @@ var MessageHandlers = {
           .append( $('<span class="meta">from</span>').append(makeText()))
           .append( $('<span class="albumname"></span>').text(message.meta['Album'])))
     }
-    if( !isStatic ){
+    if( !isStatic || (songId == nowplayingart)){
       if( message.meta && ('pic' in message.meta)){
         albumartDiv = $('<img></img>').attr("width","128")
                         .attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic))

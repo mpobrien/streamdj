@@ -1,3 +1,9 @@
+.dragdropcopy {
+  font-size: .8em;
+  text-transform: none;
+  letter-spacing: 1px;
+  padding-left: 10px; }
+
 #header {
   height: 50px;
   background-color: #2A2C31;
@@ -215,6 +221,21 @@
 .notmuted {
   background: url("/static/volume_on.png"); }
 
+#settingscog {
+  cursor: pointer; }
+
+#settingsmenu {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  display: none;
+  position: absolute;
+  z-index: 3000;
+  background-color: white;
+  -webkit-box-shadow: 0px 0px 2px 2px #bbbbbb;
+  -moz-box-shadow: 0px 0px 2px 2px #bbbbbb;
+  box-shadow: 0px 0px 2px 2px #bbbbbb; }
+  #settingsmenu .menuitem {
+    margin: 10px; }
+
 #queueholder {
   margin-top: 35px;
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
@@ -246,6 +267,23 @@
     color: #888;
     font-size: .75em; }
 
+.delsong {
+  color: blue;
+  display: block;
+  padding-right: 3px; }
+
+a.delsong:link {
+  color: blue;
+  text-decoration: none; }
+
+a.delsong:hover {
+  color: blue;
+  text-decoration: underline; }
+
+a.delsong:inactive {
+  color: blue;
+  text-decoration: none; }
+
 .queuedsong > .title, .artistinfo {
   padding-right: 3px;
   font-size: 14px;
@@ -255,6 +293,11 @@
   font-size: 11px;
   float: right;
   padding-left: 8px; }
+
+.queuedsong > .delsong {
+  clear: right;
+  font-size: 11px;
+  float: right; }
 
 /* Center column shit */
 #centercolumn {
@@ -355,6 +398,10 @@
   left: 1115px;
   right: 0px;
   position: absolute; }
+
+.username {
+  padding-left: 10px;
+  list-style: none; }
 
 #listeners {
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;

@@ -16,7 +16,7 @@ var redis     = require('redis');
 var msgs      = require('./messages')
 var chat      = require('./rooms')
 var TemplateManager = require('./templatemanager').TemplateManager
-domains = ["outloud.fm","dev.outloud.fm","stream.dev.outloud.fm:3001"];
+domains = ["outloud.fm","dev.outloud.fm","stream.dev.outloud.fm:81"];
 
 var querystring = require('querystring')
 var net = require("net")
@@ -79,9 +79,9 @@ function getUserInfo(sessionId, callback){//{{{
   });
 }//}}}
 
-process.on('uncaughtException', function (err) {
-  console.log('FATAL - caught exception:' + err);
-});
+/*process.on('uncaughtException', function (err) {*/
+/*console.log('FATAL - caught exception:' + err);*/
+/*});*/
 sys.puts(util.inspect(settings))
 
 pubsubClient.subscribe("chatmessage");
@@ -104,7 +104,10 @@ pubsubClient.on("message", function(channel, msg){
     //room.broadcast(msg.substr(secondSpace+1), msgId);
   }else if(channel == 'userjoined'){
     //room.broadcast(msg.substr(secondSpace+1), msgId);
-    //broadcastToRoom(room, msg.substr(secondSpace+1));
+    broadcastToRoom(room, msg.substr(secondSpace+1));
+  }else if(channel == 'userleft'){
+    //room.broadcast(msg.substr(secondSpace+1), msgId);
+    broadcastToRoom(room, msg.substr(secondSpace+1));
   }else if(channel == 'file-ended'){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
     var outgoingMsg = msggen.stopped(incomingMsg.songId, msgId);
@@ -720,6 +723,8 @@ var postdone = function(req, res, qs){//{{{
   res.end('<html><head><script type="text/javascript">window.close()</script></head><body></body></html>');
 }//}}}//}}}
 
+var skip = function(req, res, qs, matches){
+}
 
 var router = new routing.Router([//{{{
   ["^/$", homepage],
@@ -735,6 +740,7 @@ var router = new routing.Router([//{{{
   ["^/authdone/fb/?$", authdone_facebook],
   /*["^/([\\w\-]+)/(vote|unvote)/?$", vote_unvote],*/
   ["^/(like|unlike)/?$", like_unlike],
+  ["^/([\\w\-]+)/skip/?$", skip],
   ["^/([\\w\-]+)/remove/?$", remove_from_queue],
   ["^/([\\w\-]+)/upload/?$", upload],  
   ["^/([\\w\-]+)/?$", roomdisplay],
@@ -806,7 +812,7 @@ server.addListener("connection", function(connection){
             redisClient.sadd("uniqlisteners_" + roomname, userinfo.service + '_' + userinfo.user_id, function(err2, reply2){
               var message = JSON.stringify(msggen.join(connection.name,userinfo.service, userinfo.user_id, userinfo.pic, reply2==1))
               if( reply == 1 ){
-                //redisClient.publish("userjoined", roomname + " " + msgId + " " + eventMsgString);
+                redisClient.publish("userjoined", roomname + " " + "-1" + " " + message);
               }else{} // already inside
             });
           })
@@ -842,19 +848,13 @@ server.addListener("connection", function(connection){
     redisClient.hdel("listeners_" + roomname, connection.uid, function(err, reply){
       if(reply==1){
         var message = JSON.stringify( msggen.left(connection.name, connection.uid))
-        //redisClient.publish("userleft", roomname + " " + msgId + " " + message);
+        redisClient.publish("userleft", roomname + " " + "-1" + " " + message);
       }
     })
   })
 });
 
 server.listen(settings.port);
-
-
-
-
-
-
 
 /*
 http.createServer(function (req, res) {//{{{
