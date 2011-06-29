@@ -29,6 +29,12 @@ var StreamRoom = function(roomName, redisClient){
     req.connection.addListener("close", function(){ listeners.remove(listener); } );
   }
 
+  this.endCurrentFile = function(requiredId){
+    if( nowPlaying.songId == requiredId ){
+      that.playNextFile(nowPlaying);
+    }
+  }
+
   this.playNextFile = function(endingFile){
     //To pop the lowest-ranked member of a sorted set in redis, we need 2 steps:
     //1. zrange <key> 0 0 WITHSCORES (returns lowest ranked key and its score)

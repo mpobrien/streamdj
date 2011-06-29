@@ -82,7 +82,7 @@
         <a href="#" class="headerlink" id="faveslink">favorites</a>
       </div>
       <div id="settingsmenu">
-        <div class="menuitem">Skip this song</div>
+        <div class="menuitem" id="nowplaying_skip">Skip this song</div>
         <div class="menuitem">Mute until next song plays</div>
       </div>
       <div id="main">

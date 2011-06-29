@@ -274,6 +274,13 @@ $(document).ready(function(){
       sendMessage();
     } 
   })
+  $('#nowplaying_skip').click(
+    function(){
+      $.get( '/' + roomname + '/skip/', {s:$.data(this,"songId")}, function(){
+      });
+    }
+  );
+
 
    $('.delsong').live('click',
      function(div){

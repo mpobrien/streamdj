@@ -22,22 +22,24 @@ var pubsubClient = redis.createClient();
 var redisClient2 = redis.createClient();
 
 pubsubClient.subscribe("newQueueReady")
-pubsubClient.subscribe("voteskip")
+pubsubClient.subscribe("skipnow")
 
 pubsubClient.on("message", function(channel, msg){
-  if(channel != "newQueueReady" && channel != "voteskip") return;
+    console.log(channel, msg);
+  if(channel != "newQueueReady" && channel != "skipnow") return;
   var roomName = msg.split(" ")[0]
   var room = rooms[roomName];
   if( channel == 'newQueueReady'){
     if(room && !room.getNowPlaying()){
       room.playNextFile();
     }
-  }else if(channel == 'voteskip'){
+  }else if(channel == 'skipnow'){
+  console.log("got skip shit");
     var msgparts = msg.split(" ");
     var roomName = msgparts[0];
     var songId = msgparts[1]
     if(room && room.getNowPlaying() && room.getNowPlaying().songId == songId){
-      room.playNextFile();
+      room.endCurrentFile(songId);
     }
   }
 });

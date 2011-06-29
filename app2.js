@@ -724,6 +724,26 @@ var postdone = function(req, res, qs){//{{{
 }//}}}//}}}
 
 var skip = function(req, res, qs, matches){
+  var cookies = new Cookies(req, res);
+  if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
+  var sessionId = cookies.get("session");
+  var songId = qs.query['s']
+  res.end("{}");
+  roomname = matches[1];
+  if( !utilities.validateRoomName(roomname) ) return;
+  if( isNaN(parseInt(songId)) ) return;
+  songId = parseInt(songId)
+  getUserInfo(sessionId, function(err, userinfo){
+    if(err) return; //TODO handle/log error.  //TODO make sure user name is valid, + not empyy
+    var uidkey = userinfo.service + "_" + userinfo.user_id
+    console.log(uidkey,"is skipping", songId);
+    redisClient.get("nowplaying_" + roomname, function(err2, reply2){
+      var songInfo = JSON.parse(reply2)
+      if(songInfo.songId != songId) return; // song ID doesn't match currently playing song.
+      console.log("publishing");
+      redisClient.publish("skipnow", roomname + " " + songId);
+    });
+  });
 }
 
 var router = new routing.Router([//{{{
