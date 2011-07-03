@@ -267,6 +267,15 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 
   .menuitem{
     margin:10px;
+    cursor:pointer;
+    display:block;
+    text-decoration:none;
+    padding:3px;
+  }
+
+  a.menuitem:hover{
+    @include rounded(3px);
+    background-color:#efefef;
   }
 }
 

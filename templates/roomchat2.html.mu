@@ -82,8 +82,8 @@
         <a href="#" class="headerlink" id="faveslink">favorites</a>
       </div>
       <div id="settingsmenu">
-        <div class="menuitem" id="nowplaying_skip">Skip this song</div>
-        <div class="menuitem">Mute until next song plays</div>
+        <a class="menuitem" id="nowplaying_skip">Skip this song</a>
+        <a class="menuitem">Mute until next song plays</a>
       </div>
       <div id="main">
           <div id="leftside"><!--{{{-->
