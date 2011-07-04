@@ -150,7 +150,7 @@ var MessageHandlers = {
     nowplayingMeta = message.meta;
     var songId = message["songId"]
     nowplayingId = songId;
-    $('#currentfile').html('<div id="albumartcol"><div id="currentfile_opts"><div class="optcontrol heartbox off" id="nowplaying_favorite"></div><div class="optcontrol" id="settingscog"><img src="/static/cog_unhover.png"/></div></div><div id="nowplayingart"></div></div>')
+    $('#currentfile').html('<div id="albumartcol"><div id="currentfile_opts"><div class="optcontrol heartbox off" id="nowplaying_favorite"></div><div class="optcontrol c_off" id="settingscog">&nbsp;</div></div><div id="nowplayingart"></div></div>')
     $('#nowplaying_favorite').data("songId", songId); 
     $('#nowplaying_skip').data("songId", songId); 
 

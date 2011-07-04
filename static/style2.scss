@@ -229,6 +229,23 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 .off{
    background: url('/static/heart_deactive.png') no-repeat;
 }
+.hover{
+   background: url('/static/heart_hover.png') no-repeat;
+}
+
+#settingscog{
+ height:24px;
+ width:24px;
+}
+
+.c_off{
+ background: url('/static/cog_unhover.png') no-repeat;
+}
+
+.c_hover{
+   background: url('/static/cog_hover.png') no-repeat;
+}
+
 #volcontrol{
   width:24px;
   height:24px;
@@ -258,7 +275,6 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 
 #settingsmenu{
   @include seriffont;
-  display:none;
   position:absolute;
   z-index:3000;
   background-color:white;
@@ -277,6 +293,10 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
     @include rounded(3px);
     background-color:#efefef;
   }
+}
+
+.menuhidden{
+  display:none;
 }
 
 #queueholder{

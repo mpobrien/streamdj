@@ -47,9 +47,13 @@
         <script type="text/javascript" src="/static/outloud.js"></script>
         <script type="text/javascript">
           $(document).ready(function(){
+            $(window).resize(function(){
+              var objDiv = document.getElementById("chat");
+              objDiv.scrollTop = objDiv.scrollHeight;
+            });
             setTimeout(function(){
                 soundManager.onready(startStream);
-              }, 1000);
+              }, 100);
             var favoritesopen = false;
             $('#options').click(function(){
               $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
@@ -81,7 +85,7 @@
         <img src="http://outloud.fm/static/ol.png" height="40px" style="padding-top:5px"/>
         <a href="#" class="headerlink" id="faveslink">favorites</a>
       </div>
-      <div id="settingsmenu">
+      <div id="settingsmenu" class="menuhidden">
         <a class="menuitem" id="nowplaying_skip">Skip this song</a>
         <a class="menuitem">Mute until next song plays</a>
       </div>

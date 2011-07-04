@@ -23,10 +23,15 @@ var redisClient2 = redis.createClient();
 
 pubsubClient.subscribe("newQueueReady")
 pubsubClient.subscribe("skipnow")
+pubsubClient.subscribe("debug")
 
 pubsubClient.on("message", function(channel, msg){
-    console.log(channel, msg);
-  if(channel != "newQueueReady" && channel != "skipnow") return;
+  console.log(channel, msg);
+  if(channel != "newQueueReady" && channel != "skipnow" && channel!="debug") return;
+  if( channel == 'debug'){
+    console.log(process.memoryUsage());
+    console.log(rooms);
+  }
   var roomName = msg.split(" ")[0]
   var room = rooms[roomName];
   if( channel == 'newQueueReady'){
@@ -47,14 +52,31 @@ pubsubClient.on("message", function(channel, msg){
 function prepareStartup(){
   redisClient2.smembers("rooms", function(err, reply){
     if(reply == null) reply = [];
-    for(var i in reply){
+    for(var i=0;i<reply.length;i++){
       var roomname = reply[i];                                                            
-      if(typeof(roomname)!="string") continue;
-      var roominfo = new streamRoom.StreamRoom(roomname, redisClient2);
-      roominfo.on("file-end", fileEnd);
-      roominfo.on("file-change", fileChanged);
-      rooms[roomname] = roominfo;
-      roominfo.playNextFile();
+      console.log("roomname:" + reply[i]);
+
+      var roomcreator = function(rn){
+        redisClient2.zcard("roomqueue_" + rn, function(err2, reply2){
+          if(err2) return;
+          if( reply2 > 0){
+            var newstreamroom = new streamRoom.StreamRoom(rn, redisClient2);
+            newstreamroom.onEmpty = function(name){
+              var room = rooms[name];
+              if(!room.getNowPlaying()){
+                delete rooms[name];
+              }
+            }
+            newstreamroom.on("file-end", fileEnd);
+            newstreamroom.on("file-change", fileChanged);
+            rooms[rn] = newstreamroom;
+            newstreamroom.playNextFile();
+          }else{
+            console.log("room", rn, "has empty queue, skipping");
+          }
+        });
+      };
+      roomcreator(reply[i]);
     }
   });
 }
@@ -140,8 +162,15 @@ var streamingServer = http.createServer(
         }
         console.log("setting up new room");
         var newroom = new streamRoom.StreamRoom(roomName, redisClient2);
+        newroom.onEmpty = function(name){
+          var room = rooms[name];
+          if(!room.getNowPlaying()){
+            delete rooms[name];
+          }
+        }
         newroom.on("file-end", fileEnd);
         newroom.on("file-change", fileChanged);
+        console.log("adding new room", roomName);
         rooms[roomName] = newroom;
         newroom.addNewListener(req, res);
         newroom.playNextFile();

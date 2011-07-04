@@ -291,15 +291,43 @@ $(document).ready(function(){
        }
      });
 
-  $('#settingscog').live('click', function(event){
-    var cogposition = $('#settingscog').position();
-    //$('#settingsmenu').position({left:cogposition.left + 'px', top:cogposition.top + 24 + 'px'});
-    $('#settingsmenu').css('left', cogposition.left + 'px').css('top', cogposition.top + 24 +  'px').show();
-    event.stopPropagation();
+  $('#settingscog').live({
+    mouseenter: function(){
+      $(this).addClass("c_hover");
+    },
+
+    mouseleave: function(){
+      if(!$('#settingsmenu').is(':visible')){
+        $(this).removeClass("c_hover");
+      }
+    }, 
+
+    click: function(event){
+      if(document.getElementById('settingsmenu').className != 'menuhidden'){
+        $('#settingsmenu').addClass('menuhidden');
+        $(this).removeClass("c_hover");
+      }else{
+        $(this).add("c_hover");
+        var cogposition = $('#settingscog').position();
+        $('#settingsmenu').css('left', cogposition.left + 'px').css('top', cogposition.top + 24 +  'px');
+        $('#settingsmenu').attr('class','');
+      }
+    }
   });
 
-  $('html').click(function() {
-    $('#settingsmenu').hide();
+  /*$('#settingscog').live('click', function(event){*/
+  /*var cogposition = $('#settingscog').position();*/
+  /*//$('#settingsmenu').position({left:cogposition.left + 'px', top:cogposition.top + 24 + 'px'});*/
+  /*$('#settingsmenu').css('left', cogposition.left + 'px').css('top', cogposition.top + 24 +  'px').show();*/
+  /*event.stopPropagation();*/
+  /*});*/
+
+  $('html').click(function(event) {
+    if($('#settingsmenu').is(':visible')){
+      $('#settingsmenu').addClass('menuhidden');
+      $('#settingscog').removeClass("c_hover");
+      event.stopPropagation();
+    }
   });
 
   $('#faveslink').click(function(){
