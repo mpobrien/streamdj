@@ -14,13 +14,18 @@
           var WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
           var wsurl = '{{wsurl}}'
           var nowplayingId = null;
-          var msgs = [{{{msgs}}}]
+          var songs = [{{{songs}}}]
+          var chats = [{{{chats}}}]
+          var msgs = songs.concat(chats);
+          msgs.sort(function(a,b){
+            return b.time - a.time;
+          });
           var roomname = '{{roomname}}'
           var uidkey = '{{uidkey}}'
           var username = {{{username}}}
           var messagecount = msgs.length;
           var nowplayingstart = {{nowPlaying}};
-          var lastMsgId = {{lastMsgId}};
+          //var lastMsgId =
           soundManager.url = '/static/swf/';
           soundManager.debugMode = false;
           soundManager.useFlashBlock = false; 
@@ -87,7 +92,7 @@
       </div>
       <div id="settingsmenu" class="menuhidden">
         <a class="menuitem" id="nowplaying_skip">Skip this song</a>
-        <a class="menuitem">Mute until next song plays</a>
+        <!--<a class="menuitem">Mute until next song plays</a>-->
       </div>
       <div id="main">
           <div id="leftside"><!--{{{-->
@@ -153,12 +158,12 @@
 
                 </div>
                 <div class="sectionheading" style="padding-top:10px;margin-bottom:5px;">listeners</div>
-                <ul id="listeners">
+                <div id="listeners">
                   {{#listeners}}
-                  <li id="user_{{uid}}" style="line-height:24px"><a href="{{link}}" target="_blank"><img src="{{pic}}" width="24px" height="24px"/></a><span class="username">{{name}}</name></li>
+                  <div id="user_{{uid}}" style="line-height:24px"><a href="{{link}}" target="_blank"><img src="{{pic}}" width="24px" height="24px"/></a><span class="username">{{name}}</name></div>
                   {{/listeners}}
                   </div>
-                </ul>
+                </div>
             </div>
           </div>
 

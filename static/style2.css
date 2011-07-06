@@ -421,7 +421,8 @@ a.delsong:inactive {
   top: 50px;
   left: 1115px;
   right: 0px;
-  position: absolute; }
+  position: absolute;
+  bottom: 0px; }
 
 .username {
   padding-left: 10px;
@@ -429,7 +430,13 @@ a.delsong:inactive {
 
 #listeners {
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
-  font-size: 12px; }
+  font-size: 12px;
+  bottom: 0px;
+  top: 100px;
+  position: absolute;
+  overflow-y: auto;
+  right: 0px;
+  width: 100%; }
 
 /* Other */
 .sectionheading {

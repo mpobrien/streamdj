@@ -1,0 +1,84 @@
+a:link, a:visited, a:active {
+  color: #DFBA69;
+  text-decoration: none; }
+
+a:hover {
+  color: #DFBA69;
+  text-decoration: underline; }
+
+body {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  background-color: #2a2c31;
+  color: #fffedf; }
+
+#logo {
+  text-align: center;
+  padding-bottom: 40px; }
+
+#logout {
+  font-size: .8em;
+  float: right; }
+
+#profileimg {
+  padding-right: 24px; }
+
+#bodywrapper {
+  clear: both;
+  text-align: center;
+  width: 100%; }
+  #bodywrapper #leftside {
+    width: 50%;
+    float: left; }
+  #bodywrapper #rightside {
+    text-align: left;
+    padding-left: 30px;
+    width: 40%;
+    float: left; }
+
+.containerheading {
+  font-size: 1.5em;
+  color: white;
+  text-shadow: 1px 1px #4d4d4d; }
+
+.userinfo {
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  width: 300px;
+  right: 0px;
+  float: right;
+  background-color: #42454c;
+  padding: 10px;
+  margin-bottom: 20px; }
+
+#footer {
+  padding-top: 30px;
+  clear: both;
+  padding-top: 70px;
+  text-align: center;
+  font-size: 13px; }
+
+.clearer {
+  clear: both; }
+
+#roomcreatewrapper {
+  left: 0px; }
+
+.listenercount {
+  font-size: .9em;
+  color: #cccccc; }
+
+.roomname {
+  width: 300px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px dotted gray; }
+
+.recentnowplaying {
+  padding-top: 8px; }
+  .recentnowplaying .artist, .recentnowplaying .title {
+    font-size: .9em; }
+  .recentnowplaying .meta {
+    font-style: italic;
+    font-size: .8em;
+    color: #cccccc; }

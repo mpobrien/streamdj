@@ -178,71 +178,8 @@ var MessageHandlers = {
     $('#currentfile').addClass('playing').removeClass('notplaying');
     $('#currentfile').append($('<div class="clearer"> </div>'));
     $('#song_' + songId).hide('slide', function(){$(this).remove(); oddify()});
-
-        /*if( message.meta ){*/
-        /*$('#currentfile').append($('<div></div>').attr("id","np_title").text(message.meta['Title']));*/
-    /*var npartist = $('<div></div>')*/
-    /*npartist.attr("id","np_artist").append($('<span></span>').attr("class","by").text("by"))*/
-    /*.append($('<span></span>').attr("class","artist").text(message.meta['Artist']))*/
-    /*$('#currentfile').append(npartist)*/
-    /*var npalbum = $('<div></div>')*/
-    /*npalbum.attr("id","np_album").append($('<span></span>').attr("class","from").text("from"))*/
-    /*.append($('<span></span>').attr("class","album").text(message.meta['Album'])); */
-    /*$('#currentfile').append(npalbum)*/
-    /*}else{*/
-    /*$('#currentfile').append($('<div></div>').attr("id","np_title").text(message['body']));*/
-    /*}*/
-    /*$('#currentfile').append($('<div></div>').attr("id","uploaderinfo")*/
-    /*.append($('<span></span>').attr('class','upby').html('added&nbsp;by'))*/
-    /*.append($('<span></span>').attr('class','uploader').text(message['from'])))*/
-
-    /*var songId = message["songId"]*/
-    /*if( message.meta && ('pic' in message.meta)){*/
-    /*feedart.append($('<img></img>').attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic)).attr('width','60').attr('height','60'))*/
-    /*}*/
-    /*if( message.meta && ('pic' in message.meta) && (!isStatic || (songId==nowplayingstart) )){*/
-    /*$('#albumart').html('')*/
-    /*var aimg = $('<img></img>');*/
-    /*aimg.attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(nowplayingMeta.pic));*/
-    /*aimg.attr('width','128')*/
-    /*aimg.appendTo('#albumart');*/
-    /*$('#albumart').show();*/
-    /*}else{*/
-    /*$('#albumart').html('')*/
-    /*$('#albumart').hide();*/
-    /*}*/
-    /*//innerWrapper.append($('<div class="feedplayart"></div>'));*/
-
-    /*if(message.meta && 'Title' in message.meta){*/
-    /*innerWrapper.append($('<div></div>').attr("class","title").text(message.meta['Title']))*/
-    /*if(message.meta['Artist'] != '(Unknown)' && strip(message.meta['Artist']).length>0){*/
-    /*var artistInfo = $('<div class="artistinfo"></div>')*/
-    /*artistInfo.append($('<span></span>').attr("class","by").text("by"))*/
-    /*.append($('<span></span>').attr("class","artist").text(message.meta['Artist']))*/
-    /*innerWrapper.append(artistInfo)*/
-    /*}*/
-    /*//.append($('<br/>'));*/
-    /*}else{*/
-    /*innerWrapper.append($('<span></span>').attr("class","title").text(message['body']))*/
-    /*.append($('<br/>'));*/
-    /*}*/
-    /*innerWrapper.append($('<span></span>').attr('class','upby').html('added&nbsp;by'))*/
-    /*innerWrapper.append($('<span></span>').attr('class','uploader').text(message['from']))*/
-    /*innerWrapper.append($('<span></span>').attr('class','startedplaying').html("started playing"))*/
-    /*enqDiv.appendTo("#chat");*/
-    /*$('#nowplayingheart').data("songId", songId);*/
-    /*$('#thumbsdown').data("songId", songId);*/
-    /*nowplayingId = songId*/
-
-
-    /*if(!isStatic){*/
-    /*$('#currentfile').addClass("playing");*/
-    /*$('#currentfile_opts').show();*/
-    /*$('#visualization').show();*/
-    /*$('#nowplayingtext').text(message['body']);*/
-    /*$('#song_' + songId).hide('slide', function(){$(this).remove()});*/
-    /*oddify(); //TODO clean up*/
-    /*}*/
+    var objDiv = document.getElementById("chat");
+    objDiv.scrollTop = objDiv.scrollHeight;
   },//}}}
 
   "qdel": function(message, isStatic){//{{{

@@ -482,6 +482,7 @@ a.delsong:inactive{
   left:$leftColWidth + $leftColPadding + $centerColWidth + 30px;
   right:0px;
   position:absolute;
+  bottom:0px;
 }
 
 .username{
@@ -492,6 +493,12 @@ a.delsong:inactive{
 #listeners{
   @include seriffont;
   font-size:12px;
+  bottom:0px;
+  top:100px;
+  position:absolute;
+  overflow-y:auto;
+  right:0px;
+  width:100%;
 }
 
 /* Other */
