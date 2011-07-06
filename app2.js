@@ -27,7 +27,7 @@ var msggen = new msgs.MessageGenerator();
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
 var error404path = path.join(process.cwd(), "/static/404.html");   
 
-var templates = new TemplateManager('./templates',['login.html.mu', 'roomchat2.html.mu']);
+var templates = new TemplateManager('./templates',['login.html.mu', 'roomchat2.html.mu', 'loggedin.html.mu']);
 templates.initializeTemplates();
 
 function reloadTemplates(req, res){
@@ -79,9 +79,10 @@ function getUserInfo(sessionId, callback){//{{{
   });
 }//}}}
 
-/*process.on('uncaughtException', function (err) {*/
-/*console.log('FATAL - caught exception:' + err);*/
-/*});*/
+process.on('uncaughtException', function (err) {
+  console.log('FATAL - caught exception:' + err);
+  console.log("stack:", err.stack);
+});
 sys.puts(util.inspect(settings))
 
 pubsubClient.subscribe("chatmessage");
@@ -221,8 +222,29 @@ var homepage = function(req, res, qs, matches){//{{{
         utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {})
       }else{
         console.log(userinfo.name, " loaded homepage");
-        utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {userinfo:userinfo})
-        return;
+        var uidkey = userinfo.service + "_" + userinfo.user_id;
+        redisClient.zrange("roomvisits_" + uidkey, 0, 6, function(errz, reply){
+          if(errz || !reply){
+            utilities.sendTemplate(res, templates.getTemplate("loggedin.html.mu"), {userinfo:userinfo})
+          }else{
+            var commands = [];
+            var nowplayingKeys = ["mget"];
+            for(var i=0; i<reply.length;i++){
+              nowplayingKeys.push("nowplaying_" + reply[i]);
+            }
+            commands.push(nowplayingKeys);
+            for(var i=0; i<reply.length;i++){
+              commands.push(["hlen","listeners_" + reply[i]]);
+            }
+            console.log(commands);
+            redisClient.multi(commands).exec(function(errz, reply2){ 
+              var nowplayingSongs = reply2[0]
+              var roomCounts = reply2.slice(1);
+              utilities.sendTemplate(res, templates.getTemplate("loggedin.html.mu"), {userinfo:userinfo, rooms:JSON.stringify(reply), songs:JSON.stringify(reply2[0]), counts:JSON.stringify(roomCounts)})
+            })
+          }
+          return;
+        });
       }
     });
   }
@@ -540,6 +562,7 @@ var roomdisplay = function(req, res, qs, matches){//{{{
       var userinfo = {user_id:replies[0], screen_name:replies[1], name:replies[2], pic:replies[3], service:replies[4]}
       console.log(replies[2], "loaded page for room", roomName);
       var uidkey = userinfo.service + "_" + userinfo.user_id;
+      redisClient.zadd("roomvisits_" + uidkey, new Date().getTime(), roomName ) //key, score, member 
       if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
         redisClient.multi([
          ["zscore",   "fave_" + uidkey,      nowplaying],
@@ -601,33 +624,29 @@ function display_form(req, res, context){//{{{
       else if( !userinfo.pic ) {userinfo.pic = "/static/person_small.png";}
       listeners.unshift({name:userinfo.name, pic:userinfo.pic, link:self_link, uid:userinfo.service + '_' + userinfo.user_id});
     }
-    redisClient.zrevrange("roomlog_" + roomname, 0, 99, function(err, reply2){
-      if(reply2 == null) result.msgs = []
-      else result.msgs = reply2;
-      redisClient.zrange("roomqueue_" + roomname, 0, 30, function(err, reply3){ //TODO check for err
-        if( reply3 ){
-          var queueinfo = [];
-          var i=0;
-          var uidkey = userinfo.service + '_' + userinfo.user_id;
-          for(i=0;i<reply3.length;i++){
-            var queueItem = JSON.parse(reply3[i]);
-            //console.log(queueItem, uidkey);
-            if(queueItem.uid && queueItem.uid == uidkey){
-              queueItem.mine = true;
-            }
-            queueinfo.push(queueItem);
-          }
-          result.queue = queueinfo;
-        }else{
-          result.queue = [];
+    redisClient.multi( [
+      ["zrevrange", "chats_" + roomname, 0, 50],
+      ["zrevrange", "songs_" + roomname, 0, 50],
+      ["zrange", "roomqueue_" + roomname, 0, 30]
+    ]).exec(function(errz, replies){
+      var latestChats = replies[0];
+      var latestSongs = replies[1];
+      var currentQueue = replies[2];
+      if( !currentQueue) currentQueue = [];
+      for(var i=0;i<currentQueue.length;i++){
+        var queueItem = JSON.parse(currentQueue[i]);
+        if(queueItem.uid && queueItem.uid == uidkey){
+          queueItem.mine = true;
+          queueinfo.push(queueItem);
         }
-        result.nowPlaying = (nowplaying!=null) ? nowplaying : 0;
-        if( liked ) result.liked = true;
-        result.lastMsgId = lastMsgId;
-        //if( voted ) result.voted = true;
-        utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
-      });
-    });
+      }
+      result.nowPlaying = (nowplaying!=null) ? nowplaying : 0;
+      if( liked ) result.liked = true;
+      result.lastMsgId = lastMsgId;
+      result.songs = latestSongs;
+      result.chats = latestChats;
+      utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
+    })
   });
 }//}}}
 
@@ -769,17 +788,20 @@ var router = new routing.Router([//{{{
 var server = ws.createServer();
 server.addListener("error", function(err) {//{{{
   console.log("server caught 'error' event:", err);
+  console.log("stack", err.stack);
 })//}}}
 
 server.addListener("request", function(req, res) {//{{{
 
   req.on("clientError", function(exception){
     console.log("request had client ERROR - ", exception);
+    console.log("stack:", exception.stack);
     res.end();
   });
 
   req.on("error", function(exception){
     console.log("request had ERROR - ", exception);
+    console.log("stack:", exception.stack);
     res.end();
   });
 
