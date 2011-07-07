@@ -54,12 +54,12 @@ function prepareStartup(){
     if(reply == null) reply = [];
     for(var i=0;i<reply.length;i++){
       var roomname = reply[i];                                                            
-      console.log("roomname:" + reply[i]);
 
       var roomcreator = function(rn){
         redisClient2.zcard("roomqueue_" + rn, function(err2, reply2){
           if(err2) return;
-          if( reply2 > 0){
+          //if( reply2 > 0){
+          if( true ){
             var newstreamroom = new streamRoom.StreamRoom(rn, redisClient2);
             newstreamroom.onEmpty = function(name){
               var room = rooms[name];
