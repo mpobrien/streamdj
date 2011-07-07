@@ -251,6 +251,9 @@
     display: block;
     text-decoration: none;
     padding: 3px; }
+  #settingsmenu .disabled {
+    color: #ccc;
+    font-style: italic; }
   #settingsmenu a.menuitem:hover {
     border--radius: 3px;
     -moz-border-radius: 3px;
@@ -357,6 +360,14 @@ a.delsong:inactive {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 14px;
     padding: 3px; }
+  #chat .join {
+    font-family: Helvetica, Arial, sans-serif; }
+    #chat .join .from {
+      font-weight: bold;
+      padding-right: 7px;
+      font-size: 14px; }
+    #chat .join .message {
+      font-size: 14px; }
   #chat .timestamp {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 12px;
