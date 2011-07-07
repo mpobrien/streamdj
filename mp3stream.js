@@ -157,6 +157,10 @@ var Mp3Stream = function Mp3Stream(){
 
   this.streamFile = function streamFile(fd){//{{{
     that.stopStream();
+    if( !fd ){
+      that.emit("stream-end");
+      return
+    }
     fd.reset(0);
     var headerOffset;
     var headerCheck = fd.getChunk(3);
