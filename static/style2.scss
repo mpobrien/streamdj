@@ -288,6 +288,10 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
     text-decoration:none;
     padding:3px;
   }
+  .disabled{
+    color:#ccc;
+    font-style:italic;
+  }
 
   a.menuitem:hover{
     @include rounded(3px);
@@ -408,6 +412,18 @@ a.delsong:inactive{
     @include sansseriffont;
     font-size:14px;
     padding:3px;
+  }
+
+  .join{
+    @include sansseriffont;
+    .from{
+      font-weight:bold;
+      padding-right:7px;
+      font-size:14px;
+    }
+    .message{
+      font-size:14px;
+    }
   }
 
   .timestamp{

@@ -153,6 +153,10 @@ var MessageHandlers = {
     $('#currentfile').html('<div id="albumartcol"><div id="currentfile_opts"><div class="optcontrol heartbox off" id="nowplaying_favorite"></div><div class="optcontrol c_off" id="settingscog">&nbsp;</div></div><div id="nowplayingart"></div></div>')
     $('#nowplaying_favorite').data("songId", songId); 
     $('#nowplaying_skip').data("songId", songId); 
+    console.log(message);
+    console.log(message['uid'], uidkey);
+    if(message['uid'] == uidkey) $('#nowplaying_skip').removeClass('disabled');
+    else $('#nowplaying_skip').addClass('disabled')
 
     var nowPlayingInfo = $('<div id="nowplayinginfo"></div>');
     $('#currentfile').append(nowPlayingInfo);

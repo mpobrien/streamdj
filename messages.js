@@ -30,8 +30,8 @@ exports.MessageGenerator = function MessageGenerator(){
 
 
   //////////////////
-  this.started = function(who, filename, id, meta, msgId){
-    return {"type":"started","id":msgId,'from':who,'body':filename, 'songId':id, 'time':new Date().getTime(), 'meta':meta}
+  this.started = function(who, filename, id, meta, uid, msgId){
+    return {"type":"started","id":msgId,'from':who,'body':filename, 'songId':id, 'uid':uid, 'time':new Date().getTime(), 'meta':meta}
   }
 
   this.left = function(who, uid){
