@@ -93,7 +93,7 @@ pubsubClient.subscribe("queueremove");
 pubsubClient.subscribe("userjoined");
 pubsubClient.subscribe("userleft");
 pubsubClient.on("message", function(channel, msg){
-  console.log(channel, msg);
+  //console.log(channel, msg);
   var firstSpace =  msg.indexOf(" ");
   var secondSpace = msg.indexOf(" ", firstSpace+1);
   var roomname = msg.substring(0, firstSpace);
@@ -119,7 +119,7 @@ pubsubClient.on("message", function(channel, msg){
   }else if(channel == 'file-changed'){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
     var messages = [];
-    var startedmsg = msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta, msgId)
+    var startedmsg = msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta, incomingMsg.newfile.uid, msgId)
     startedmsg.id = msgId;
     var outgoingMsg = JSON.stringify(startedmsg) 
     console.log("file changed");
@@ -227,7 +227,8 @@ var homepage = function(req, res, qs, matches){//{{{
           if(errz || !reply || reply.length == 0){
             utilities.sendTemplate(res, templates.getTemplate("loggedin.html.mu"), {userinfo:userinfo, rooms:'[]',songs:'[]', counts:'[]'})
           }else{
-            var commands = [];
+            utilities.sendTemplate(res, templates.getTemplate("loggedin.html.mu"), {userinfo:userinfo, rooms:'[]',songs:'[]', counts:'[]'})
+            /*var commands = [];
             var nowplayingKeys = ["mget"];
             for(var i=0; i<reply.length;i++){
               nowplayingKeys.push("nowplaying_" + reply[i]);
@@ -241,7 +242,7 @@ var homepage = function(req, res, qs, matches){//{{{
               var nowplayingSongs = reply2[0]
               var roomCounts = reply2.slice(1);
               utilities.sendTemplate(res, templates.getTemplate("loggedin.html.mu"), {userinfo:userinfo, rooms:JSON.stringify(reply), songs:JSON.stringify(reply2[0]), counts:JSON.stringify(roomCounts)})
-            })
+            })*/
           }
           return;
         });
@@ -438,7 +439,7 @@ var authdone_twitter = function(req, res, qs){//{{{
                        "session_"+session_id+"_profilepic", profileImg,
                        function(){ 
                          //TODO check for error here.
-        cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});
+        cookies.set("session", session_id, {domain:settings.domain, httpOnly:false, expires: new Date(+new Date() + (1000 * 60 * 60 * 24 * 14))});
         var redirectUrl = 'http://' + settings.domain + ':' + settings.port + '/';
         if( roomname && utilities.validateRoomName(roomname) ) redirectUrl += roomname;
         res.writeHead(302, { 'Location': redirectUrl });
@@ -491,7 +492,7 @@ var authdone_facebook = function(req, res, qs){//{{{
                            "session_"+session_id+"_name", me_data.name,
             function(){ 
               //TODO check for error here.
-              cookies.set("session", session_id, {domain:settings.domain, httpOnly:false});
+              cookies.set("session", session_id, {domain:settings.domain, httpOnly:false, expires: new Date(+new Date() + (1000 * 60 * 60 * 24 * 14))});
               var redirectUrl = 'http://' + settings.domain + ':' + settings.port + '/';
               if( roomname && utilities.validateRoomName(roomname) ) redirectUrl += roomname;
               res.writeHead(302, { 'Location': redirectUrl });
