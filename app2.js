@@ -93,7 +93,7 @@ pubsubClient.subscribe("queueremove");
 pubsubClient.subscribe("userjoined");
 pubsubClient.subscribe("userleft");
 pubsubClient.on("message", function(channel, msg){
-    console.log(channel, msg);
+    //console.log(channel, msg);
   var firstSpace =  msg.indexOf(" ");
   var secondSpace = msg.indexOf(" ", firstSpace+1);
   var roomname = msg.substring(0, firstSpace);
@@ -224,8 +224,8 @@ var homepage = function(req, res, qs, matches){//{{{
         console.log(userinfo.name, " loaded homepage");
         var uidkey = userinfo.service + "_" + userinfo.user_id;
         redisClient.zrange("roomvisits_" + uidkey, 0, 6, function(errz, reply){
-          if(errz || !reply){
-            utilities.sendTemplate(res, templates.getTemplate("loggedin.html.mu"), {userinfo:userinfo})
+          if(errz || !reply || reply.length == 0){
+            utilities.sendTemplate(res, templates.getTemplate("loggedin.html.mu"), {userinfo:userinfo, rooms:'[]',songs:'[]', counts:'[]'})
           }else{
             var commands = [];
             var nowplayingKeys = ["mget"];
