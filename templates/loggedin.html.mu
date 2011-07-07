@@ -58,12 +58,17 @@
               </div>
             </form>
           </div>
+          <div style="font-size:.9em">
+            For the friendless and the early adopters -<br/> join us in the <a href="/dirtybeaches">public room</a>!
+          </div>
         </div>
 
-        <div class="containerheading" style="padding-top:30px">Rooms You've Visited Recently</div>
-        <div>
-          <!-- http://s3.amazonaws.com/albumart-outloud/art/QWP0a2oZqxiyeiDfHm0Bsw%3D%3D -->
-          <div class="recentroom" id="recentlist">
+        <div id="recentroomswrapper">
+          <div class="containerheading" style="padding-top:30px">Rooms You've Visited Recently</div>
+          <div>
+            <!-- http://s3.amazonaws.com/albumart-outloud/art/QWP0a2oZqxiyeiDfHm0Bsw%3D%3D -->
+            <div class="recentroom" id="recentlist">
+            </div>
           </div>
         </div>
       </div>
