@@ -683,7 +683,7 @@ server.addListener("connection", function(connection){
         redisClient.incr("roommsg_" + connection.roomname, function(err, reply){
           //TODO check err
           var msgId = reply;
-          var message = JSON.stringify( {messages:[msggen.chat(connection.name, msg, msgId)]})
+          var message = JSON.stringify( msggen.chat(connection.name, msg, msgId))
           console.log("[" + connection.roomname + "] ", connection.name + ":", msg);
           broadcastToRoom(connection.roomname, message);
           redisClient.zadd("roomlog_" + connection.roomname, msgId, message, function(err2, reply2){ });

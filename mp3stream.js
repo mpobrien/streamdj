@@ -120,6 +120,7 @@ var Mp3Stream = function Mp3Stream(){
       var version = (h & 0x00180000) >> 19
       var isprotected = !(h & 0x00010000)
       var b = (h & 0xf000) >> 12
+      var bitrate;
       if(version == 3) //# V1
         bitrate = BITRATE1[b]
       else // # V2 or V2.5
@@ -156,6 +157,10 @@ var Mp3Stream = function Mp3Stream(){
 
   this.streamFile = function streamFile(fd){//{{{
     that.stopStream();
+    if( !fd ){
+      that.emit("stream-end");
+      return
+    }
     fd.reset(0);
     var headerOffset;
     var headerCheck = fd.getChunk(3);

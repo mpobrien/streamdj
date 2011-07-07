@@ -7,6 +7,8 @@ var StreamRoom = function(roomName, redisClient){
   var mp3Stream = new mp3.Mp3Stream();
   var nowPlaying = null;
 
+  this.onEmpty = function(){};
+
   this.getNowPlaying = function(){
     return nowPlaying;
   }
@@ -26,10 +28,22 @@ var StreamRoom = function(roomName, redisClient){
 
   this.addNewListener = function(req, listener){
     listeners.push(listener);
-    req.connection.addListener("close", function(){ listeners.remove(listener); } );
+    req.connection.addListener("close", 
+        function(){ 
+          listeners.remove(listener); 
+          if( listeners.length == 0 ){
+            that.onEmpty(roomName);
+          }
+        });
   }
 
-  this.playNextFile = function(endingFile){
+  this.endCurrentFile = function(requiredId){
+    if( nowPlaying.songId == requiredId ){
+      that.playNextFile(nowPlaying, true);
+    }
+  }
+
+  this.playNextFile = function(endingFile, forceStop){
     //To pop the lowest-ranked member of a sorted set in redis, we need 2 steps:
     //1. zrange <key> 0 0 WITHSCORES (returns lowest ranked key and its score)
     //2. zremrangebyscore <key> score score // removes that lowest element
@@ -40,6 +54,9 @@ var StreamRoom = function(roomName, redisClient){
           that.emit("file-end", roomName, endingFile);
         }
         nowPlaying = null;
+        if(forceStop){
+          mp3Stream.stopStream();
+        }
         return; // Nothing on the queue.
       }
       var songInfo = JSON.parse(reply[0])

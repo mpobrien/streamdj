@@ -22,22 +22,29 @@ var pubsubClient = redis.createClient();
 var redisClient2 = redis.createClient();
 
 pubsubClient.subscribe("newQueueReady")
-pubsubClient.subscribe("voteskip")
+pubsubClient.subscribe("skipnow")
+pubsubClient.subscribe("debug")
 
 pubsubClient.on("message", function(channel, msg){
-  if(channel != "newQueueReady" && channel != "voteskip") return;
+  console.log(channel, msg);
+  if(channel != "newQueueReady" && channel != "skipnow" && channel!="debug") return;
+  if( channel == 'debug'){
+    console.log(process.memoryUsage());
+    console.log(rooms);
+  }
   var roomName = msg.split(" ")[0]
   var room = rooms[roomName];
   if( channel == 'newQueueReady'){
     if(room && !room.getNowPlaying()){
       room.playNextFile();
     }
-  }else if(channel == 'voteskip'){
+  }else if(channel == 'skipnow'){
+  console.log("got skip shit");
     var msgparts = msg.split(" ");
     var roomName = msgparts[0];
     var songId = msgparts[1]
     if(room && room.getNowPlaying() && room.getNowPlaying().songId == songId){
-      room.playNextFile();
+      room.endCurrentFile(songId);
     }
   }
 });
@@ -45,14 +52,31 @@ pubsubClient.on("message", function(channel, msg){
 function prepareStartup(){
   redisClient2.smembers("rooms", function(err, reply){
     if(reply == null) reply = [];
-    for(var i in reply){
+    for(var i=0;i<reply.length;i++){
       var roomname = reply[i];                                                            
-      if(typeof(roomname)!="string") continue;
-      var roominfo = new streamRoom.StreamRoom(roomname, redisClient2);
-      roominfo.on("file-end", fileEnd);
-      roominfo.on("file-change", fileChanged);
-      rooms[roomname] = roominfo;
-      roominfo.playNextFile();
+      console.log("roomname:" + reply[i]);
+
+      var roomcreator = function(rn){
+        redisClient2.zcard("roomqueue_" + rn, function(err2, reply2){
+          if(err2) return;
+          if( reply2 > 0){
+            var newstreamroom = new streamRoom.StreamRoom(rn, redisClient2);
+            newstreamroom.onEmpty = function(name){
+              var room = rooms[name];
+              if(!room.getNowPlaying()){
+                delete rooms[name];
+              }
+            }
+            newstreamroom.on("file-end", fileEnd);
+            newstreamroom.on("file-change", fileChanged);
+            rooms[rn] = newstreamroom;
+            newstreamroom.playNextFile();
+          }else{
+            console.log("room", rn, "has empty queue, skipping");
+          }
+        });
+      };
+      roomcreator(reply[i]);
     }
   });
 }
@@ -64,7 +88,7 @@ var fileEnd = function(roomName, fileinfo){
   redisClient2.del("nowplayingid_" + roomName);
   redisClient2.incr("roommsg_" + roomName, function(err, reply){
     fileinfo.msgId = reply;
-    redisClient2.publish("file-ended", JSON.stringify(fileinfo));
+    redisClient2.publish("file-ended", roomName + " " + fileinfo.msgId + " " + JSON.stringify(fileinfo));
   });
 
   if( fileinfo && fileinfo.path){
@@ -81,11 +105,17 @@ var fileEnd = function(roomName, fileinfo){
 var fileChanged = function(roomName, oldfile, newfile){
   redisClient2.set("nowplaying_" + roomName, JSON.stringify(newfile));
   redisClient2.set("nowplayingid_" + roomName, newfile.songId);
-  redisClient2.incrby("roommsg_" + roomName, 2, function(er, reply){ //TODO check errors
+  redisClient2.incr("roommsg_" + roomName, function(er, reply){ //TODO check errors
+    console.log("reply",reply)
     var msgId = reply;
-    var message = JSON.stringify( {messages:[msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta, msgId)]})
+    var startedMsg = msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta, msgId);
+    var message = JSON.stringify( startedMsg )
     var msg = {"oldfile":oldfile, "newfile":newfile, "roomname":roomName, "msgId":msgId};
-    redisClient2.publish("file-changed", JSON.stringify(msg));
+    redisClient2.publish("file-changed", roomName + " " + msgId + " " + JSON.stringify(msg));
+    redisClient2.multi([
+     ["zadd","roomlog_" + roomName, msgId, message],
+     ["zadd","songs_" + roomName, msgId, message]
+    ]).exec();
     redisClient2.zadd("roomlog_" + roomName, msgId, message, function(){ 
       //TODO trim the log?
       //redisClient2.ltrim("chatlog_"+ roomName, 100, function(){});
@@ -110,7 +140,7 @@ var streamingServer = http.createServer(
 
     if(url_parts.pathname == '/crossdomain.xml'){
       res.writeHead(200, {'Content-Type': 'application/xml'}); 
-      res.end('<?xml version="1.0"?><!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd"><cross-domain-policy><allow-access-from domain="outloud.fm" to-ports="80"/><allow-access-from domain="dev.outloud.fm"to-ports="80"/><allow-access-from domain="stream.dev.outloud.fm"to-ports="3001"/></cross-domain-policy>')
+      res.end('<?xml version="1.0"?><!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd"><cross-domain-policy><allow-access-from domain="outloud.fm" to-ports="80"/><allow-access-from domain="dev.outloud.fm"to-ports="80"/><allow-access-from domain="stream.dev.outloud.fm"to-ports="81"/></cross-domain-policy>')
       return;
     }
 
@@ -133,8 +163,15 @@ var streamingServer = http.createServer(
         }
         console.log("setting up new room");
         var newroom = new streamRoom.StreamRoom(roomName, redisClient2);
+        newroom.onEmpty = function(name){
+          var room = rooms[name];
+          if(!room.getNowPlaying()){
+            delete rooms[name];
+          }
+        }
         newroom.on("file-end", fileEnd);
         newroom.on("file-change", fileChanged);
+        console.log("adding new room", roomName);
         rooms[roomName] = newroom;
         newroom.addNewListener(req, res);
         newroom.playNextFile();

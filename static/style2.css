@@ -1,0 +1,451 @@
+.dragdropcopy {
+  font-size: .8em;
+  text-transform: none;
+  letter-spacing: 1px;
+  padding-left: 10px; }
+
+#header {
+  height: 50px;
+  background-color: #2A2C31;
+  z-index: 1000; }
+
+#main {
+  margin: 0px; }
+
+.headerlink {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  color: white; }
+
+.headerlink:hover {
+  color: white;
+  text-decoration: none; }
+
+.headerlink:link {
+  color: white;
+  text-decoration: none; }
+
+.headerlink:visited {
+  color: white;
+  text-decoration: none; }
+
+.headerlink:active {
+  color: white;
+  text-decoration: none; }
+
+/* Left Column Shit */
+#leftside {
+  -webkit-box-shadow: 5px 0px 5px -3px #bbbbbb;
+  -moz-box-shadow: 5px 0px 5px -3px #bbbbbb;
+  box-shadow: 5px 0px 5px -3px #bbbbbb;
+  top: 50px;
+  padding-left: 10px;
+  width: 425px;
+  background-color: #fff; }
+
+#favorites .meta {
+  font-style: italic;
+  color: #888;
+  font-size: .75em;
+  padding-right: 4px; }
+#favorites #nofaves {
+  display: none;
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+  padding: 30px 80px 50px; }
+#favorites #favesheader {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-size: 1.2em;
+  text-align: center;
+  font-weight: bold;
+  padding: 5px; }
+#favorites #favepages {
+  margin-left: 20px;
+  margin-bottom: 15px;
+  text-align: center; }
+#favorites #curpage {
+  cursor: default;
+  font-weight: bold;
+  border: 1px solid #ccc; }
+#favorites .nolink {
+  cursor: default; }
+#favorites .favepagelink {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  list-style: none;
+  cursor: pointer;
+  display: inline;
+  margin-right: 5px;
+  padding-top: 3px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px; }
+#favorites .favwrapper {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  position: relative;
+  clear: both;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc; }
+  #favorites .favwrapper .heartbox {
+    margin-left: 5px;
+    margin-top: 10px;
+    float: left; }
+#favorites .first {
+  border-top: 1px solid #ccc; }
+#favorites .odd {
+  background-color: #eee; }
+#favorites .favorite_entry {
+  width: 300px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  float: left;
+  position: relative;
+  padding-left: 10px; }
+  #favorites .favorite_entry .title, #favorites .favorite_entry .artist, #favorites .favorite_entry .by, #favorites .favorite_entry .album, #favorites .favorite_entry .upby, #favorites .favorite_entry .uploader, #favorites .favorite_entry .from {
+    margin-right: 4px; }
+  #favorites .favorite_entry .title, #favorites .favorite_entry .artist {
+    font-size: .9em; }
+
+#currentfile_opts {
+  float: right; }
+  #currentfile_opts .optcontrol {
+    width: 24px;
+    margin-left: 6px;
+    margin-right: 6px;
+    float: left; }
+
+#currentfile {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-size: 20px;
+  line-height: 18px;
+  padding-top: 10px;
+  padding-bottom: 10px; }
+  #currentfile #nowPlayingInfo {
+    width: 297px; }
+  #currentfile .meta {
+    font-style: italic;
+    color: #888;
+    font-size: .75em; }
+  #currentfile #albumartcol {
+    float: right;
+    top: 55px;
+    width: 128px; }
+  #currentfile .artistinfo, #currentfile .title, #currentfile .albuminfo {
+    margin-top: 6px;
+    margin-bottom: 6px; }
+  #currentfile .artistinfo, #currentfile .albuminfo {
+    font-size: .8em; }
+
+.notplaying {
+  text-align: center; }
+
+.playing {
+  text-align: left; }
+
+#progress {
+  text-align: center; }
+
+.progressBar {
+  width: 0%;
+  height: 5px;
+  background-color: black; }
+
+.progressContainer {
+  width: 300px;
+  height: 5px;
+  border: 1px solid black; }
+
+.progress_container {
+  width: 100px;
+  height: 5px;
+  border: 1px solid #bbb; }
+
+.progress_inner {
+  width: 60%;
+  height: 100%;
+  background-color: #bbb; }
+
+#albuminfo {
+  font-size: .9em; }
+
+#uploaderinfo {
+  font-size: .8em; }
+
+.uploader {
+  padding-right: 6px; }
+
+.heartbox {
+  width: 24px;
+  height: 24px;
+  cursor: pointer; }
+
+.on {
+  background: url("/static/heart.png") no-repeat; }
+
+.off {
+  background: url("/static/heart_deactive.png") no-repeat; }
+
+.hover {
+  background: url("/static/heart_hover.png") no-repeat; }
+
+#settingscog {
+  height: 24px;
+  width: 24px; }
+
+.c_off {
+  background: url("/static/cog_unhover.png") no-repeat; }
+
+.c_hover {
+  background: url("/static/cog_hover.png") no-repeat; }
+
+#volcontrol {
+  width: 24px;
+  height: 24px; }
+
+#volicon {
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  float: left;
+  top: 20px;
+  margin-top: 5px;
+  margin-right: 5px; }
+
+.muted {
+  background: url("/static/volumeorgmute.png"); }
+
+#volwrapper {
+  float: right;
+  height: 20px; }
+
+#volcontrol {
+  width: 140px;
+  border: 1px solid #a3a7ae;
+  height: 14px;
+  float: left;
+  margin-top: 8px; }
+
+#volinside {
+  width: 90%;
+  background-color: black;
+  height: 100%;
+  padding: 0px;
+  margin: 0px; }
+
+.notmuted {
+  background: url("/static/volume_on.png"); }
+
+#settingscog {
+  cursor: pointer; }
+
+#settingsmenu {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  position: absolute;
+  z-index: 3000;
+  background-color: white;
+  -webkit-box-shadow: 0px 0px 2px 2px #bbbbbb;
+  -moz-box-shadow: 0px 0px 2px 2px #bbbbbb;
+  box-shadow: 0px 0px 2px 2px #bbbbbb; }
+  #settingsmenu .menuitem {
+    margin: 10px;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    padding: 3px; }
+  #settingsmenu a.menuitem:hover {
+    border--radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    background-color: #efefef; }
+
+.menuhidden {
+  display: none; }
+
+#queueholder {
+  margin-top: 35px;
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-size: 16px;
+  line-height: 18px;
+  bottom: 0px;
+  max-height: 500px;
+  border: 1px solid transparent; }
+  #queueholder .odd {
+    background-color: #EEE; }
+
+.highlight {
+  background-color: #ffffa2;
+  border: 1px solid #000; }
+  .highlight .queuedsong {
+    background-color: #ffffa2; }
+
+.songinfo {
+  float: left;
+  width: 300px;
+  font-size: 14px; }
+
+.queuedsong {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px dotted #BBB; }
+  .queuedsong .meta {
+    font-style: italic;
+    color: #888;
+    font-size: .75em; }
+
+.delsong {
+  color: blue;
+  display: block;
+  padding-right: 3px; }
+
+a.delsong:link {
+  color: blue;
+  text-decoration: none; }
+
+a.delsong:hover {
+  color: blue;
+  text-decoration: underline; }
+
+a.delsong:inactive {
+  color: blue;
+  text-decoration: none; }
+
+.queuedsong > .title, .artistinfo {
+  padding-right: 3px;
+  font-size: 14px;
+  line-height: 14px; }
+
+.queuedsong > .uploaderinfo {
+  font-size: 11px;
+  float: right;
+  padding-left: 8px; }
+
+.queuedsong > .delsong {
+  clear: right;
+  font-size: 11px;
+  float: right; }
+
+/* Center column shit */
+#centercolumn {
+  top: 50px;
+  background-color: white;
+  left: 450px;
+  border-left: 1px solid #eee;
+  /*border:1px solid black;*/
+  position: absolute;
+  width: 650px;
+  bottom: 10px; }
+
+#chatbox {
+  position: absolute;
+  bottom: 15px;
+  width: 100%; }
+
+#newchat {
+  width: 100%;
+  font-size: 1.1em; }
+
+#chat {
+  -webkit-box-shadow: 5px 0px 5px -3px #bbbbbb;
+  -moz-box-shadow: 5px 0px 5px -3px #bbbbbb;
+  box-shadow: 5px 0px 5px -3px #bbbbbb;
+  width: 100%;
+  overflow-y: auto;
+  position: absolute;
+  top: 0px;
+  bottom: 45px;
+  border-bottom: 1px solid #ccc; }
+  #chat .chatmessage {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    padding: 3px; }
+  #chat .timestamp {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    color: #888;
+    float: left;
+    padding-right: 6px; }
+  #chat .sendername {
+    font-weight: bold;
+    padding-right: 7px; }
+  #chat .songmessage {
+    margin-top: 7px;
+    font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+    font-size: 16px;
+    padding-left: 3px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #f6fafa;
+    border-top: 1px dotted #BBB;
+    border-bottom: 1px dotted #BBB;
+    line-height: 19px; }
+    #chat .songmessage .feed_title {
+      font-weight: normal; }
+    #chat .songmessage .feed_artist {
+      font-weight: normal; }
+    #chat .songmessage .feed_artist > .meta {
+      color: #888;
+      font-size: .8em;
+      font-style: italic; }
+    #chat .songmessage .feed_uploader_info .meta {
+      color: #888;
+      font-size: .8em;
+      font-style: italic; }
+    #chat .songmessage .feed_uploader_info .uploader {
+      font-size: .9em; }
+  #chat .albumart {
+    float: left;
+    padding-right: 6px; }
+  #chat .albumartspacer {
+    float: left;
+    width: 60px;
+    height: 60px; }
+
+/* Right Column */
+#invitelinks {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  padding-top: 5px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px; }
+  #invitelinks .fbinvite, #invitelinks .twinvite {
+    cursor: pointer; }
+
+.roomlink {
+  border--radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background-color: #efefef;
+  border: 1px solid #ccc;
+  padding: 2px; }
+
+#rightside {
+  top: 50px;
+  left: 1115px;
+  right: 0px;
+  position: absolute;
+  bottom: 0px; }
+
+.username {
+  padding-left: 10px;
+  list-style: none; }
+
+#listeners {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-size: 12px;
+  bottom: 0px;
+  top: 100px;
+  position: absolute;
+  overflow-y: auto;
+  right: 0px;
+  width: 100%; }
+
+/* Other */
+.sectionheading {
+  letter-spacing: 3px;
+  color: #333;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  border-bottom: 1px dotted #BBB;
+  padding-bottom: 5px; }
+
+.clearer {
+  clear: both; }
