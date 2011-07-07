@@ -89,6 +89,7 @@
       <div id="header" style="color:white">
         <img src="http://outloud.fm/static/ol.png" height="40px" style="padding-top:5px"/>
         <a href="#" class="headerlink" id="faveslink">favorites</a>
+        <a href="/logout/" class="headerlink" >logout</a>
       </div>
       <div id="settingsmenu" class="menuhidden">
         <a class="menuitem" id="nowplaying_skip">Skip this song</a>

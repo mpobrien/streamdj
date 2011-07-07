@@ -93,7 +93,7 @@ pubsubClient.subscribe("queueremove");
 pubsubClient.subscribe("userjoined");
 pubsubClient.subscribe("userleft");
 pubsubClient.on("message", function(channel, msg){
-    //console.log(channel, msg);
+  console.log(channel, msg);
   var firstSpace =  msg.indexOf(" ");
   var secondSpace = msg.indexOf(" ", firstSpace+1);
   var roomname = msg.substring(0, firstSpace);
