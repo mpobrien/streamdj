@@ -37,6 +37,8 @@ $(document).ready(
             
           }
         }
+      }else{
+        $('#recentroomswrapper').hide();
       }
     }
 );
