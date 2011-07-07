@@ -366,7 +366,7 @@ var send = function(req, res, qs, matches){//{{{
       var msgId = replies[1];
       var eventMsg = msggen.chat(username, message, msgId)
       var eventMsgString = JSON.stringify(eventMsg)
-      redisClient.zadd("events_" + roomname, msgId, eventMsgString ) //key, score, member 
+      //redisClient.zadd("events_" + roomname, msgId, eventMsgString ) //key, score, member 
       redisClient.zadd("chats_" + roomname, msgId, eventMsgString ) //key, score, member 
       redisClient.publish("chatmessage", roomname + " " + msgId + " " + eventMsgString);
     })
@@ -632,6 +632,7 @@ function display_form(req, res, context){//{{{
       var latestChats = replies[0];
       var latestSongs = replies[1];
       var currentQueue = replies[2];
+      var queueinfo = [];
       if( !currentQueue) currentQueue = [];
       for(var i=0;i<currentQueue.length;i++){
         var queueItem = JSON.parse(currentQueue[i]);
@@ -645,6 +646,7 @@ function display_form(req, res, context){//{{{
       result.lastMsgId = lastMsgId;
       result.songs = latestSongs;
       result.chats = latestChats;
+      result.queue = queueinfo;
       utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
     })
   });
