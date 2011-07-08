@@ -10,26 +10,33 @@
   z-index: 1000; }
 
 #main {
-  margin: 0px; }
+  margin-top: 0px; }
 
 .headerlink {
-  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
-  color: white; }
+  font-family: verdana;
+  color: #FFFEDF;
+  margin-left: 20px;
+  margin-right: 20px; }
+
+#logo {
+  float: left;
+  padding-left: 10px;
+  padding-right: 40px; }
 
 .headerlink:hover {
-  color: white;
+  color: #FFFEDF;
   text-decoration: none; }
 
 .headerlink:link {
-  color: white;
+  color: #FFFEDF;
   text-decoration: none; }
 
 .headerlink:visited {
-  color: white;
+  color: #FFFEDF;
   text-decoration: none; }
 
 .headerlink:active {
-  color: white;
+  color: #FFFEDF;
   text-decoration: none; }
 
 /* Left Column Shit */
@@ -39,7 +46,7 @@
   box-shadow: 5px 0px 5px -3px #bbbbbb;
   top: 50px;
   padding-left: 10px;
-  width: 425px;
+  width: 370px;
   background-color: #fff; }
 
 #favorites .meta {
@@ -120,7 +127,7 @@
   padding-top: 10px;
   padding-bottom: 10px; }
   #currentfile #nowPlayingInfo {
-    width: 297px; }
+    width: 242px; }
   #currentfile .meta {
     font-style: italic;
     color: #888;
@@ -207,18 +214,21 @@
   width: 20px;
   float: left;
   top: 20px;
-  margin-top: 5px;
-  margin-right: 5px; }
+  margin-top: 7px;
+  margin-right: 1px; }
 
 .muted {
-  background: url("/static/volumeorgmute.png"); }
+  background: url("/static/volicon_mute.png") no-repeat; }
+
+.notmuted {
+  background: url("/static/volicon.png") no-repeat; }
 
 #volwrapper {
   float: right;
   height: 20px; }
 
 #volcontrol {
-  width: 140px;
+  width: 128px;
   border: 1px solid #a3a7ae;
   height: 14px;
   float: left;
@@ -230,9 +240,6 @@
   height: 100%;
   padding: 0px;
   margin: 0px; }
-
-.notmuted {
-  background: url("/static/volume_on.png"); }
 
 #settingscog {
   cursor: pointer; }
@@ -250,6 +257,7 @@
     cursor: pointer;
     display: block;
     text-decoration: none;
+    font-size: 12px;
     padding: 3px; }
   #settingsmenu .disabled {
     color: #ccc;
@@ -282,7 +290,7 @@
 
 .songinfo {
   float: left;
-  width: 300px;
+  width: 280px;
   font-size: 14px; }
 
 .queuedsong {
@@ -314,7 +322,7 @@ a.delsong:inactive {
 .queuedsong > .title, .artistinfo {
   padding-right: 3px;
   font-size: 14px;
-  line-height: 14px; }
+  line-height: 12px; }
 
 .queuedsong > .uploaderinfo {
   font-size: 11px;
@@ -330,11 +338,11 @@ a.delsong:inactive {
 #centercolumn {
   top: 50px;
   background-color: white;
-  left: 450px;
+  left: 390px;
   border-left: 1px solid #eee;
   /*border:1px solid black;*/
   position: absolute;
-  width: 650px;
+  width: 800px;
   bottom: 10px; }
 
 #chatbox {
@@ -344,7 +352,7 @@ a.delsong:inactive {
 
 #newchat {
   width: 100%;
-  font-size: 1.1em; }
+  font-size: 1em; }
 
 #chat {
   -webkit-box-shadow: 5px 0px 5px -3px #bbbbbb;
@@ -384,7 +392,7 @@ a.delsong:inactive {
     padding-left: 3px;
     padding-top: 5px;
     padding-bottom: 5px;
-    background-color: #f6fafa;
+    background-color: #FFE6E6;
     border-top: 1px dotted #BBB;
     border-bottom: 1px dotted #BBB;
     line-height: 19px; }
@@ -404,7 +412,7 @@ a.delsong:inactive {
       font-size: .9em; }
   #chat .albumart {
     float: left;
-    padding-right: 6px; }
+    padding-right: 8px; }
   #chat .albumartspacer {
     float: left;
     width: 60px;
@@ -413,10 +421,12 @@ a.delsong:inactive {
 /* Right Column */
 #invitelinks {
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
-  padding-top: 5px;
-  text-align: center;
-  font-size: 14px;
-  line-height: 20px; }
+  padding-top: 2px;
+  padding-bottom: 2px;
+  text-align: left;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 18px; }
   #invitelinks .fbinvite, #invitelinks .twinvite {
     cursor: pointer; }
 
@@ -428,22 +438,34 @@ a.delsong:inactive {
   border: 1px solid #ccc;
   padding: 2px; }
 
+/*
+.b1f, .b2f, .b3f, .b4f{font-size:1px; overflow:hidden; display:block;}
+.b1f {height:1px; background:#ddd; margin:0 5px;}
+.b2f {height:1px; background:#ddd; margin:0 3px;}
+.b3f {height:1px; background:#ddd; margin:0 2px;}
+.b4f {height:2px; background:#ddd; margin:0 1px;}
+.contentf {background: #ddd;}
+.contentf div {margin-left: 5px;}
+*/
 #rightside {
   top: 50px;
-  left: 1115px;
+  left: 1210px;
   right: 0px;
   position: absolute;
-  bottom: 0px; }
+  bottom: 0px;
+  width: 200px;
+  min-width: 50px; }
 
 .username {
   padding-left: 10px;
   list-style: none; }
 
 #listeners {
-  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
-  font-size: 12px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 14px;
   bottom: 0px;
-  top: 100px;
+  top: 80px;
+  padding-top: 2px;
   position: absolute;
   overflow-y: auto;
   right: 0px;

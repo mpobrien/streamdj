@@ -13,8 +13,8 @@ $sectionHeadingColor: #3E4147;
 $sectionHeadingShadow: lighten(#3E4147,50%);
 $sectionHeadingBorder: black;
 
-@mixin seriffont{
-  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+@mixin sansseriffont{
+  font-family: Helvetica, sansserif;
 }
 
 @mixin rounded($radius){
@@ -36,15 +36,17 @@ a:hover{
 
 
 body{
-  @include seriffont;
+  @include sansseriffont;
   background-color: $backgroundColor;
   color: $textColor;
 }
 
 
 #logo{
-  text-align:center;
-  padding-bottom:40px;
+  text-align:left;
+  padding-bottom:60px;
+  padding-top:40px;
+  padding-left:90px;
 }
 
 #logout{
@@ -53,7 +55,7 @@ body{
 }
 
 #profileimg{
-  padding-right:24px;
+  padding-right:20x;
 }
 
 #bodywrapper{
@@ -64,7 +66,6 @@ body{
   #leftside{
     width:50%;
     float:left;
-
 
   }
 

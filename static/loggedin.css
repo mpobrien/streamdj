@@ -7,20 +7,22 @@ a:hover {
   text-decoration: underline; }
 
 body {
-  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-family: Helvetica, sansserif;
   background-color: #2a2c31;
   color: #fffedf; }
 
 #logo {
-  text-align: center;
-  padding-bottom: 40px; }
+  text-align: left;
+  padding-bottom: 60px;
+  padding-top: 40px;
+  padding-left: 90px; }
 
 #logout {
   font-size: .8em;
   float: right; }
 
 #profileimg {
-  padding-right: 24px; }
+  padding-right: 20x; }
 
 #bodywrapper {
   clear: both;

@@ -87,7 +87,7 @@
     </head>
     <body>
       <div id="header" style="color:white">
-        <img src="http://outloud.fm/static/ol.png" height="40px" style="padding-top:5px"/>
+        <div id="logo"><img src="/static/ol.png"></div>
         <a href="#" class="headerlink" id="faveslink">favorites</a>
         <a href="/logout/" class="headerlink" >logout</a>
       </div>
@@ -152,12 +152,11 @@
               </div>
             </div>
             <div id="rightside">
-                <div id="invitelinks">
-                  Invite friends with <span class="fbinvite"><img src="/static/facebook_small.png"/></span> <span class="twinvite" style="cursor:pointer;"><img src="/static/twitter_small.png"/></span> 
-                  <div>Or copy and paste: <span class="roomlink">http://outloud.fm/{{roomname}}</span>
-                  </div>
-
-                </div>
+                <b class="b1f"></b><b class="b2f"></b><b class="b3f"></b><b class="b4f"></b>
+    	     	   <div class="contentf">
+	   	        <div id="invitelinks"> Invite friends on <span class="fbinvite"><img src="/static/facebook_small.png"/></span> <span class="twinvite" style="cursor:pointer;"><img src="/static/twitter_small.png"/></span></div>
+    		   </div>
+		<b class="b4f"></b><b class="b3f"></b><b class="b2f"></b><b class="b1f"></b>
                 <div class="sectionheading" style="padding-top:10px;margin-bottom:5px;">listeners</div>
                 <div id="listeners">
                   {{#listeners}}
