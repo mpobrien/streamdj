@@ -1,0 +1,65 @@
+body {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  background-color: #2a2c31;
+  color: #fffedf; }
+
+#bodywrapper {
+  text-align: center; }
+
+#logo {
+  text-align: center;
+  padding-bottom: 50px; }
+
+#loginlinks {
+  line-height: 24px; }
+  #loginlinks img {
+    vertical-align: middle;
+    border: none; }
+
+.or {
+  font-style: italic;
+  color: gray;
+  padding: 10px; }
+
+#greeting {
+  padding: 24px;
+  font-size: 30px; }
+
+.divider {
+  text-align: center;
+  border-bottom: 1px dotted gray;
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto; }
+
+.meta {
+  font-style: italic;
+  color: gray;
+  font-size: .8em; }
+
+#nowplaying, #recentsongs {
+  width: 500px;
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto; }
+
+.nowplaying_art {
+  float: left; }
+
+.artspacer {
+  width: 64px;
+  height: 64px;
+  float: left; }
+
+.nowplaying_info {
+  float: left;
+  padding-left: 24px; }
+
+.npheading {
+  padding: 20px;
+  font-style: italic;
+  color: #cccccc; }
+
+.np_item {
+  margin-left: auto;
+  margin-right: auto; }

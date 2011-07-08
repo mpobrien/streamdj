@@ -1,0 +1,74 @@
+<html>
+  <head>
+    <link href="/static/roompreview.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="logo">
+       <img src="/static/ol_med.png">
+    </div>
+
+    <div id="bodywrapper">
+      <div id="greeting">
+        You're invited to hang out and play music in <b>{{room}}</b>!
+      </div>
+      <div id="listenerinfo">There are {{numlisteners}} other people listening.</div>
+
+      <div id="loginlinks">
+        <div style="padding:10px;">
+          Log in to enter the room and get started.
+        </div>
+        <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a> <span class="or">or</span> <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
+      </div>
+
+      <div class="divider">&nbsp;</div>
+
+      {{#nowplaying}}
+        <div id="nowplaying">
+          <div class="npheading">Currently playing inside <b>{{room}}</b>:</div>
+          <div class="nowplaying_art">
+            {{#meta}}
+              {{#pic}}
+              <img src="http://s3.amazonaws.com/albumart-outloud/art/{{pic}}" width="64" height="64"/>
+              {{/pic}}
+
+              {{^pic}}
+              <div class="artspacer">&nbsp;</div>
+              {{/pic}}
+          </div>
+          <div class="nowplaying_info">
+            <div class="nowplaying_title">{{Title}}</div>
+            <div class="nowplaying_artist"><span class="meta">by</span> {{Artist}}</div>
+            {{/meta}}
+          </div>
+          <div style="clear:both">&nbsp;</div>
+        </div>
+      {{/nowplaying}}
+
+      <div id="recentsongs">
+        <div class="npheading">Recently Played Songs:</div>
+        {{#recentSongs}}
+        <div class="nowplaying_art">
+          {{#meta}}
+            {{#pic}}
+            <img src="http://s3.amazonaws.com/albumart-outloud/art/{{pic}}" width="64" height="64"/>
+            {{/pic}}
+
+            {{^pic}}
+            <div class="artspacer">&nbsp;</div>
+            {{/pic}}
+        </div>
+        <div class="nowplaying_info">
+          <div class="nowplaying_title">{{Title}}</div>
+          <div class="nowplaying_artist"><span class="meta">by</span> {{Artist}}</div>
+          {{/meta}}
+        </div>
+        <div style="clear:both">&nbsp;</div>
+        {{/recentSongs}}
+      </div>
+
+
+
+      
+    </div>
+  </body>
+</html>
