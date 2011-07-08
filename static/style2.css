@@ -13,10 +13,14 @@
   margin-top: 0px; }
 
 .headerlink {
-  font-family: verdana;
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  margin-top: 10px;
   color: #FFFEDF;
   margin-left: 20px;
   margin-right: 20px; }
+
+#linkwrapper {
+  padding-top: 20px; }
 
 #logo {
   float: left;

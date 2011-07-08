@@ -31,7 +31,6 @@
           soundManager.useFlashBlock = false; 
           soundManager.flashVersion = 9;
           var startStream = function(){
-            console.log("yo");
             var soundOpts = { id: 'mySound', url: '{{listenurl}}', autoPlay: true, stream: true }
             if( currentVolume>0 ){
               soundOpts.volume = currentVolume;
@@ -72,7 +71,6 @@
          nowplayingMeta = null;
          {{/nowPlaying}}
          {{#liked}}
-         console.log("faving");
            if(nowplayingId){
              $('#nowplaying_favorite').removeClass("off").addClass("on");
            }
@@ -88,8 +86,10 @@
     <body>
       <div id="header" style="color:white">
         <div id="logo"><img src="/static/ol.png"></div>
+        <div id="linkwrapper">
         <a href="#" class="headerlink" id="faveslink">favorites</a>
         <a href="/logout/" class="headerlink" >logout</a>
+      </div>
       </div>
       <div id="settingsmenu" class="menuhidden">
         <a class="menuitem" id="nowplaying_skip">Skip this song</a>

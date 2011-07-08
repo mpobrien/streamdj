@@ -13,6 +13,11 @@ $sectionHeadingColor: #3E4147;
 $sectionHeadingShadow: lighten(#3E4147,50%);
 $sectionHeadingBorder: black;
 
+@mixin seriffont{
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+}
+
+
 @mixin sansseriffont{
   font-family: Helvetica, sansserif;
 }
@@ -36,7 +41,7 @@ a:hover{
 
 
 body{
-  @include sansseriffont;
+  @include seriffont;
   background-color: $backgroundColor;
   color: $textColor;
 }

@@ -106,7 +106,6 @@ var handleFiles = function(files){//{{{
     pendinguploads++;
     var qxhr = new XMLHttpRequest();
     var progbar = new ProgressBar();
-    console.log("here");
     $('#progress').append(progbar.outer)
     qxhr.onreadystatechange = function(){}
     qxhr.upload.onerror = function(e){ /*console.debug("error", e);*/ }
@@ -151,7 +150,6 @@ var sendMessage = function(){//{{{
 }//}}}
 
 var removeSongFromQueue = function(songId){
-  console.log("removing", songId);
   $.get( '/' + roomname + '/remove', {s:songId}, function(){})
 }
 
@@ -270,10 +268,8 @@ $(document).ready(function(){
     /*processMessage(y.messages[i], true);*/
     /*}*/
     }else{
-      console.log(y.time);
       processMessage(y, true);
     }
-    console.log("processing:", y);
   }
   var objDiv = document.getElementById("chat");
   objDiv.scrollTop = objDiv.scrollHeight;
@@ -503,7 +499,6 @@ $(document).ready(function(){
     if(message.data=='1'){ return; }
     //var msgs = $.parseJSON(message.data);
     var jsonMessage = $.parseJSON(message.data)
-    console.log(message,jsonMessage);
     processMessage(jsonMessage, false);
     /*if( jsonMessage.type == 'chat' && countmsgs){*/
     /*newMessageCount++;*/
