@@ -27,7 +27,7 @@ var msggen = new msgs.MessageGenerator();
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
 var error404path = path.join(process.cwd(), "/static/404.html");   
 
-var templates = new TemplateManager('./templates',['login.html.mu', 'roomchat2.html.mu', 'loggedin.html.mu']);
+var templates = new TemplateManager('./templates',['login.html.mu', 'roomchat2.html.mu', 'loggedin.html.mu', 'roompreview.html']);
 templates.initializeTemplates();
 
 function reloadTemplates(req, res){
@@ -524,8 +524,43 @@ var roomdisplay = function(req, res, qs, matches){//{{{
   var roomName = matches[1]
   var cookies = new Cookies(req, res);
   if( !cookies.get("session") ){
-    utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {room:roomName}); 
-    return;
+    // get the currently playing song
+    // get the 5 most recently played songs
+    redisClient.multi([
+      ['sismember', 'rooms', roomName],
+      ['get','nowplayingid_' + roomName],
+      ["zrevrange", "songs_" + roomName, 0, 5],
+      ['hlen','listeners_' + roomName],
+    ]).exec(function(errz, repliez){
+      if( errz ){
+        utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {room:roomName}); 
+        return;
+      }
+      var isMember = repliez[0];
+      var nowplayingId = repliez[1];
+      var recentSongs = repliez[2];
+      var numlisteners = repliez[3];
+      if(!numlisteners) numlisteners = 0;
+      if( recentSongs ){
+        for(var i=0;i<recentSongs.length;i++){
+          recentSongs[i] = JSON.parse(recentSongs[i]);
+          if( recentSongs[i].meta.pic ){
+            recentSongs[i].meta.pic = encodeURIComponent(recentSongs[i].meta.pic);
+          }
+        }
+      }else{
+        recentSongs = [];
+      }
+      var nowplaying = [];
+      if( nowplayingId == recentSongs[0].songId ){
+        nowplaying = recentSongs.shift()
+      }
+      utilities.sendTemplate(res, templates.getTemplate("roompreview.html"), {room:roomName, recentSongs:recentSongs, nowplaying:nowplaying, numlisteners:numlisteners}); 
+      return;
+    });
+    /*//utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {room:roomName}); */
+    /*utilities.sendTemplate(res, templates.getTemplate("roompreview.html"), {room:roomName}); */
+    /*return;*/
   } // user is not logged in.
   var sessionId = cookies.get("session");
   redisClient.sismember("rooms",roomName, function(err, reply){
@@ -545,7 +580,8 @@ var roomdisplay = function(req, res, qs, matches){//{{{
       if(replies[0] == null || replies[1] == null || replies[2] == null){
         var logincontext = {room:roomName}
         var displayLoginCallback = function(){
-          utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), logincontext); 
+          utilities.sendTemplate(res, templates.getTemplate("roompreview.html"), logincontext); 
+          //utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), logincontext); 
           return;
         }
         if(nowplaying){
