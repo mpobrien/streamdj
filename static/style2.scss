@@ -36,14 +36,15 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 #header{ height:$headerHeight; background-color: #2A2C31;  z-index:1000; }
 #main{ margin-top:0px;}
 .headerlink{
-  @include seriffont;
+  @include sansseriffont;
   margin-top:10px;
   color:#FFFEDF;
-  margin-left:20px;
-  margin-right:20px;
+  font-size:12px;
+  margin-left:25px;
+  margin-right:25px;
 }
 #linkwrapper{
-  padding-top:20px;
+  padding-top:25px;
 }
 
 #logo{

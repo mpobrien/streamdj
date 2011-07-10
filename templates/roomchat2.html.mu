@@ -85,10 +85,10 @@
     </head>
     <body>
       <div id="header" style="color:white">
-        <div id="logo"><img src="/static/ol.png"></div>
+        <div id="logo"><a href="/"><img src="/static/ol.png"></a></div>
         <div id="linkwrapper">
-        <a href="#" class="headerlink" id="faveslink">favorites</a>
-        <a href="/logout/" class="headerlink" >logout</a>
+        <a href="#" class="headerlink" id="faveslink">FAVORITES</a>
+        <a href="/logout/" class="headerlink" >LOGOUT</a>
       </div>
       </div>
       <div id="settingsmenu" class="menuhidden">
