@@ -22,41 +22,35 @@ body {
   float: right; }
 
 #profileimg {
-  padding-right: 20x; }
+  padding-right: 20px; }
 
 #bodywrapper {
   clear: both;
   text-align: center;
   width: 100%; }
   #bodywrapper #leftside {
-    width: 50%;
-    float: left; }
+    padding-bottom: 360px;
+    padding-top: 40px;
+    float: right; }
   #bodywrapper #rightside {
-    text-align: left;
-    padding-left: 30px;
-    width: 40%;
-    float: left; }
+    width: 60%;
+    margin-left: auto;
+    padding-top: 30px; }
 
 .containerheading {
-  font-size: 1.5em;
+  font-size: 1.7em;
+  text-align: center;
   color: white;
+  padding-bottom: 5px;
   text-shadow: 1px 1px #4d4d4d; }
 
-.userinfo {
-  border-radius: 10px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  width: 300px;
-  right: 0px;
-  float: right;
-  background-color: #42454c;
-  padding: 10px;
-  margin-bottom: 20px; }
+#userinfo {
+  width: 200px;
+  padding-right: 90px;
+  margin-bottom: 10px; }
 
 #footer {
-  padding-top: 30px;
   clear: both;
-  padding-top: 70px;
   text-align: center;
   font-size: 13px; }
 
@@ -64,7 +58,12 @@ body {
   clear: both; }
 
 #roomcreatewrapper {
-  left: 0px; }
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  width: 275px;
+  background-color: #42454c;
+  padding: 20px; }
 
 .listenercount {
   font-size: .9em;

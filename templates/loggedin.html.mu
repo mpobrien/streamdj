@@ -32,7 +32,6 @@
     <div id="logo">
        <img src="/static/ol_med.png">
     </div>
-
     <div id="bodywrapper">
       {{#userinfo}}
         <div id="leftside">
@@ -48,17 +47,17 @@
       {{/userinfo}}
       <div id="rightside">
         <div id="roomcreatewrapper">
-          <div class="containerheading">Create or Join a Room</div>
-          <div class="formcontainer">
+          <div class="containerheading">Create a Room</div>
+          <div class="formcontainer" style="text-align:center";>
             <form action="/room" method="POST">
               <label for="roomname">Room Name:</label>
               <input type="text" name="roomname" id="roomname" placeholder="room name" value="{{roomname}}" />
-              <div style="width:200px;margin-left:auto;margin-right:auto">
+              <div style="width:200px; margin-left:40px;">
                 <input type="submit" id="go" value="Go!"/>
               </div>
             </form>
           </div>
-          <div style="font-size:.9em">
+          <div style="padding-top:20px; font-size:.9em">
             For the friendless and the early adopters -<br/> join us in the <a href="/dirtybeaches">public room</a>!
           </div>
         </div>

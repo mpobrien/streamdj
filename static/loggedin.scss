@@ -60,7 +60,7 @@ body{
 }
 
 #profileimg{
-  padding-right:20x;
+  padding-right:20px;
 }
 
 #bodywrapper{
@@ -68,40 +68,35 @@ body{
   text-align:center;
   width:100%;
 
-  #leftside{
-    width:50%;
-    float:left;
+#leftside{
+    padding-bottom:360px;
+    padding-top:40px;
+    float:right; 
+}
 
-  }
-
-  #rightside{
-    text-align:left;
-    padding-left:30px;
-    width:40%;
-    float:left;
+#rightside{
+    width:60%;
+    margin-left: auto;
+    padding-top:30px;
   }
 }
 
 .containerheading{
-  font-size:1.5em;
+  font-size:1.7em;
+  text-align:center;
   color:white;
+  padding-bottom:5px;
   text-shadow: 1px 1px darken(white, 70%);
 }
 
-.userinfo{
-  @include rounded(10px);
-  width:300px;
-  right:0px;
-  float:right;
-  background-color: lighten($backgroundColor, 10%);
-  padding:10px;
-  margin-bottom:20px;
+#userinfo{
+  width:200px;
+  padding-right:90px;
+  margin-bottom:10px;
 }
 
 #footer{
-padding-top:30px;
   clear:both;
-  padding-top:70px;
   text-align:center;
   font-size:13px;
 }
@@ -111,7 +106,11 @@ padding-top:30px;
 }
 
 #roomcreatewrapper{
-  left:0px;
+  @include rounded(10px);
+  width:275px;
+  background-color: lighten($backgroundColor, 10%);
+  padding:20px;
+  
 }
 
 .listenercount{
