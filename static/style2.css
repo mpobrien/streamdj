@@ -133,6 +133,8 @@
   padding-bottom: 10px; }
   #currentfile #nowPlayingInfo {
     width: 242px; }
+  #currentfile .np_uploaderinfo {
+    font-size: .6em; }
   #currentfile .meta {
     font-style: italic;
     color: #888;
@@ -142,8 +144,7 @@
     top: 55px;
     width: 128px; }
   #currentfile .artistinfo, #currentfile .title, #currentfile .albuminfo {
-    margin-top: 6px;
-    margin-bottom: 6px; }
+    margin-top: 6px; }
   #currentfile .artistinfo, #currentfile .albuminfo {
     font-size: .8em; }
 

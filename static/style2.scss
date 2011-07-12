@@ -191,6 +191,8 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
     width:$leftColWidth - $playingThumbnailWidth;
   }
 
+  .np_uploaderinfo{ font-size:.6em; }
+
   .meta{
     font-style:italic;
     color:#888;
@@ -204,7 +206,6 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 
   .artistinfo, .title, .albuminfo{
     margin-top:6px;
-    margin-bottom:6px;
   }
 
   .artistinfo, .albuminfo{
