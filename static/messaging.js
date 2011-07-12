@@ -1,5 +1,6 @@
 /* Utility function for padding zeros into numeric strings. */
 var nowplayingMeta = null;
+var nowplayingMessage = null;
 var lastStoppedTime = null;
 var makeText = function(){
   return document.createTextNode(' ');
@@ -53,7 +54,6 @@ var MessageHandlers = {
   },//}}}
 
   "join"   : function(message, isStatic){//{{{
-    console.log("yoooooo joined");
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"')
     //newMessageHtml.attr("id",message["id"]);
@@ -108,7 +108,6 @@ var MessageHandlers = {
     $('#currentfile_opts').hide()
     $('#visualization').hide();
     $('#song_' + songId).hide('slide', function(){$(this).remove()} );
-    console.log("nulling");
     nowplayingId = null;
     nowplayingMeta = null;
     $('#albumart').html('')
@@ -148,13 +147,12 @@ var MessageHandlers = {
         .append($('<div class="clearer"></div>'))).appendTo("#chat");
     var nowPlayingInfo;
     nowplayingMeta = message.meta;
+    nowplayingMessage = message;
     var songId = message["songId"]
     nowplayingId = songId;
     $('#currentfile').html('<div id="albumartcol"><div id="currentfile_opts"><div class="optcontrol heartbox off" id="nowplaying_favorite"></div><div class="optcontrol c_off" id="settingscog">&nbsp;</div></div><div id="nowplayingart"></div></div>')
     $('#nowplaying_favorite').data("songId", songId); 
     $('#nowplaying_skip').data("songId", songId); 
-    console.log(message);
-    console.log(message['uid'], uidkey);
     if(message['uid'] == uidkey) $('#nowplaying_skip').removeClass('disabled');
     else $('#nowplaying_skip').addClass('disabled')
 
@@ -171,6 +169,10 @@ var MessageHandlers = {
           .append( $('<span class="meta">from</span>').append(makeText()))
           .append( $('<span class="albumname"></span>').text(message.meta['Album'])))
     }
+    nowPlayingInfo
+      .append( $('<div class="np_uploaderinfo"></div>')
+        .append( $('<span class="meta">added by</span>').append(makeText()))
+        .append( $('<span class="uploader"></span>').text(message['from'])))
     if( !isStatic || (songId == nowplayingart)){
       if( message.meta && ('pic' in message.meta)){
         albumartDiv = $('<img></img>').attr("width","128")
