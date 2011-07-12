@@ -96,6 +96,7 @@ body{
 }
 
 #footer{
+  @include sansseriffont;
   clear:both;
   text-align:center;
   font-size:13px;

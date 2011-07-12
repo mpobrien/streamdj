@@ -69,7 +69,7 @@
             The coolest way to share</br> music with your friends.  
           </div>
           <div id="blurb">
-            OUTLOUD.FM lets you create rooms where you can chat <br> and listen to music with your friends with a real time <br>collaborative playlist. Just sign in, pick a room name, and<br> start uploading music! 
+            OUTLOUD.FM lets you create rooms where you can <br>chat and listen to music with your friends using<br> a real time collaborative playlist. Just sign in, pick <br>a room name, and start uploading music! 
           </div>
           <div class="slideshow" id="flavor_1"></div>
           <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
@@ -101,7 +101,7 @@
             <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a> -or- <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
           </div>
           <div id="disclaimer">
-            We will <b>NEVER</b> publish to your account feed<br/> without you explicitly choosing to do so.
+            We will <b>NEVER</b> publish to your account feed without </br> you explicitly choosing to do so.
           </div>
         {{/userinfo}}
       </div>

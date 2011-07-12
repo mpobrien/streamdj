@@ -50,6 +50,7 @@ body {
   margin-bottom: 10px; }
 
 #footer {
+  font-family: Helvetica, sansserif;
   clear: both;
   text-align: center;
   font-size: 13px; }

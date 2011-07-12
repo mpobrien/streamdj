@@ -3,7 +3,7 @@ $leftColWidth: 370px;
 $volumebarColor: black;
 $leftColPadding: 10px;
 $centerColLeftPad: 20px;
-$centerColWidth: 800px;
+$centerColWidth: 780px;
 $playingThumbnailWidth: 128px;
 $volumebarBorderColor: lighten(#3e4147, 40%);
 
@@ -425,7 +425,7 @@ a.delsong:inactive{
 
   .chatmessage{
     @include sansseriffont;
-    font-size:14px;
+    font-size:12px;
     padding:3px;
   }
 
@@ -433,11 +433,11 @@ a.delsong:inactive{
     @include sansseriffont;
     .from{
       font-weight:bold;
-      padding-right:7px;
-      font-size:14px;
+      padding-right:8px;
+      font-size:12px;
     }
     .message{
-      font-size:14px;
+      font-size:12px;
     }
   }
 
@@ -456,7 +456,7 @@ a.delsong:inactive{
   .songmessage{
     margin-top:7px;
     @include seriffont;
-    font-size:16px;
+    font-size:15px;
     padding-left:3px;
     padding-top:5px;
     padding-bottom:5px;
@@ -522,7 +522,7 @@ a.delsong:inactive{
 
 #rightside{
   top:$headerHeight;
-  left:$leftColWidth + $leftColPadding + $centerColWidth + 30px;
+  left:$leftColWidth + $leftColPadding + $centerColWidth + 20px;
   right:0px;
   position:absolute;
   bottom:0px;
