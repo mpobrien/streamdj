@@ -12,14 +12,13 @@ body {
   color: #fffedf; }
 
 #logo {
-  text-align: left;
+  text-align: center;
   padding-bottom: 60px;
   padding-top: 40px;
   padding-left: 90px; }
 
 #logout {
-  font-size: .8em;
-  float: right; }
+  font-size: .8em; }
 
 #profileimg {
   padding-right: 20px; }
@@ -29,9 +28,7 @@ body {
   text-align: center;
   width: 100%; }
   #bodywrapper #leftside {
-    padding-bottom: 360px;
-    padding-top: 40px;
-    float: right; }
+    padding-top: 40px; }
   #bodywrapper #rightside {
     width: 60%;
     margin-left: auto;
