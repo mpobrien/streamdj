@@ -108,7 +108,7 @@ var fileChanged = function(roomName, oldfile, newfile){
   redisClient2.incr("roommsg_" + roomName, function(er, reply){ //TODO check errors
     console.log("reply",reply)
     var msgId = reply;
-    var startedMsg = msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta, msgId);
+    var startedMsg = msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta,newfile.uid, msgId);
     var message = JSON.stringify( startedMsg )
     var msg = {"oldfile":oldfile, "newfile":newfile, "roomname":roomName, "msgId":msgId};
     redisClient2.publish("file-changed", roomName + " " + msgId + " " + JSON.stringify(msg));
