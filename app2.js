@@ -594,7 +594,7 @@ var roomdisplay = function(req, res, qs, matches){//{{{
             .exec(function(err3, reply){
               var isLiked = reply[0];
               //var isVoted = reply[1];
-              var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying, liked:isLiked, lastMsgId:lastMsgId}
+              var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying, liked:isLiked}
               display_form(req, res, context);
             });
           }else{
@@ -612,7 +612,7 @@ function display_form(req, res, context){//{{{
   var roomname = context.roomname;
   var nowplaying = context.nowplaying;
   var liked = context.liked;
-  var lastMsgId = context.lastMsgId;
+  //var lastMsgId = context.lastMsgId;
   
   //context:{userinfo, roomname, nowplaying, liked, voted}
   res.statusCode = 200
@@ -667,7 +667,7 @@ function display_form(req, res, context){//{{{
       }
       result.nowPlaying = (nowplaying!=null) ? nowplaying : 0;
       if( liked ) result.liked = true;
-      result.lastMsgId = lastMsgId;
+      //result.lastMsgId = lastMsgId;
       result.songs = latestSongs;
       result.chats = latestChats;
       result.queue = queueinfo;
