@@ -16,6 +16,14 @@
           var nowplayingId = null;
           var songs = [{{{songs}}}]
           var chats = [{{{chats}}}]
+          var faveCounts = {{{favCounts}}}
+          var songIds = {{{songIds}}}
+          var countsDict = {}
+          for(var i=0;i<songIds.length;i++){
+            if( songIds[i] != null ){
+              countsDict[songIds[i]] = faveCounts[i];
+            }
+          }
           var msgs = songs.concat(chats);
           msgs.sort(function(a,b){
             return b.time - a.time;
