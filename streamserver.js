@@ -62,10 +62,10 @@ function prepareStartup(){
           if( true ){
             var newstreamroom = new streamRoom.StreamRoom(rn, redisClient2);
             newstreamroom.onEmpty = function(name){
-              var room = rooms[name];
-              if(!room.getNowPlaying()){
-                delete rooms[name];
-              }
+            /*var room = rooms[name];*/
+            /*if(!room.getNowPlaying()){*/
+            /*delete rooms[name];*/
+            /*}*/
             }
             newstreamroom.on("file-end", fileEnd);
             newstreamroom.on("file-change", fileChanged);
@@ -164,10 +164,11 @@ var streamingServer = http.createServer(
         console.log("setting up new room");
         var newroom = new streamRoom.StreamRoom(roomName, redisClient2);
         newroom.onEmpty = function(name){
-          var room = rooms[name];
-          if(!room.getNowPlaying()){
-            delete rooms[name];
-          }
+        /*var room = rooms[name];*/
+        /*if(room*/
+          /*if(!room.getNowPlaying()){*/
+          /*delete rooms[name];*/
+          /*}*/
         }
         newroom.on("file-end", fileEnd);
         newroom.on("file-change", fileChanged);
