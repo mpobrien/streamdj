@@ -550,8 +550,8 @@ var roomdisplay = function(req, res, qs, matches){//{{{
       ["zrevrange", "songs_" + roomName, 0, 5],
       ['hlen','listeners_' + roomName],
     ]).exec(function(errz, repliez){
-      if( errz || !repliez || !repliez[0]){
-        utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {room:roomName}); 
+      if( errz || !repliez){
+        utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {room:''}); 
         return;
       }else{
         if( !repliez[0] ) {
