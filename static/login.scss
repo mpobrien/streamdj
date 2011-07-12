@@ -13,6 +13,11 @@ $sectionHeadingColor: #3E4147;
 $sectionHeadingShadow: lighten(#3E4147,50%);
 $sectionHeadingBorder: black;
 
+@mixin seriffont{
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+}
+
+
 @mixin rounded($radius){
   $radius: 10px;
   border-radius: $radius;
@@ -70,7 +75,10 @@ top:40px;
 
 #headline{
   font-size:29px;
+<<<<<<< HEAD
   font-family: Helvetica, sansserif; 
+=======
+>>>>>>> soundcloud stuff
   text-align:center;
   position:absolute;
   left:200px;
@@ -78,8 +86,12 @@ top:40px;
 }
 
 #blurb{
+<<<<<<< HEAD
   font-size:15px;
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+=======
+  font-size:14px;
+>>>>>>> soundcloud stuff
   text-align:left;
   position:absolute;
   line-height: 150%;
@@ -130,9 +142,13 @@ padding-bottom:-10px;
 }
 
 body{
+  @include seriffont;
   background-color: $backgroundColor;
   color:$textColor;
+<<<<<<< HEAD
   font-family:Helvetica;
+=======
+>>>>>>> soundcloud stuff
 }
 
 .dotfm{
@@ -151,7 +167,10 @@ a:hover{
 
 
 #info{
+<<<<<<< HEAD
   font-family:Helvetica;
+=======
+>>>>>>> soundcloud stuff
   text-align:center;
   font-size:24px;
   color:#46433A
