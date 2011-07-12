@@ -12,23 +12,25 @@ body {
   color: #fffedf; }
 
 #logo {
-  text-align: center;
-  padding-bottom: 60px;
+  text-align: left;
+  padding-bottom: 5px;
   padding-top: 40px;
   padding-left: 90px; }
 
 #logout {
-  font-size: .8em; }
+  font-size: .9em;
+  margin-left: 50px; }
 
 #profileimg {
-  padding-right: 20px; }
+  padding-right: 10px; }
 
 #bodywrapper {
   clear: both;
   text-align: center;
   width: 100%; }
   #bodywrapper #leftside {
-    padding-top: 40px; }
+    font-family: Helvetica;
+    font-size: 12px; }
   #bodywrapper #rightside {
     width: 60%;
     margin-left: auto;
@@ -42,6 +44,7 @@ body {
   text-shadow: 1px 1px #4d4d4d; }
 
 #userinfo {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
   width: 200px;
   padding-right: 90px;
   margin-bottom: 10px; }
@@ -50,7 +53,8 @@ body {
   font-family: Helvetica, sansserif;
   clear: both;
   text-align: center;
-  font-size: 13px; }
+  font-size: 13px;
+  padding-top: 40px; }
 
 .clearer {
   clear: both; }

@@ -48,18 +48,19 @@ body{
 
 
 #logo{
-  text-align:center;
-  padding-bottom:60px;
+  text-align:left;
+  padding-bottom:5px;
   padding-top:40px;
   padding-left:90px;
 }
 
 #logout{
-  font-size:.8em;
+  font-size:.9em;
+  margin-left:50px;
 }
 
 #profileimg{
-  padding-right:20px;
+  padding-right:10px;
 }
 
 #bodywrapper{
@@ -68,14 +69,15 @@ body{
   width:100%;
 
 #leftside{
-    padding-top:40px;
+  font-family:Helvetica; 
+  font-size:12px;
 }
 
 #rightside{
     width:60%;
     margin-left: auto;
     padding-top:30px;
-  }
+ }
 }
 
 .containerheading{
@@ -87,6 +89,7 @@ body{
 }
 
 #userinfo{
+  @include seriffont;
   width:200px;
   padding-right:90px;
   margin-bottom:10px;
@@ -97,6 +100,7 @@ body{
   clear:both;
   text-align:center;
   font-size:13px;
+  padding-top:40px;
 }
 
 .clearer{
