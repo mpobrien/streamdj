@@ -520,6 +520,24 @@ var authdone_facebook = function(req, res, qs){//{{{
   });
 }//}}}
 
+var prepareRoomPreview = function(roomName, recentSongs, numlisteners, nowplayingid, res){
+  if(!numlisteners) numlisteners = 0;
+  if( !recentSongs ) recentSongs = [];
+  for(var i=0;i<recentSongs.length;i++){
+    recentSongs[i] = JSON.parse(recentSongs[i]);
+    if( recentSongs[i].meta.pic ){
+      recentSongs[i].meta.pic = encodeURIComponent(recentSongs[i].meta.pic);
+    }
+  }
+  var nowplaying = [];
+  if( nowplayingid == recentSongs[0].songId ){
+    nowplaying = recentSongs.shift()
+  }
+  utilities.sendTemplate(res, templates.getTemplate("roompreview.html"), {room:roomName, recentSongs:recentSongs, nowplaying:nowplaying, numlisteners:numlisteners}); 
+  return;
+}
+
+
 var roomdisplay = function(req, res, qs, matches){//{{{
   var roomName = matches[1]
   var cookies = new Cookies(req, res);
@@ -532,92 +550,61 @@ var roomdisplay = function(req, res, qs, matches){//{{{
       ["zrevrange", "songs_" + roomName, 0, 5],
       ['hlen','listeners_' + roomName],
     ]).exec(function(errz, repliez){
-      if( errz ){
+      if( errz || !repliez || !repliez[0]){
         utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {room:roomName}); 
         return;
-      }
-      var isMember = repliez[0];
-      var nowplayingId = repliez[1];
-      var recentSongs = repliez[2];
-      var numlisteners = repliez[3];
-      if(!numlisteners) numlisteners = 0;
-      if( recentSongs ){
-        for(var i=0;i<recentSongs.length;i++){
-          recentSongs[i] = JSON.parse(recentSongs[i]);
-          if( recentSongs[i].meta.pic ){
-            recentSongs[i].meta.pic = encodeURIComponent(recentSongs[i].meta.pic);
-          }
-        }
       }else{
-        recentSongs = [];
-      }
-      var nowplaying = [];
-      if( nowplayingId == recentSongs[0].songId ){
-        nowplaying = recentSongs.shift()
-      }
-      utilities.sendTemplate(res, templates.getTemplate("roompreview.html"), {room:roomName, recentSongs:recentSongs, nowplaying:nowplaying, numlisteners:numlisteners}); 
-      return;
-    });
-    /*//utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {room:roomName}); */
-    /*utilities.sendTemplate(res, templates.getTemplate("roompreview.html"), {room:roomName}); */
-    /*return;*/
-  } // user is not logged in.
-  var sessionId = cookies.get("session");
-  redisClient.sismember("rooms",roomName, function(err, reply){
-    if(reply==0){
-      console.log("user requested unknown room: ", roomName);
-      res.end("room not found :(");
-      return;
-    }
-    redisClient.mget("session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name",
-                     "session_"+sessionId+"_name", "session_"+sessionId+"_profilepic",
-                     "session_"+sessionId+"_service", 
-                     "nowplayingid_" + roomName, "roommsg_" + roomName,
-                     function(err2, replies){
-      //TODO;check for err.
-      var nowplaying = replies[5];
-      var lastMsgId = replies[6];
-      if(replies[0] == null || replies[1] == null || replies[2] == null){
-        var logincontext = {room:roomName}
-        var displayLoginCallback = function(){
-          utilities.sendTemplate(res, templates.getTemplate("roompreview.html"), logincontext); 
-          //utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), logincontext); 
+        if( !repliez[0] ) {
+          res.end("room not found :(");
           return;
         }
-        if(nowplaying){
-          redisClient.get("s_" + nowplaying, function(err3, reply3){
-            if(!err3 && reply3){
-              logincontext.songInfo = JSON.parse(reply3);
-            }
-            displayLoginCallback();
-          });
-        }else{
-          displayLoginCallback();
-        }
+        prepareRoomPreview(roomName, repliez[2], repliez[3], repliez[1], res);
         return;
       }
-      var userinfo = {user_id:replies[0], screen_name:replies[1], name:replies[2], pic:replies[3], service:replies[4]}
-      console.log(replies[2], "loaded page for room", roomName);
-      var uidkey = userinfo.service + "_" + userinfo.user_id;
-      redisClient.zadd("roomvisits_" + uidkey, new Date().getTime(), roomName ) //key, score, member 
-      if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
-        redisClient.multi([
-         ["zscore",   "fave_" + uidkey,      nowplaying],
-         //["sismember","votes_" + nowplaying, uidkey]
-        ]).exec(
-          function(err3, reply){
-            var isLiked = reply[0];
-            //var isVoted = reply[1];
-            var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying, liked:isLiked, lastMsgId:lastMsgId}
+    });
+  }else{
+    var sessionId = cookies.get("session");
+    redisClient.sismember("rooms",roomName, function(err, reply){
+      if(reply==0){
+        console.log("user requested unknown room: ", roomName);
+        res.end("room not found :(");
+        return;
+      }
+      redisClient.multi([
+        ["mget", "session_"+sessionId+"_user_id", "session_"+sessionId+"_screen_name",
+         "session_"+sessionId+"_name", "session_"+sessionId+"_profilepic",
+         "session_"+sessionId+"_service", 
+         "nowplayingid_" + roomName],
+        ["zrevrange", "songs_" + roomName, 0, 5],
+        ['hlen','listeners_' + roomName],
+      ]).exec(function(errx, repliex){
+        var nowplaying = repliex[0][5];
+        if(repliex[0][0] == null || repliex[0][1] == null || repliex[0][2] == null){
+          // not logged in
+          prepareRoomPreview(roomName, repliex[1], repliex[2], repliex[0][5], res);
+          return;
+        }else{
+          // logged in
+          var userinfo = {user_id:repliex[0][0], screen_name:repliex[0][1], name:repliex[0][2], pic:repliex[0][3], service:repliex[0][4]}
+          console.log(repliex[2], "loaded page for room", roomName);
+          var uidkey = userinfo.service + "_" + userinfo.user_id;
+          redisClient.zadd("roomvisits_" + uidkey, new Date().getTime(), roomName ) //key, score, member 
+          if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
+            redisClient.multi([ ["zscore",   "fave_" + uidkey,      nowplaying], ])
+            .exec(function(err3, reply){
+              var isLiked = reply[0];
+              //var isVoted = reply[1];
+              var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying, liked:isLiked, lastMsgId:lastMsgId}
+              display_form(req, res, context);
+            });
+          }else{
+            var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying}
             display_form(req, res, context);
           }
-        );
-      }else{
-        var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying, lastMsgId:lastMsgId}
-        display_form(req, res, context);
-      }
-    })
-  });
+        }
+      })
+    });
+  }
 }//}}}
 
 function display_form(req, res, context){//{{{
@@ -711,7 +698,6 @@ var like_unlike = function(req, res, qs, matches){//{{{
   getUserInfo(sessionId, function(err, userinfo){
     if(err) return; //TODO handle/log error.  //TODO make sure user name is valid, + not empyy
     var uidkey = userinfo.service + "_" + userinfo.user_id
-    console.log(uidkey)
     if( matches[1] == 'like'){
       console.log(userinfo.name, "likes", songId);
       redisClient.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member 
