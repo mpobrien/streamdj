@@ -55,6 +55,9 @@
               var objDiv = document.getElementById("chat");
               objDiv.scrollTop = objDiv.scrollHeight;
             });
+            if( msgs.length == 0 ){
+              appendGreeting();
+            }
             setTimeout(function(){
                 soundManager.onready(startStream);
               }, 100);

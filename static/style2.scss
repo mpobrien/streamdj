@@ -563,3 +563,9 @@ a.delsong:inactive{
 .clearer{
   clear:both;
 }
+
+.greeting{
+  @include seriffont;
+  text-align:center;
+  line-height:24px;
+}

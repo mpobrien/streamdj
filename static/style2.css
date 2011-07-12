@@ -488,3 +488,8 @@ a.delsong:inactive {
 
 .clearer {
   clear: both; }
+
+.greeting {
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  text-align: center;
+  line-height: 24px; }
