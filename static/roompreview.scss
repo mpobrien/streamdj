@@ -68,7 +68,7 @@ body{
 
 #nowplaying, #recentsongs{
   width:500px;
-  text-align:left;
+  text-align:center;
   margin-left:auto;
   margin-right:auto;
 }
@@ -78,13 +78,13 @@ body{
 }
 
 .artspacer{
-  width:64px;
+  width:30px;
   height:64px;
   float:left;
 }
 .nowplaying_info{
-  float:left;
-  padding-left:24px;
+  text-align:center;;
+  padding-left:12px;
 }
 
 .npheading{

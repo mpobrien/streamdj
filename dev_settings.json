@@ -1,6 +1,6 @@
 {
   "homeurl":"http://dev.outloud.fm",
-  "uploadDirectory":"/home/mike/uploaded",
+  "uploadDirectory":"/Users/steven/Projects/OutloudMusic",
   "albumart_dir":"/static/art/",
   "port":80,
   "domain":"dev.outloud.fm",
