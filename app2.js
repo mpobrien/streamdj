@@ -586,7 +586,7 @@ var roomdisplay = function(req, res, qs, matches){//{{{
         }else{
           // logged in
           var userinfo = {user_id:repliex[0][0], screen_name:repliex[0][1], name:repliex[0][2], pic:repliex[0][3], service:repliex[0][4]}
-          console.log(repliex[2], "loaded page for room", roomName);
+          console.log(repliex[0][1], "loaded page for room", roomName);
           var uidkey = userinfo.service + "_" + userinfo.user_id;
           redisClient.zadd("roomvisits_" + uidkey, new Date().getTime(), roomName ) //key, score, member 
           if( nowplaying ){ // this is bad spaghetti code. clean this up. TODO
@@ -662,8 +662,8 @@ function display_form(req, res, context){//{{{
         var queueItem = JSON.parse(currentQueue[i]);
         if(queueItem.uid && queueItem.uid == uidkey){
           queueItem.mine = true;
-          queueinfo.push(queueItem);
         }
+        queueinfo.push(queueItem);
       }
       result.nowPlaying = (nowplaying!=null) ? nowplaying : 0;
       if( liked ) result.liked = true;
