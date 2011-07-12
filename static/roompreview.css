@@ -7,8 +7,10 @@ body {
   text-align: center; }
 
 #logo {
-  text-align: center;
-  padding-bottom: 50px; }
+  text-align: left;
+  padding-bottom: 70px;
+  padding-left: 100px;
+  padding-top: 30px; }
 
 #loginlinks {
   line-height: 24px; }
@@ -23,7 +25,8 @@ body {
 
 #greeting {
   padding: 24px;
-  font-size: 30px; }
+  font-size: 30px;
+  color: #DFBA69; }
 
 .divider {
   text-align: center;
@@ -44,16 +47,17 @@ body {
   margin-right: auto; }
 
 .nowplaying_art {
-  float: left; }
+  float: left;
+  padding-right: 10px;
+  padding-left: 90px; }
 
 .artspacer {
-  width: 30px;
+  width: 64px;
   height: 64px;
   float: left; }
 
 .nowplaying_info {
-  text-align: center;
-  padding-left: 12px; }
+  text-align: left; }
 
 .npheading {
   padding: 20px;
