@@ -762,6 +762,7 @@ var skip = function(req, res, qs, matches){
     redisClient.get("nowplaying_" + roomname, function(err2, reply2){
       var songInfo = JSON.parse(reply2)
       if(songInfo.songId != songId) return; // song ID doesn't match currently playing song.
+      if(songInfo.uid != uidkey) return;
       console.log("publishing");
       redisClient.publish("skipnow", roomname + " " + songId);
     });
