@@ -22,9 +22,9 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
   
-      var rooms = {{{rooms}}};
-      var roomcounts = {{{counts}}};
-      var nowplayingsongs = {{{songs}}};
+      var rooms = [];
+      var roomcounts = [] ;
+      var nowplayingsongs = [];
 
     </script>
   </head>
