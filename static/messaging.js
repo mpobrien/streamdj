@@ -17,18 +17,25 @@ var makeTimestamp = function(rawtime){
 
 var MessageHandlers = {
 
-  "chat"   : function(message, isStatic) {//{{{
-
-    var from = message['from']
-    var body = message['body']
-    var time = message['time']
-    var newMessageHtml = $('<div class="chatmessage"></div>"').attr("id",message["id"])
-                          .append( $('<div class="timestamp"></div>').text(makeTimestamp(time)) )
-                          .append( $('<span class="sendername"></span>').text(from + ":") )
-                          .append( $('<span class="messagebody"></span>').html(linkify(body)) )
-                          .appendTo("#chat");
-    var objDiv = document.getElementById("chat");
-    objDiv.scrollTop = objDiv.scrollHeight;
+  "liked"   : function(message, isStatic) {//{{{
+    console.log(message);
+    var songDiv = $('#s_' + message.songId);
+    if(!songDiv) return;
+    console.log("yo");
+    favCounter = songDiv.find('.favcount');
+    var countNum = message.body;
+    var innerText = (countNum == 1 ? countNum + ' person favorited this': countNum + ' people favorited this')
+    if( favCounter.length ){
+      console.log(innerText);
+      console.log(favCounter);
+      favCounter.text(innerText); 
+    }else{
+      var newfavcount =  $('<div class="favcount"></div>').text(innerText).hide(); 
+      songDiv.find('.feed_uploader_info').after(newfavcount);
+      newfavcount.fadeIn();
+      var objDiv = document.getElementById("chat");
+      objDiv.scrollTop = objDiv.scrollHeight;
+    }
   },//}}}
 
   "enq"    : function(message, isStatic){//{{{
@@ -134,7 +141,15 @@ var MessageHandlers = {
       albumartDiv = $('<div class="albumartspacer">&nbsp;</div>"')
     }
     albumartDiv.appendTo('#currentfile')
-    $('<div class="songmessage">')
+    var songId = message["songId"]
+    var favCount = null;
+    if( ('favecount_' + songId) in countsDict ){
+      countNum = countsDict['favecount_' + songId]
+      if(countNum > 0 ){
+        favCount = $('<div class="favcount"></div>').text(countNum == 1 ? countNum + ' person favorited this': countNum + ' people favorited this');
+      }
+    }
+    $('<div class="songmessage" id="s_' + songId + '">')
       .append($('<div class="timestamp"></div>"').text(makeTimestamp(message['time'])))
       .append(albumartDiv)
       .append($('<div></div>')
@@ -145,10 +160,11 @@ var MessageHandlers = {
         .append($('<div class="feed_uploader_info"></div>')
           .append($('<span class="meta">added by</span>').append(makeText()))
           .append($('<span class="uploader"></span>').text(message['from']).append(makeText())))
-        .append($('<div class="clearer"></div>'))).appendTo("#chat");
+        .append(favCount)
+        .append($('<div class="clearer"></div>')))
+      .appendTo("#chat");
     var nowPlayingInfo;
     nowplayingMeta = message.meta;
-    var songId = message["songId"]
     nowplayingId = songId;
     $('#currentfile').html('<div id="albumartcol"><div id="currentfile_opts"><div class="optcontrol heartbox off" id="nowplaying_favorite"></div><div class="optcontrol c_off" id="settingscog">&nbsp;</div></div><div id="nowplayingart"></div></div>')
     $('#nowplaying_favorite').data("songId", songId); 
