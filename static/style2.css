@@ -416,6 +416,13 @@ a.delsong:inactive {
       font-style: italic; }
     #chat .songmessage .feed_uploader_info .uploader {
       font-size: .9em; }
+  #chat .favcount {
+    background: url("/static/heartsmall.png") no-repeat;
+    background-position: 0% 50%;
+    float: left;
+    padding-left: 12px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: .8em; }
   #chat .albumart {
     float: left;
     padding-right: 8px; }

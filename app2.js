@@ -92,15 +92,17 @@ pubsubClient.subscribe("file-queued");
 pubsubClient.subscribe("queueremove");
 pubsubClient.subscribe("userjoined");
 pubsubClient.subscribe("userleft");
+pubsubClient.subscribe("userliked");
 pubsubClient.on("message", function(channel, msg){
-  //console.log(channel, msg);
   var firstSpace =  msg.indexOf(" ");
   var secondSpace = msg.indexOf(" ", firstSpace+1);
   var roomname = msg.substring(0, firstSpace);
   var msgId = msg.substring(firstSpace+1, secondSpace);
   var room = rooms[roomname];
   if( !room ) return;
-  if(channel == 'chatmessage'){
+  if(channel == 'userliked'){
+    broadcastToRoom(room, msg.substr(secondSpace+1));
+  } if(channel == 'chatmessage'){
     broadcastToRoom(room, msg.substr(secondSpace+1));
     //room.broadcast(msg.substr(secondSpace+1), msgId);
   }else if(channel == 'userjoined'){
@@ -627,13 +629,14 @@ function display_form(req, res, context){//{{{
     }
     redisClient.multi( [
       ["zrevrange", "chats_" + roomname, 0, 50],
-      ["zrevrange", "songs_" + roomname, 0, 50],
+      ["zrevrange", "songs_" + roomname, 0, 30],
       ["zrange", "roomqueue_" + roomname, 0, 30]
     ]).exec(function(errz, replies){
       var latestChats = replies[0];
       var latestSongs = replies[1];
       var currentQueue = replies[2];
       var queueinfo = [];
+      if( !latestSongs ) latestSongs = []
       if( !currentQueue) currentQueue = [];
       for(var i=0;i<currentQueue.length;i++){
         var queueItem = JSON.parse(currentQueue[i]);
@@ -648,7 +651,21 @@ function display_form(req, res, context){//{{{
       result.songs = latestSongs;
       result.chats = latestChats;
       result.queue = queueinfo;
-      utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
+      var songIds = [];
+      for(var i=0;i<latestSongs.length;i++){
+        var songInfo = JSON.parse(latestSongs[i]);
+        songIds.push("favecount_" + songInfo.songId);
+      }
+      
+      if( !songIds ){
+        utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
+      }else{
+        redisClient.mget(songIds, function(errz2, replies2){
+          result.songIds = JSON.stringify(songIds);
+          result.favCounts = JSON.stringify(replies2);
+          utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
+        })
+      }
     })
   });
 }//}}}
@@ -678,10 +695,33 @@ var like_unlike = function(req, res, qs, matches){//{{{
     console.log(uidkey)
     if( matches[1] == 'like'){
       console.log(userinfo.name, "likes", songId);
-      redisClient.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member 
+      redisClient.multi([
+        ["zadd","fave_" + uidkey, new Date().getTime(), songId],
+        ["sadd", "favers_" + songId, uidkey],
+        ["scard", "favers_" + songId],
+        ["get","s_" + songId],
+      ]).exec(function(er, r1){
+        var numFavers = r1[2];
+        var songInfo = r1[3];
+        redisClient.set("favecount_" + songId, numFavers);
+        try{
+          var songjson = JSON.parse(songInfo);
+          var outgoingMessage = msggen.liked(songId, numFavers) 
+          console.log("publishing");
+          redisClient.publish("userliked",songjson.room + " -1 " + JSON.stringify(outgoingMessage));
+        }catch(e){};
+      });
     }else{
       console.log(userinfo.name, "unlikes", songId);
       redisClient.zrem("fave_" + uidkey, songId);
+      redisClient.multi([
+        ["zrem","fave_" + uidkey, songId],
+        ["srem", "favers_" + songId, uidkey],
+        ["scard", "favers_" + songId],
+      ]).exec(function(er, r1){
+        var numFavers = r1[2];
+        redisClient.set("favecount_" + songId, numFavers);
+      });
     }
   });
 }//}}}

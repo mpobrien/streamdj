@@ -38,4 +38,8 @@ exports.MessageGenerator = function MessageGenerator(){
     return {"type":"left",'from':who,'body':'', 'uid':uid, 'time':new Date().getTime()}
   }
 
+  this.liked = function(songId, count){
+    return {"type":"liked",'body':count, 'songId':songId, 'time':new Date().getTime()}
+  }
+
 }
