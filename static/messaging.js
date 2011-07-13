@@ -84,7 +84,7 @@ var MessageHandlers = {
       newMessageHtml.appendTo("#chat");
     }
     if($('#user_' + message['uid']).length==0){
-      var newlistener = $('<li></li>');
+      var newlistener = $('<div style="line-height:24px"></div>');
       var listenerInfo = message['uid'].split('_')
       if(listenerInfo[0] == 'tw'){
         var picpath = message['body']
