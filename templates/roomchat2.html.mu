@@ -10,6 +10,8 @@
         <script type="text/javascript" src="/static/simplemodal.js"></script>
         <script type="text/javascript" src="/static/messaging.js"></script>
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/static/soundcloud.player.api.js"></script>
+        <script type="text/javascript" src="/static/soundcloud.js"></script>
 
         <script type="text/javascript">
           var WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
@@ -59,6 +61,7 @@
 
         <script type="text/javascript" src="/static/outloud.js"></script>
         <script type="text/javascript">
+          var currentModal = null;
           $(document).ready(function(){
             $(window).resize(function(){
               var objDiv = document.getElementById("chat");
@@ -69,10 +72,13 @@
             }
             setTimeout(function(){
                 soundManager.onready(startStream);
-              }, 100);
+            }, 100);
             var favoritesopen = false;
             $('#options').click(function(){
               $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
+            });
+            $('#scfindlink').click(function(){                                  
+              $('#soundcloudmodal').modal( {closeHtml:"", overlayClose:true, autoResize:true});
             });
             $('.fbinvite').click(doFbInvite);
             $('.twinvite').click(doTwitterinvite);
@@ -137,6 +143,7 @@
               </div>
              <div id="queueholder">
                <div class="sectionheading" id="queueheading">queue <span class="dragdropcopy">(drag and drop files to add)</span></div>
+               <div style="background-color:#ccc" id="scfindlink">add tracks from soundcloud <img src="http://developers.soundcloud.com/images/cloud.png"/> </div>
                 <div id="queuelisting">
                   {{#queue}}
                     <div class="queuedsong" id="song_{{songId}}">
@@ -181,8 +188,23 @@
 
 
       </div>
+      <div id="soundcloudmodal">
+        <div id="scsearchbanner">
+          <select name="searchtype" id="searchtype">
+            <option value="tracks">Search Tracks</option>
+            <option value="users">Search Users</option>
+          </select>
+          <input type="text" id="user_query" name="user_query"/>
+          <img src="/static/ajax-loader.gif" style="display:none" id="search_spinner" />
+          <div id="searchresults">
+          </div>
+        </div>
     
-    
-    
+      </div>
+      <object height="1" width="100%" id="yourPlayerId" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000">
+        <param name="movie" value="http://player.soundcloud.com/player.swf?url=http%3A%2F%2Fsoundcloud.com%2Fmatas%2Fhobnotropic&amp;enable_api=true&amp;object_id=yourPlayerId&amp;single_active=false"></param>
+        <param name="allowscriptaccess" value="always"></param>
+        <embed allowscriptaccess="always" height="1" src="http://player.soundcloud.com/player.swf?url=http%3A%2F%2Fsoundcloud.com%2Fmatas%2Fhobnotropic&amp;enable_api=true&amp;object_id=yourPlayerId&amp;single_active=false;" type="application/x-shockwave-flash" width="100%" name="yourPlayerId"></embed>
+      </object>
     </body>
 </html>
