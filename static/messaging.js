@@ -203,12 +203,11 @@ var MessageHandlers = {
       .append( $('<div class="np_uploaderinfo"></div>')
         .append( $('<span class="meta">added by</span>').append(makeText()))
         .append( $('<span class="uploader"></span>').text(message['from'])))
-    if( !isStatic || (songId == nowplayingart)){
+    if( !isStatic || (songId == nowplayingstart)){
       if( message.meta && ('pic' in message.meta)){
         albumartDiv = $('<img></img>').attr("width","128")
                         .attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic))
                       .appendTo('#nowplayingart')
-
       }
     }
     $('#currentfile').addClass('playing').removeClass('notplaying');
