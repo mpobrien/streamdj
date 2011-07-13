@@ -18,6 +18,19 @@ var makeTimestamp = function(rawtime){
 
 var MessageHandlers = {
 
+  "chat"   : function(message, isStatic) {//{{{
+    var from = message['from']
+    var body = message['body']
+    var time = message['time']
+    var newMessageHtml = $('<div class="chatmessage"></div>"').attr("id",message["id"])
+                          .append( $('<div class="timestamp"></div>').text(makeTimestamp(time)) )
+                          .append( $('<span class="sendername"></span>').text(from + ":") )
+                          .append( $('<span class="messagebody"></span>').html(linkify(body)) )
+                          .appendTo("#chat");
+    var objDiv = document.getElementById("chat");
+    objDiv.scrollTop = objDiv.scrollHeight;
+  },//}}}
+
   "liked"   : function(message, isStatic) {//{{{
     console.log(message);
     var songDiv = $('#s_' + message.songId);

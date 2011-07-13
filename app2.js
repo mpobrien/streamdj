@@ -94,6 +94,7 @@ pubsubClient.subscribe("userjoined");
 pubsubClient.subscribe("userleft");
 pubsubClient.subscribe("userliked");
 pubsubClient.on("message", function(channel, msg){
+    console.log(channel, msg)
   var firstSpace =  msg.indexOf(" ");
   var secondSpace = msg.indexOf(" ", firstSpace+1);
   var roomname = msg.substring(0, firstSpace);
@@ -685,6 +686,7 @@ function display_form(req, res, context){//{{{
       }else{
         redisClient.mget(songIds, function(errz2, replies2){
           result.songIds = JSON.stringify(songIds);
+          if( !replies2 ) replies2 = []
           result.favCounts = JSON.stringify(replies2);
           utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
         })
