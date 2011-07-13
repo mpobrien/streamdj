@@ -589,3 +589,5 @@ var doTwitterinvite = function(){
     window.open('http://twitter.com/intent/tweet?text=' + escape(message), 'intent', windowOptions + ',width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
   }
 }
+
+

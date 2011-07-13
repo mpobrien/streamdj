@@ -609,8 +609,14 @@ a.delsong:inactive{
 }
 /******** SOUNDCLOUD SHIT ********/
 #searchresults{
+  @include seriffont;
   font-size:12px;
   line-height:22px;
+  height:100%;
+  background-color:white;
+  overflow-y:auto;
+  height:470px;
+  border:1px dotted #aaa;
 }
 img{
   vertical-align:middle;
@@ -630,7 +636,7 @@ img.albumartimg{
   color:#888;
 }
 
-.hover{
+.schover{
   background-color:#eee;
 }
 .notplaying{
@@ -639,11 +645,12 @@ img.albumartimg{
 }
 
 .userresult, .trackresult{
+  text-align:left;
   padding-top:2px;
   padding-bottom:2px;
   cursor:pointer;
 }
-.playing{
+.scplaying{
   border-top:1px solid #888;
   border-bottom:1px solid #888;
   background-color:#efefef;
@@ -652,7 +659,7 @@ span.title{
   padding-left:5px;
 }
 .lilheart{
-  background-image:url('heartsmall.png');
+  background-image:url('/static/heartsmall.png');
   background-position: 0% 50%;
   background-repeat: no-repeat;
   height: 12px;
@@ -665,4 +672,20 @@ span.title{
   font-weight:bold;
   font-family:sans-serif;
   margin-left:4px;
+}
+#soundcloudmodal{
+  border:5px solid #888;
+  display:none;
+  background-color: white;
+  @include rounded(5px);
+  padding:5px;
+  height:500px;
+  width:400px;
+}
+#scsearchbanner{
+  height:15px;
+}
+#yourPlayerId{
+  position:absolute;
+  top:-300px;
 }

@@ -58,6 +58,7 @@ $(document).ready(function(){
     player.api_play();
   });
   $('#user_query').keypress( function(e){
+    console.log("starting search!");
     if(e.keyCode==13 && $(this).val().length > 0 ){
       search($('#searchtype').val());
     } 
@@ -65,12 +66,12 @@ $(document).ready(function(){
 
   $('.userresult').live({
     mouseenter: function(){
-      $(this).addClass("hover");
+      $(this).addClass("schover");
     },
 
     mouseleave: function(){
       if(!$('#settingsmenu').is(':visible')){
-        $(this).removeClass("hover");
+        $(this).removeClass("schover");
       }
     },
     click: function(){
@@ -80,23 +81,23 @@ $(document).ready(function(){
 
   $('.trackresult').live({
     mouseenter: function(){
-      $(this).addClass("hover");
+      $(this).addClass("schover");
     },
 
     mouseleave: function(){
       if(!$('#settingsmenu').is(':visible')){
-        $(this).removeClass("hover");
+        $(this).removeClass("schover");
       }
     },
 
     click:function(){
       if( currentlyPlaying ){
-        $(currentlyPlaying).removeClass('playing').addClass('notplaying')
+        $(currentlyPlaying).removeClass('scplaying').addClass('notplaying')
       }
       console.log("setting", currentlyPlaying)
       currentlyPlaying = this;
       console.log("set", currentlyPlaying)
-      $(this).addClass('playing').removeClass('notplaying');
+      $(this).addClass('scplaying').removeClass('notplaying');
       soundcloud.getPlayer('yourPlayerId').api_load($(this).data('url'));
     }
   });
