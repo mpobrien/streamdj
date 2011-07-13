@@ -1,0 +1,98 @@
+$backgroundColor: #2a2c31;
+$textColor: #fffedf;
+$navbarLinkColor: #fffedf;
+$volumebarColor: #DFBA69;
+$volumebarBorderColor: lighten(#3e4147, 40%);
+$dotfmColor: #DFBA69; 
+$startPlayingMessageColor:#EFC7C5;
+$notecolor: #fffedf;
+$uploadedByColor: black;
+$dragDropFilesColor: black;
+$byfromcolor: #3E4147;
+$sectionHeadingColor: #3E4147; 
+$sectionHeadingShadow: lighten(#3E4147,50%);
+$sectionHeadingBorder: black;
+
+@mixin seriffont{
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+}
+
+@mixin sansseriffont{
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+body{
+  @include seriffont;
+  background-color: $backgroundColor;
+  color:$textColor;
+}
+
+#bodywrapper{
+  text-align:center;
+}
+
+#logo{
+  text-align:center;
+  padding-bottom:50px;
+}
+
+#loginlinks{
+  line-height:24px;
+  img{
+    vertical-align:middle;
+    border:none;
+  }
+}
+.or{
+  font-style:italic;
+  color:darken(white, 50%);
+  padding:10px;
+}
+#greeting{
+  padding:24px;
+  font-size:30px;
+}
+.divider{
+  text-align:center;
+  border-bottom:1px dotted darken(white, 50%);
+  width:500px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.meta{
+  font-style:italic;
+  color:darken(white, 50%);
+  font-size:.8em;
+}
+
+#nowplaying, #recentsongs{
+  width:500px;
+  text-align:left;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.nowplaying_art{
+  float:left;
+}
+
+.artspacer{
+  width:64px;
+  height:64px;
+  float:left;
+}
+.nowplaying_info{
+  float:left;
+  padding-left:24px;
+}
+
+.npheading{
+  padding:20px;
+  font-style:italic;
+  color:darken(white, 20%);
+}
+.np_item{
+  margin-left:auto;
+  margin-right:auto;
+}
