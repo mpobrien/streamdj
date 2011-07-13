@@ -435,21 +435,21 @@ $(document).ready(function(){
   function dragExit(evt){
     evt.preventDefault();
     evt.stopPropagation();
-    $(droptarget).removeClass("highlight");
+    $('#queueheading').removeClass("highlight");
     return false;
   }
 
   function dragOver(evt){
     evt.preventDefault();
     evt.stopPropagation();
-    $(droptarget).addClass("highlight");
+    $('#queueheading').addClass("highlight");
     return false;
   }
 
   function drop(evt){
     evt.preventDefault();
     evt.stopPropagation();
-    $(droptarget).removeClass("highlight");
+    $('#queueheading').removeClass("highlight");
     var files = evt.dataTransfer.files;
     var count = files.length;
     if( count == 0 ) return;

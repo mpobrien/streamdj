@@ -319,6 +319,10 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   display:none;
 }
 
+#queueheading{
+  border:1px solid transparent;
+}
+
 #queueholder{
   margin-top:35px;
   @include seriffont;

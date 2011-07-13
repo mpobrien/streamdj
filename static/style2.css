@@ -277,6 +277,9 @@
 .menuhidden {
   display: none; }
 
+#queueheading {
+  border: 1px solid transparent; }
+
 #queueholder {
   margin-top: 35px;
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;

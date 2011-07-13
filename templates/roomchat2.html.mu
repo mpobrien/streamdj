@@ -135,7 +135,7 @@
                   </div>
               </div>
              <div id="queueholder">
-               <div class="sectionheading">queue <span class="dragdropcopy">(drag and drop files to add)</span></div>
+               <div class="sectionheading" id="queueheading">queue <span class="dragdropcopy">(drag and drop files to add)</span></div>
                 <div id="queuelisting">
                   {{#queue}}
                     <div class="queuedsong" id="song_{{songId}}">
