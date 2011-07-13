@@ -25,13 +25,13 @@
 
     <div id="bodywrapper">
       <div id="greeting">
-        You're invited to hang out and play music in <b>{{room}}</b>!
+        You're invited to come play music in <b>{{room}}</b>!
       </div>
       <div id="listenerinfo">There are {{numlisteners}} other people listening.</div>
 
       <div id="loginlinks">
         <div style="padding:10px;">
-          Log in to enter the room and get started.
+          Log in to join the room!
         </div>
         <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a> <span class="or">or</span> <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
       </div>
@@ -40,7 +40,7 @@
 
       {{#nowplaying}}
         <div id="nowplaying">
-          <div class="npheading">Currently playing inside <b>{{room}}</b>:</div>
+          <div class="npheading">Currently playing in <b>{{room}}</b>:</div>
           <div class="nowplaying_art">
             {{#meta}}
               {{#pic}}
