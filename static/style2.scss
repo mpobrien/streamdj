@@ -1,9 +1,9 @@
 $headerHeight: 50px;
-$leftColWidth: 370px;
+$leftColWidth: 340px;
 $volumebarColor: black;
 $leftColPadding: 10px;
 $centerColLeftPad: 20px;
-$centerColWidth: 780px;
+$centerColWidth: 740px;
 $playingThumbnailWidth: 128px;
 $volumebarBorderColor: lighten(#3e4147, 40%);
 
@@ -344,7 +344,7 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 
 .songinfo{
   float:left;
-  width:280px;
+  width:250px;
   font-size:14px;
 }
 
@@ -416,7 +416,7 @@ a.delsong:inactive{
 }
 #newchat{
   width:100%;
-  font-size:1em;
+  font-size:13px;
 }
 
 #chat{
