@@ -61,7 +61,7 @@
       {{/nowplaying}}
 
       <div id="recentsongs">
-        <div class="npheading">Recently Played Songs:</div>
+        <div class="npheading" {{^recentSongs}} style="display:none" {{/recentSongs}}>Recently Played Songs:</div>
         {{#recentSongs}}
         <div class="nowplaying_art">
           {{#meta}}

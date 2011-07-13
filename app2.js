@@ -533,7 +533,7 @@ var prepareRoomPreview = function(roomName, recentSongs, numlisteners, nowplayin
     }
   }
   var nowplaying = [];
-  if( nowplayingid == recentSongs[0].songId ){
+  if( recentSongs.length > 0 && nowplayingid == recentSongs[0].songId ){
     nowplaying = recentSongs.shift()
   }
   utilities.sendTemplate(res, templates.getTemplate("roompreview.html"), {room:roomName, recentSongs:recentSongs, nowplaying:nowplaying, numlisteners:numlisteners}); 
