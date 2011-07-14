@@ -549,6 +549,27 @@ img.albumartimg {
   border-bottom: 1px solid #888;
   background-color: #efefef; }
 
+.previewlinks {
+  right: 0px;
+  position: absolute;
+  background-color: #eee; }
+
+.prevlink {
+  background-color: #eee;
+  padding-left: 18px; }
+
+.preview {
+  padding-right: 8px;
+  background-image: url("/static/play.png");
+  background-repeat: no-repeat;
+  background-position: 0% 50%; }
+
+.queue {
+  padding-right: 3px;
+  background-image: url("/static/sq_plus.png");
+  background-repeat: no-repeat;
+  background-position: 0% 50%; }
+
 span.title {
   padding-left: 5px; }
 
@@ -576,7 +597,7 @@ span.title {
   -webkit-border-radius: 5px;
   padding: 5px;
   height: 500px;
-  width: 400px; }
+  width: 550px; }
 
 #scsearchbanner {
   height: 15px; }
