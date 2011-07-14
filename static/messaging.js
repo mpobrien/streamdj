@@ -113,7 +113,6 @@ var MessageHandlers = {
       newlistener.attr('id', 'user_' + message['uid'])
       newlistener.appendTo("#listeners");
     }
-    bumpMessageCount();
   },//}}}
 
   "left"   : function(message, isStatic){//{{{
