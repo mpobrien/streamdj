@@ -196,10 +196,7 @@
       </div>
       <div id="soundcloudmodal">
         <div id="scsearchbanner">
-          <select name="searchtype" id="searchtype">
-            <option value="tracks">Search Tracks</option>
-            <option value="users">Search Users</option>
-          </select>
+          <img src="/static/soundcloud-logo.png"/>
           <input type="text" id="user_query" name="user_query"/>
           <img src="/static/ajax-loader.gif" style="display:none" id="search_spinner" />
           <div id="searchresults">
@@ -208,9 +205,9 @@
     
       </div>
       <object height="1" width="100%" id="yourPlayerId" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000">
-        <param name="movie" value="http://player.soundcloud.com/player.swf?url=http%3A%2F%2Fsoundcloud.com%2Fmatas%2Fhobnotropic&amp;enable_api=true&amp;object_id=yourPlayerId&amp;single_active=false"></param>
+        <param name="movie" value="http://player.soundcloud.com/player.swf?enable_api=true&amp;object_id=yourPlayerId&amp;single_active=false"></param>
         <param name="allowscriptaccess" value="always"></param>
-        <embed allowscriptaccess="always" height="1" src="http://player.soundcloud.com/player.swf?url=http%3A%2F%2Fsoundcloud.com%2Fmatas%2Fhobnotropic&amp;enable_api=true&amp;object_id=yourPlayerId&amp;single_active=false;" type="application/x-shockwave-flash" width="100%" name="yourPlayerId"></embed>
+        <embed allowscriptaccess="always" height="1" src="http://player.soundcloud.com/player.swf?enable_api=true&amp;object_id=yourPlayerId&amp;single_active=false;" type="application/x-shockwave-flash" width="100%" name="yourPlayerId"></embed>
       </object>
     </body>
 </html>

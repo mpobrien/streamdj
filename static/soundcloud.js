@@ -1,16 +1,3 @@
-var userSearchCallback = function(data){
-  console.log("callback!");
-  $('#search_spinner').hide();
-  for(var i=0;i<data.length;i++){
-    console.log(data[i]);
-    $('<div class="userresult notplaying"></div>')
-      .append($('<img class="albumartimg" src="' + data[i].avatar_url + '" width="24" height="24"></img>'))
-      .append($('<span></span>').text(data[i].username + ' (' +data[i].track_count + ' tracks)' ))
-      .appendTo('#searchresults')
-      .data("user_id", data[i].id);
-  }
-}
-
 var trackSearchCallback = function(data){
   $('#search_spinner').hide();
   for(var i=0;i<data.length;i++){
@@ -35,19 +22,20 @@ var trackSearchCallback = function(data){
       .append($('<span class="meta">by</span>'))
       .append(document.createTextNode(' '))
       .append($('<span class="artist"></span>').text(data[i].user.username)) 
+      .append($('<div class="previewlinks"></div>').hide()
+          .append( $('<span class="prevlink preview">preview</span>'))
+          .append( $('<span class="prevlink queue">queue</span>')))
       .appendTo('#searchresults')
       .data("url", data[i].permalink_url);
   }
 }
 
 
-function search(type){
+function search(){
   $('#search_spinner').show();
   var url;
-  if( type != 'tracks') url = "http://api.soundcloud.com/users.json?client_id=07b794af61fdce4a25c9eadce40dda83&q=" + escape($('#user_query').val()) + "&callback=?"
-  else url = "http://api.soundcloud.com/tracks.json?client_id=07b794af61fdce4a25c9eadce40dda83&q=" + escape($('#user_query').val()) + "&callback=?", 
-  console.log("doing it", url);
-  $.getJSON(url, type=='tracks' ? trackSearchCallback : userSearchCallback)
+  url = "http://api.soundcloud.com/tracks.json?client_id=07b794af61fdce4a25c9eadce40dda83&filter=streamable&q=" + escape($('#user_query').val()) + "&callback=?", 
+  $.getJSON(url, trackSearchCallback)
   $('#searchresults > div').remove();
 }
 
@@ -64,30 +52,15 @@ $(document).ready(function(){
     } 
   })
 
-  $('.userresult').live({
-    mouseenter: function(){
-      $(this).addClass("schover");
-    },
-
-    mouseleave: function(){
-      if(!$('#settingsmenu').is(':visible')){
-        $(this).removeClass("schover");
-      }
-    },
-    click: function(){
-      console.log($(this).data('user_id'));
-    }
-  });
-
   $('.trackresult').live({
     mouseenter: function(){
       $(this).addClass("schover");
+      $(this).find('.previewlinks').css('display','inline').show();
     },
 
     mouseleave: function(){
-      if(!$('#settingsmenu').is(':visible')){
-        $(this).removeClass("schover");
-      }
+      $(this).removeClass("schover");
+      $(this).find('.previewlinks').hide();
     },
 
     click:function(){
