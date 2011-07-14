@@ -16,6 +16,13 @@ var makeTimestamp = function(rawtime){
   return pad(timestamp.getHours(),2) + ":" + pad(timestamp.getMinutes(),2)
 }//}}}
 
+var bumpMessageCount = function(){
+  if(isBlurred){
+    unreadCount++;
+    document.title = "(" + unreadCount + ") " + roomname + " - outloud.fm"
+  }
+}
+
 var MessageHandlers = {
 
   "chat"   : function(message, isStatic) {//{{{
@@ -29,10 +36,7 @@ var MessageHandlers = {
                           .appendTo("#chat");
     var objDiv = document.getElementById("chat");
     objDiv.scrollTop = objDiv.scrollHeight;
-    if(isBlurred){
-      unreadCount++;
-      document.title = "(" + unreadCount + ") " + roomname + " - outloud.fm"
-    }
+    bumpMessageCount();
   },//}}}
 
   "liked"   : function(message, isStatic) {//{{{
@@ -109,6 +113,7 @@ var MessageHandlers = {
       newlistener.attr('id', 'user_' + message['uid'])
       newlistener.appendTo("#listeners");
     }
+    bumpMessageCount();
   },//}}}
 
   "left"   : function(message, isStatic){//{{{
@@ -223,8 +228,7 @@ var MessageHandlers = {
 
   "qdel": function(message, isStatic){//{{{
     var songId = message["songId"]
-    $('#song_' + songId).hide('slide', function(){$(this).remove()});
-    oddify();
+    $('#song_' + songId).hide('slide', function(){$(this).remove(); oddify()});
   }//}}}
 
 }
