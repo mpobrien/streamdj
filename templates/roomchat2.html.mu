@@ -1,5 +1,6 @@
 <html>
     <head>
+        <title>{{roomname}} - outloud.fm</title>
         <link href="/static/reset.css" rel="stylesheet" />
         <link href="/static/style2.css" rel="stylesheet" />
         <link rel="icon" type="image/gif" href="/static/favicon.gif" />

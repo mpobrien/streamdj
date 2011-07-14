@@ -257,9 +257,19 @@ function loadFavorites(pageNum, doSlide){
 }
 
 
+var isBlurred = false;
+var unreadCount = 0;
 
 /* GUI hooks setup */
 $(document).ready(function(){
+  $(window).blur( function(){
+    isBlurred = true;
+  }).focus( function(){
+    unreadCount = 0;
+    document.title = roomname + " - outloud.fm"
+    isBlurred = false;
+  })
+
   droptarget = document.getElementById("queueholder"); 
   var y;
   while(y = msgs.pop()){

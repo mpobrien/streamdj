@@ -29,6 +29,10 @@ var MessageHandlers = {
                           .appendTo("#chat");
     var objDiv = document.getElementById("chat");
     objDiv.scrollTop = objDiv.scrollHeight;
+    if(isBlurred){
+      unreadCount++;
+      document.title = "(" + unreadCount + ") " + roomname + " - outloud.fm"
+    }
   },//}}}
 
   "liked"   : function(message, isStatic) {//{{{
