@@ -123,6 +123,7 @@ pubsubClient.on("message", function(channel, msg){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
     var messages = [];
     var startedmsg = msggen.started(incomingMsg.newfile.uploader, incomingMsg.newfile.name, incomingMsg.newfile.songId, incomingMsg.newfile.meta, incomingMsg.newfile.uid, msgId)
+    console.log(startedmsg);
     startedmsg.id = msgId;
     var outgoingMsg = JSON.stringify(startedmsg) 
     console.log("file changed");
@@ -833,6 +834,25 @@ var skip = function(req, res, qs, matches){
   });
 }
 
+var scQueue = function(req, res, qs, matches){
+  var cookies = new Cookies(req, res);
+  if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
+  var sessionId = cookies.get("session");
+  var trackId = qs.query['t']
+  res.end("{}");
+  roomname = matches[1];
+  if( isNaN(parseInt(trackId)) ) return;
+  redisClient.sismember("rooms", roomname, function(err2, isroom){
+    if( err2 || !isroom ) return;
+    getUserInfo(sessionId, function(err, userinfo){
+      if(err) return; //TODO handle/log error.  //TODO make sure user name is valid, + not empyy
+      var uidkey = userinfo.service + "_" + userinfo.user_id
+      var newScTrackInfo = JSON.stringify({uid:uidkey, uploader:userinfo.name, trackId:trackId, room:roomname});
+      redisClient.rpush("sctracks", newScTrackInfo);
+    })
+  });
+}
+
 var router = new routing.Router([//{{{
   ["^/$", homepage],
   ["^/admin/reloadtemplates$", reloadTemplates],
@@ -850,6 +870,7 @@ var router = new routing.Router([//{{{
   ["^/([\\w\-]+)/skip/?$", skip],
   ["^/([\\w\-]+)/remove/?$", remove_from_queue],
   ["^/([\\w\-]+)/upload/?$", upload],  
+  ["^/([\\w\-]+)/scqueue/?$", scQueue],  
   ["^/([\\w\-]+)/?$", roomdisplay],
 ]);//}}}
 
