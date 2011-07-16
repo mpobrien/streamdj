@@ -44,6 +44,7 @@ var StreamRoom = function(roomName, redisClient){
   }
 
   this.playNextFile = function(endingFile, forceStop){
+    console.log("playing next!");
     //To pop the lowest-ranked member of a sorted set in redis, we need 2 steps:
     //1. zrange <key> 0 0 WITHSCORES (returns lowest ranked key and its score)
     //2. zremrangebyscore <key> score score // removes that lowest element
@@ -64,12 +65,17 @@ var StreamRoom = function(roomName, redisClient){
       redisClient.zremrangebyscore("roomqueue_" + roomName, songId, songId, function(err2, reply2){
         nowPlaying = songInfo;
         console.log("[" + roomName + "] now playing: ", songInfo);
-        fs.readFile(songInfo.path, function(err3, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)
+        console.log(songInfo);
+        if( songInfo.fromSoundcloud ){
           that.emit("file-change", roomName, endingFile, nowPlaying);
-          if(err) console.log("err:",err);
-          setTimeout(function(){ mp3Stream.streamFile(data) }, 100)
-          console.log("playing: " + reply);
-        });
+        }else{
+          fs.readFile(songInfo.path, function(err3, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)
+            that.emit("file-change", roomName, endingFile, nowPlaying);
+            if(err) console.log("err:",err);
+            setTimeout(function(){ mp3Stream.streamFile(data) }, 100)
+            console.log("playing: " + reply);
+          });
+        }
       });
     });
 /*

@@ -12,7 +12,6 @@
         <script type="text/javascript" src="/static/jquery.min.js"></script>
         <script type="text/javascript" src="/static/jqueryui.js"></script>
         <script type="text/javascript" src="/static/simplemodal.js"></script>
-        <script type="text/javascript" src="/static/messaging.js"></script>
         <script type="text/javascript" src="/static/soundmanager2.js"></script>
         <script type="text/javascript" charset="utf-8" src="/static/soundcloud.player.api.js"></script>
         <script type="text/javascript" src="/static/soundcloud.js"></script>
@@ -64,6 +63,7 @@
         <script type="text/javascript" src="/static/web_socket.js"></script>
 
         <script type="text/javascript" src="/static/outloud.js"></script>
+        <script type="text/javascript" src="/static/messaging.js"></script>
         <script type="text/javascript">
           var currentModal = null;
           $(document).ready(function(){
@@ -204,10 +204,5 @@
         </div>
     
       </div>
-      <object height="1" width="100%" id="yourPlayerId" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000">
-        <param name="movie" value="http://player.soundcloud.com/player.swf?enable_api=true&amp;object_id=yourPlayerId&amp;single_active=false"></param>
-        <param name="allowscriptaccess" value="always"></param>
-        <embed allowscriptaccess="always" height="1" src="http://player.soundcloud.com/player.swf?enable_api=true&amp;object_id=yourPlayerId&amp;single_active=false;" type="application/x-shockwave-flash" width="100%" name="yourPlayerId"></embed>
-      </object>
     </body>
 </html>

@@ -163,6 +163,7 @@ var MessageHandlers = {
   },//}}}
 
   "started": function(message, isStatic){//{{{
+  console.log(message);
     var nowtime = new Date().getTime();
     if(!isStatic && (lastStoppedTime == null || (nowtime - lastStoppedTime > 10000))){
       soundManager.destroySound('mySound');
@@ -171,11 +172,13 @@ var MessageHandlers = {
     $('#nowplayingheart').removeClass("on").addClass("off");
     //$('#thumbsdown').removeClass("t_on").addClass("t_off");
     var albumartDiv;
-    if( message.meta && ('pic' in message.meta)){
+    if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
+      var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) 
+                                           : message.meta.picurl;
       albumartDiv = $('<div id="albumartcol"></div>"')
                        .append($('<div class="albumart"></div>')
                         .append($('<img></img>').attr("width","60").attr("height","60")
-                        .attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic))))
+                        .attr('src',imageUrl)))
     }else{
       albumartDiv = $('<div class="albumartspacer">&nbsp;</div>"')
     }
@@ -232,9 +235,11 @@ var MessageHandlers = {
         .append( $('<span class="meta">added by</span>').append(makeText()))
         .append( $('<span class="uploader"></span>').text(message['from'])))
     if( !isStatic || (songId == nowplayingstart)){
-      if( message.meta && ('pic' in message.meta)){
+      if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
+        var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) 
+                                             : message.meta.picurl;
         albumartDiv = $('<img></img>').attr("width","128")
-                        .attr('src','http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic))
+                        .attr('src',imageUrl)
                       .appendTo('#nowplayingart')
       }
     }
@@ -243,6 +248,22 @@ var MessageHandlers = {
     $('#song_' + songId).hide('slide', function(){$(this).remove(); oddify()});
     var objDiv = document.getElementById("chat");
     objDiv.scrollTop = objDiv.scrollHeight;
+    if( !isStatic || (isStatic && songId == nowplayingstart)){
+      console.log(message);
+      console.log(isStatic, songId, nowplayingstart);
+      console.log("soundcloud baby");
+      if( 'scid' in message['meta'] ){
+        var scplaysound = soundManager.getSoundById('scplaysound');
+        var soundurl = "http://api.soundcloud.com/tracks/" + message['meta']['scid'] + "/stream?client_id=" + sc_clientId;
+        if(scplaysound == null ){
+          scplaysound = soundManager.createSound({id:'scplaysound',url: soundurl, autoPlay:true});
+        }else{
+          scplaysound.load({url: soundurl});
+          scplaysound.setPosition(0);
+          scplaysound.play();
+        }
+      }
+    }
   },//}}}
 
   "qdel": function(message, isStatic){//{{{

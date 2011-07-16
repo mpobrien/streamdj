@@ -1,3 +1,4 @@
+var sc_clientId = "07b794af61fdce4a25c9eadce40dda83";
 var trackSearchCallback = function(data){
   $('#search_spinner').hide();
   for(var i=0;i<data.length;i++){
@@ -23,10 +24,11 @@ var trackSearchCallback = function(data){
       .append(document.createTextNode(' '))
       .append($('<span class="artist"></span>').text(data[i].user.username)) 
       .append($('<div class="previewlinks"></div>').hide()
-          .append( $('<span class="prevlink preview">preview</span>'))
-          .append( $('<span class="prevlink queue">queue</span>')))
+          .append( $('<span class="prevlink preview">preview</span>').data("id", data[i].id))
+          .append( $('<span class="prevlink queue">queue</span>').data("id", data[i].id)))
       .appendTo('#searchresults')
-      .data("url", data[i].permalink_url);
+      .data("url", data[i].permalink_url)
+      .data("id", data[i].id);
   }
 }
 
@@ -43,7 +45,7 @@ var currentlyPlaying = null;
 
 $(document).ready(function(){
   soundcloud.addEventListener('onPlayerReady', function(player, data){
-    player.api_play();
+    console.log("ready");
   });
   $('#user_query').keypress( function(e){
     console.log("starting search!");
@@ -62,16 +64,5 @@ $(document).ready(function(){
       $(this).removeClass("schover");
       $(this).find('.previewlinks').hide();
     },
-
-    click:function(){
-      if( currentlyPlaying ){
-        $(currentlyPlaying).removeClass('scplaying').addClass('notplaying')
-      }
-      console.log("setting", currentlyPlaying)
-      currentlyPlaying = this;
-      console.log("set", currentlyPlaying)
-      $(this).addClass('scplaying').removeClass('notplaying');
-      soundcloud.getPlayer('yourPlayerId').api_load($(this).data('url'));
-    }
   });
 })
