@@ -68,6 +68,7 @@ var StreamRoom = function(roomName, redisClient){
         console.log(songInfo);
         if( songInfo.fromSoundcloud ){
           that.emit("file-change", roomName, endingFile, nowPlaying);
+          mp3Stream.stopStream();
         }else{
           fs.readFile(songInfo.path, function(err3, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)
             that.emit("file-change", roomName, endingFile, nowPlaying);
