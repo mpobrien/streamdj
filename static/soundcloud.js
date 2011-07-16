@@ -12,7 +12,15 @@ var trackSearchCallback = function(data){
     var ms = data[i].duration;
     var seconds = Math.floor(ms / 1000) % 60;
     var minutes = Math.floor(ms / (1000 * 60)) % 60;
-    var prettyDuration = minutes + ":" + String("0" + seconds).slice(-2);
+    var hours = Math.floor(ms / (1000 * 60 * 60)) % 60;
+    var prettyDuration;
+    if( hours>0 ){
+      prettyDuration = hours + ':' + String("0" + minutes).slice(-2) + ":" + String("0" + seconds).slice(-2);
+    }else{
+      prettyDuration = minutes + ":" + String("0" + seconds).slice(-2);
+    }
+    var prettyDuration = (hours >0?hours+':' : '') + minutes + ":" + String("0" + seconds).slice(-2);
+    var prettyDuration = (hours>0?hours+':' : '') + minutes + ":" + String("0" + seconds).slice(-2);
 
     $('<div class="trackresult notplaying"></div>')
       .append(artwork)

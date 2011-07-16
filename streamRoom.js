@@ -65,10 +65,12 @@ var StreamRoom = function(roomName, redisClient){
       redisClient.zremrangebyscore("roomqueue_" + roomName, songId, songId, function(err2, reply2){
         nowPlaying = songInfo;
         console.log("[" + roomName + "] now playing: ", songInfo);
-        console.log(songInfo);
+        console.log(songInfo.meta.length);
         if( songInfo.fromSoundcloud ){
           that.emit("file-change", roomName, endingFile, nowPlaying);
           mp3Stream.stopStream();
+          console.log(songInfo.meta.length);
+          setTimeout(function(){ console.log("next!"); that.playNextFile(nowPlaying) }, songInfo.meta.length);
         }else{
           fs.readFile(songInfo.path, function(err3, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)
             that.emit("file-change", roomName, endingFile, nowPlaying);
