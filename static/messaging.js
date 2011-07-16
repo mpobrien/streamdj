@@ -163,12 +163,21 @@ var MessageHandlers = {
   },//}}}
 
   "started": function(message, isStatic){//{{{
-  console.log(message);
+    console.log(message);
     var nowtime = new Date().getTime();
-    if(!isStatic && (lastStoppedTime == null || (nowtime - lastStoppedTime > 10000))){
-      soundManager.destroySound('mySound');
-      startStream();
+    if( !isStatic ){
+      var readystatenow = soundManager.getSoundById('mySound').readyState;
+      if(readystatenow != 1 && readystatenow != 3){
+        soundManager.destroySound('mySound');
+        startStream();
+      }
+
+      var currentSCsound = soundManager.getSoundById('scplaysound');
+      if( currentSCsound ){
+        currentSCsound.stop();
+      }
     }
+    
     $('#nowplayingheart').removeClass("on").addClass("off");
     //$('#thumbsdown').removeClass("t_on").addClass("t_off");
     var albumartDiv;

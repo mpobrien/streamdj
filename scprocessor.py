@@ -142,6 +142,7 @@ def main(argv):
     if( 'artwork_url' in trackInfo and trackInfo['artwork_url'] ):
       metadata['picurl'] = trackInfo['artwork_url']
 
+
     if trackInfo:
       newSongId = r.incr("maxsongid")
       streamMessage = json.dumps({
@@ -157,6 +158,7 @@ def main(argv):
       #streamMessage = json.dumps( {'name':songInfo['fname'], 'uid':songInfo['uid'], 'uploader':songInfo['uploader'], 'songId':newSongId, 'meta':metadata});
       r.zadd("roomqueue_" + songInfo['room'], streamMessage, newSongId ) #key, score, member 
       roomMsgId = r.incr("roommsg_" + songInfo['room'])
+      r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?#}}}
       
 
       outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'uid':songInfo['uid'], 'fromSoundcloud':True, 'meta':metadata, 'songId':newSongId}

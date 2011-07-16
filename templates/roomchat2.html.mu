@@ -41,6 +41,7 @@
           var nowplayingstart = {{nowPlaying}};
           //var lastMsgId =
           soundManager.url = '/static/swf/';
+          soundManager.onerror = function(){ console.log("error!!!!") };
           soundManager.debugMode = false;
           soundManager.useFlashBlock = false; 
           soundManager.flashVersion = 9;
@@ -50,6 +51,10 @@
               soundOpts.volume = currentVolume;
             }
             x = soundManager.createSound(soundOpts);
+            x.ondataerror = function(){console.log("Data error");}
+            x.onload = function(success){
+              console.log("is success?", success);
+            }
             if( muted ) soundManager.setVolume('mySound', 0); 
              //soundManager.setVolume('mySound', 0); 
           }
@@ -197,7 +202,7 @@
       <div id="soundcloudmodal">
         <div id="scsearchbanner">
           <img src="/static/soundcloud-logo.png"/>
-          <input type="text" id="user_query" name="user_query"/>
+          <input type="text" id="user_query" name="user_query" placeholder="Search Soundcloud"/>
           <img src="/static/ajax-loader.gif" style="display:none" id="search_spinner" />
           <div id="searchresults">
           </div>
