@@ -550,8 +550,8 @@ img.albumartimg {
   background-color: #efefef; }
 
 .previewlinks {
-  right: 0px;
-  position: absolute;
+  float: right;
+  padding-left: 10px;
   background-color: #eee; }
 
 .prevlink {
