@@ -6,6 +6,7 @@ var StreamRoom = function(roomName, redisClient){
   var that = this;
   var mp3Stream = new mp3.Mp3Stream();
   var nowPlaying = null;
+  var scTimeout = null;
 
   this.onEmpty = function(){};
 
@@ -44,6 +45,10 @@ var StreamRoom = function(roomName, redisClient){
   }
 
   this.playNextFile = function(endingFile, forceStop){
+    if( scTimeout ){
+      clearTimeout(scTimeout);
+    }
+    scTimeout = null;
     console.log("playing next!");
     //To pop the lowest-ranked member of a sorted set in redis, we need 2 steps:
     //1. zrange <key> 0 0 WITHSCORES (returns lowest ranked key and its score)
@@ -70,7 +75,7 @@ var StreamRoom = function(roomName, redisClient){
           that.emit("file-change", roomName, endingFile, nowPlaying);
           mp3Stream.stopStream();
           console.log(songInfo.meta.length);
-          setTimeout(function(){ console.log("next!"); that.playNextFile(nowPlaying) }, songInfo.meta.length);
+          scTimeout = setTimeout(function(){ console.log("next!"); that.playNextFile(nowPlaying) }, songInfo.meta.length);
         }else{
           fs.readFile(songInfo.path, function(err3, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)
             that.emit("file-change", roomName, endingFile, nowPlaying);

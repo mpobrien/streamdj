@@ -188,6 +188,12 @@ $headerColor: #2A2C31;
   }
 }
 
+#loading{
+  @include seriffont;
+  text-align:center;
+  width:$leftColWidth - $playingThumbnailWidth;
+  display:none;
+}
 
 #currentfile{
   @include seriffont;

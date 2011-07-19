@@ -18,6 +18,8 @@
 
         <script type="text/javascript">
           var WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
+          var servernow = {{{servernow}}};
+          var clientnow = +new Date().getTime();
           var wsurl = '{{wsurl}}'
           var nowplayingId = null;
           var songs = [{{{songs}}}]
@@ -72,6 +74,7 @@
         <script type="text/javascript">
           var currentModal = null;
           $(document).ready(function(){
+            soundManager.onready(playAndSync);
             $(window).resize(function(){
               var objDiv = document.getElementById("chat");
               objDiv.scrollTop = objDiv.scrollHeight;
@@ -139,6 +142,7 @@
 
             <div id="player">
              <div id="songprogress"><div id="songprogressFull"> &nbsp; </div></div>
+             <div id="loading">loading sound...</div>
              <div id="currentfile" class="notplaying">
                <div>the silence is deafening &hellip; :(</div>
                <div>upload something!</div>
