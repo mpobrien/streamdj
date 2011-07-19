@@ -23,6 +23,52 @@ var bumpMessageCount = function(){
   }
 }
 
+function playAndSync(){
+  console.log("ready.");
+  var offset = servernow - clientnow
+  if(nowplayingMeta){
+    var starttimeclient = nowplayingMeta.time - offset;
+    var currentNow = +new Date().getTime()
+    var position = currentNow - starttimeclient;
+    var scplaysound = soundManager.getSoundById('scplaysound');
+    var soundurl = "http://api.soundcloud.com/tracks/" + nowplayingMeta['scid'] + "/stream?client_id=" + sc_clientId;
+    if(scplaysound == null ){
+      scplaysound = soundManager.createSound({id:'scplaysound',url: soundurl});
+      scplaysound.load();
+    }else{
+      scplaysound.load({url: soundurl});
+    }
+    sync();
+  }
+}
+
+function sync(){
+  $('#loading').show();
+  var offset = servernow - clientnow
+  console.log("syncing!");
+  var starttimeclient = nowplayingMeta.time - offset;
+  var currentNow = +new Date().getTime()
+  var position = currentNow - starttimeclient;
+  var scplaysound = soundManager.getSoundById('scplaysound');
+  console.log("duration is", scplaysound.duration);
+  console.log("seeking to", position);
+  if( scplaysound.duration != null ){
+    var percentLoaded = parseInt((scplaysound.duration / position) * 100)
+    $('#loading').text("buffering sound... " + percentLoaded + "%");
+  }else{
+    $('#loading').text("buffering sound... ");
+  }
+  if( scplaysound.duration < position ){
+    setTimeout(sync, 200);
+  }else{
+    scplaysound.setPosition(position);
+    $('#loading').hide();
+    scplaysound.play();
+  }
+
+}
+
+
 var MessageHandlers = {
 
   "chat"   : function(message, isStatic) {//{{{
@@ -197,6 +243,7 @@ var MessageHandlers = {
       .appendTo("#chat");
     var nowPlayingInfo;
     nowplayingMeta = message.meta;
+    nowplayingMeta.time = message['time']
     nowplayingMessage = message;
     var songId = message["songId"]
     nowplayingId = songId;
@@ -237,7 +284,7 @@ var MessageHandlers = {
     $('#song_' + songId).hide('slide', function(){$(this).remove(); oddify()});
     var objDiv = document.getElementById("chat");
     objDiv.scrollTop = objDiv.scrollHeight;
-    if( !isStatic || (isStatic && songId == nowplayingstart)){
+    if( !isStatic ){
       console.log(message);
       console.log(isStatic, songId, nowplayingstart);
       console.log("soundcloud baby");

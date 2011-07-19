@@ -560,11 +560,15 @@ function doFbInvite(){
   var fburl = 'http://www.facebook.com/dialog/feed?';
   fburl += 'link=' + escape('http://outloud.fm/' + roomname)
   fburl += '&app_id=123006794442539&'
-  if(nowplayingMeta && 'pic' in nowplayingMeta){
-    fburl += '&picture=' + 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(nowplayingMeta.pic)
-  }else{
-    fburl += '&picture=' + escape('http://outloud.fm/static/ol_med.png');
+  var imageUrl = escape('http://outloud.fm/static/ol_med.png');
+  if(nowplayingMeta){
+    if('pic' in nowplayingMeta){
+      imageUrl = 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(nowplayingMeta.pic);
+    }else if('picurl' in nowplayingMeta){
+      imageUrl = escape(nowplayingMeta.picurl);
+    }
   }
+  fburl += '&picture=' + imageUrl
   if( nowplayingMeta ){
     fburl += '&name=%E2%99%AB%20' + escape( " Now playing in " + roomname + ": ") + '%E2%99%AB%20'
   }else{

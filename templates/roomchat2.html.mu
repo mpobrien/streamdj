@@ -4,6 +4,10 @@
         <link href="/static/reset.css" rel="stylesheet" />
         <link href="/static/style2.css" rel="stylesheet" />
         <link rel="icon" type="image/gif" href="/static/favicon.gif" />
+        <script type="text/javascript">
+          var servernow = {{{servernow}}};
+          var clientnow = +new Date().getTime();
+        </script>
         <script type="text/javascript" src="/static/swfobject.js"></script>
         <script type="text/javascript" src="/static/jquery.min.js"></script>
         <script type="text/javascript" src="/static/jqueryui.js"></script>
@@ -14,6 +18,8 @@
 
         <script type="text/javascript">
           var WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
+          var servernow = {{{servernow}}};
+          var clientnow = +new Date().getTime();
           var wsurl = '{{wsurl}}'
           var nowplayingId = null;
           var songs = [{{{songs}}}]
@@ -68,6 +74,7 @@
         <script type="text/javascript">
           var currentModal = null;
           $(document).ready(function(){
+            soundManager.onready(playAndSync);
             $(window).resize(function(){
               var objDiv = document.getElementById("chat");
               objDiv.scrollTop = objDiv.scrollHeight;
@@ -133,6 +140,7 @@
             </div>
 
             <div id="player">
+             <div id="loading">loading sound...</div>
              <div id="currentfile" class="notplaying">
                <div>the silence is deafening &hellip; :(</div>
                <div>upload something!</div>

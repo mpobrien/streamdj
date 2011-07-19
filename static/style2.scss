@@ -179,6 +179,12 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   }
 }
 
+#loading{
+  @include seriffont;
+  text-align:center;
+  width:$leftColWidth - $playingThumbnailWidth;
+  display:none;
+}
 
 #currentfile{
   @include seriffont;
