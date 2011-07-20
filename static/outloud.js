@@ -36,6 +36,11 @@ var generateTwitterMsg = function(songInfo){
   return description;
 }   
 
+function fadeOut(soundId){
+  var sound = soundManager.getSoundById(soundId)
+
+}
+
 function bit_url(url, callback) { 
   var url=url;
   var username="outloudfm";
@@ -304,18 +309,35 @@ $(document).ready(function(){
 
   $('.queue').live('click',
   function(div){
-    $.get( '/' + roomname + '/scqueue/', {t:$.data(this,"id")}, function(){
+    var trackInfo = $(this).data('trackinfo')
+    $.get( '/' + roomname + '/scqueue/', {t:trackInfo.id}, function(){
     });
   });
 
   $('.preview').live('click',function(div){
     if( currentlyPlaying ){
-      $(currentlyPlaying).removeClass('scplaying').addClass('notplaying')
+      if( currentlyPlaying != this ){
+        $(currentlyPlaying).hide();
+        $(currentlyPlaying).removeClass('scplaying').addClass('scnotplaying').text('preview')
+        $(currentlyPlaying).parents('tr').removeClass('scplayingrow')
+      }else{
+        if($(currentlyPlaying).hasClass('scplaying')){
+          $(currentlyPlaying).removeClass('scplaying').addClass('scnotplaying').text('preview')
+          soundManager.pause('previewsound')
+          return;
+        }else{
+          $(currentlyPlaying).removeClass('scnotplaying').addClass('scplaying').text('pause')
+          soundManager.play('previewsound')
+          return;
+        }
+      }
     }
     currentlyPlaying = this;
-    $(this).addClass('scplaying').removeClass('notplaying');
+    $(this).addClass('scplaying').removeClass('scnotplaying').text('pause');
     var scid = soundManager.getSoundById('previewsound');
-    var soundurl = "http://api.soundcloud.com/tracks/" + $(this).data('id') + "/stream?client_id=" + sc_clientId;
+    var trackInfo = $(this).data('trackinfo')
+    console.log(trackInfo);
+    var soundurl = "http://api.soundcloud.com/tracks/" + trackInfo.id + "/stream?client_id=" + sc_clientId;
     console.log(soundurl);
     console.log(scid);
     if( scid ){

@@ -209,6 +209,8 @@
           <input type="text" id="user_query" name="user_query" placeholder="Search Soundcloud"/>
           <img src="/static/ajax-loader.gif" style="display:none" id="search_spinner" />
           <div id="searchresults">
+            <table id="results_table" cellspacing="0" cellpadding="0">
+            </table>
           </div>
         </div>
     

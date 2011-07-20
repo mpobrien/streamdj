@@ -131,6 +131,7 @@ def main(argv):
   settings = json.loads(settingsdata)
   while True:
     message = r.blpop("sctracks");
+    print "got: ", message
     songInfo = json.loads(message[1])
     trackInfo = getTrackInfo(songInfo['trackId'])
     metadata = {'Artist' : trackInfo['user']['username'],
