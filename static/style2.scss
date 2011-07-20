@@ -590,6 +590,7 @@ a.delsong:inactive{
 /******** SOUNDCLOUD SHIT ********/
 #searchresults{
   @include seriffont;
+  margin-top:2px;
   font-size:12px;
   line-height:22px;
   height:100%;
@@ -598,13 +599,40 @@ a.delsong:inactive{
   height:470px;
   border:1px dotted #aaa;
 }
+
+.results_table{
+  @include seriffont;
+  font-size:12px;
+  line-height:22px;
+  height:100%;
+  background-color:white;
+  overflow-y:auto;
+  height:470px;
+  border:1px dotted #aaa;
+
+}
+
+tr{
+  border-top:1px solid transparent;
+  border-bottom:1px solid transparent;
+}
+
+.schover{
+  background-color:#eee;
+}
+
+.scplayingrow{
+  border-top:1px solid #ddd;
+  border-bottom:1px solid #ddd;
+}
+
 img{
   vertical-align:middle;
   border:none;
 }
 img.albumartimg{
   display:block;
-  float:left;
+  //float:left;
 }
 .meta{
   font-style:italic;
@@ -613,45 +641,63 @@ img.albumartimg{
 }
 
 .songlength{
+  margin-left:4px;
   color:#888;
 }
 
-.schover{
-  background-color:#eee;
-}
-.notplaying{
-  border-top:1px solid transparent;
-  border-bottom:1px solid transparent;
-}
 
 .userresult, .trackresult{
   text-align:left;
   padding-top:2px;
   padding-bottom:2px;
   cursor:pointer;
+  padding-right:0px;
 }
-.scplaying{
-  border-top:1px solid #888;
-  border-bottom:1px solid #888;
-  background-color:#efefef;
+.trackresultinfo{
+  //float:left;
+  text-overflow:ellipsis;
+  overflow:hidden;
+  width:400px;
+}
+.trackresultart{
+  width:24px;
+  height:24px;
+  //float:left;
+}
+.trackresult{
+   .title, .meta, .artist{
+     //float:left;
+     margin-left:2px;
+     margin-right:2px;
+   }
+   .songlength{
+     margin-left:4px;
+   }
 }
 
-.previewlinks{
-  float:right;
-  padding-left:10px;
-  background-color:#eee;
+.scplaying{
+  background-image: url('/static/pause_small.png');
+  background-repeat: no-repeat;
+  background-position: 0% 50%;
 }
-.prevlink{
-  background-color:#eee;
-  padding-left:18px;
-}
-.preview{
-  padding-right:8px;
+.scnotplaying{
   background-image: url('/static/play.png');
   background-repeat: no-repeat;
   background-position: 0% 50%;
 }
+
+.prevlink{
+  padding-left:18px;
+}
+
+.preview{
+  right:0px;
+  height:100%;
+  display:block;
+}
+
 .queue{
+  height:100%;
   padding-right:3px;
   background-image: url('/static/sq_plus.png');
   background-repeat: no-repeat;
@@ -666,15 +712,14 @@ span.title{
   background-position: 0% 50%;
   background-repeat: no-repeat;
   height: 12px;
-  width:12px;
-  float:left;
+  width: 12px;
+  //float:left;
+  left:30px;
   line-height:12px;
-  padding-top:10px;
-  padding-left:6px;
-  padding-right:12px;
   font-weight:bold;
   font-family:sans-serif;
-  margin-left:4px;
+  padding-left:10px;
+  margin-left:3px;
 }
 #soundcloudmodal{
   border:5px solid #888;
