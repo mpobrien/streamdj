@@ -515,11 +515,11 @@ var authdone_facebook = function(req, res, qs){//{{{
     })
     .on('error', function(e12) {
       console.log("FB error:", e12);
-      utilities.sendTemplate(res, template.getTemplate("login.html.mu"), {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}); 
+      utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}); 
     });
   }).on("error", function(e9){
     console.log("FB error:", e9);
-    utilities.sendTemplate(res, template.getTemplate("login.html.mu"), {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}); 
+    utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}); 
   });
 }//}}}
 
