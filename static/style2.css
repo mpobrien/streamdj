@@ -54,9 +54,10 @@
   width: 340px;
   background-color: #fff; }
 
-#favorites .scinfo {
+.scinfo {
   margin-top: 3px;
   font-size: .7em; }
+
 #favorites .meta {
   font-style: italic;
   color: #888;
