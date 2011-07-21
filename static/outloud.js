@@ -36,11 +36,6 @@ var generateTwitterMsg = function(songInfo){
   return description;
 }   
 
-function fadeOut(soundId){
-  var sound = soundManager.getSoundById(soundId)
-
-}
-
 function bit_url(url, callback) { 
   var url=url;
   var username="outloudfm";
@@ -251,6 +246,12 @@ function loadFavorites(pageNum, doSlide){
           $('<span class="meta">from</span>')).append(
           $('<span></span>').attr("class","artist").text(message['Album'])
          ))
+       }
+       if( 'scid' in message){
+         newli.append($('<div class="fav_line scinfo"></div>')
+             .append($('<a class="soundcloudlink">on soundcloud</a>')
+               .attr("target","_blank")
+               .attr("href","/sctrack/" + message['scid'])))
        }
        unfavorite.appendTo(wrapper)
        newli.appendTo(wrapper);

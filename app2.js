@@ -984,11 +984,51 @@ var scQueue = function(req, res, qs, matches){
   });
 }
 
+var scredirect = function(req, res, qs, matches){
+  trackId = matches[1];
+  if(isNaN(parseInt(trackId))){
+    utilities.httpRedirect(res, 'http://www.soundcloud.com/');
+    return;
+  }else{
+    trackId = parseInt(trackId);
+    var soundcloudApiPath = '/tracks/' + trackId + '.json?client_id=' + settings.SOUNDCLOUD_CLIENTID
+    http.get({ host: 'api.soundcloud.com', path: soundcloudApiPath}, function(client_res) { 
+      client_res.on("data", function(clientdata){
+        try{
+          var raw = clientdata.toString();
+          var trackInfo = JSON.parse(raw);
+          if( 'permalink_url' in trackInfo ){
+            utilities.httpRedirect(res, trackInfo['permalink_url']);
+            return;
+          }else{
+            utilities.httpRedirect(res,  'http://www.soundcloud.com/');
+            return;
+          }
+        }catch(exception){
+          console.log("Could not parse json data", exception);
+          utilities.httpRedirect(res, 'http://www.soundcloud.com/');
+          return;
+        }
+      })
+      .on("error", function(error){
+        console.log("Error occurred getting soundcloud data:", error);
+        utilities.httpRedirect(res, 'http://www.soundcloud.com/');
+        return;
+      });
+    }).on("error", function(e){
+      console.log("Error occurred reaching soundcloud API:", e);
+      utilities.httpRedirect(res, 'http://www.soundcloud.com/');
+      return;
+    });
+  }
+}
+
 var router = new routing.Router([//{{{
   ["^/$", homepage],
   ["^/admin/?$", adminhome],
   ["^/admin/roominfo?$", adminroom],
   ["^/admin/command?$", admincommand],
+  ["^/sctrack/(\\d+)/?$", scredirect],
   ["^/admin/reloadtemplates$", reloadTemplates],
   ['^/([\\w\-]+)/listen/?$', listen],
   //['^/([\\w\-]+)/send/?$', send],

@@ -54,6 +54,9 @@
   width: 340px;
   background-color: #fff; }
 
+#favorites .scinfo {
+  margin-top: 3px;
+  font-size: .7em; }
 #favorites .meta {
   font-style: italic;
   color: #888;
@@ -537,15 +540,9 @@ a.delsong:inactive {
   height: 470px;
   border: 1px dotted #aaa; }
 
-.results_table {
+#results_table {
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
-  font-size: 12px;
-  line-height: 22px;
-  height: 100%;
-  background-color: white;
-  overflow-y: auto;
-  height: 470px;
-  border: 1px dotted #aaa; }
+  width: 100%; }
 
 tr {
   border-top: 1px solid transparent;
