@@ -1,4 +1,5 @@
 var mustache = require('mustache')
+var http = require('http')
 var fs = require('fs')
 var sys = require('sys')
 var util = require('util')
@@ -15,6 +16,11 @@ exports.slugify = function(text){
   text = text.replace(/-+$/, "");
   text = text.replace(/_+$/, "");
   return text;
+}
+
+exports.httpRedirect = function(response, path){
+  response.writeHead(302, { 'Location': path});
+  response.end()
 }
 
 exports.validateRoomName = function(roomname){

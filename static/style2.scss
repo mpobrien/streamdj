@@ -82,6 +82,11 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 }
 
 #favorites{
+  .scinfo{
+    margin-top:3px;
+    font-size:.7em;
+  }
+
   .meta{
     font-style:italic;
     color:#888;
@@ -600,16 +605,9 @@ a.delsong:inactive{
   border:1px dotted #aaa;
 }
 
-.results_table{
+#results_table{
   @include seriffont;
-  font-size:12px;
-  line-height:22px;
-  height:100%;
-  background-color:white;
-  overflow-y:auto;
-  height:470px;
-  border:1px dotted #aaa;
-
+  width:100%;
 }
 
 tr{
