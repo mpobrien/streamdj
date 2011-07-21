@@ -81,11 +81,12 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   background-color:#fff;
 }
 
+.scinfo{
+  margin-top:3px;
+  font-size:.7em;
+}
+
 #favorites{
-  .scinfo{
-    margin-top:3px;
-    font-size:.7em;
-  }
 
   .meta{
     font-style:italic;

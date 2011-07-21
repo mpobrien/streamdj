@@ -270,6 +270,14 @@ var MessageHandlers = {
       .append( $('<div class="np_uploaderinfo"></div>')
         .append( $('<span class="meta">added by</span>').append(makeText()))
         .append( $('<span class="uploader"></span>').text(message['from'])))
+
+    if('meta' in message && 'scid' in message.meta ){
+      nowPlayingInfo.append($('<div class="fav_line scinfo"></div>')
+       .append($('<a class="soundcloudlink">on soundcloud</a>')
+         .attr("target","_blank")
+         .attr("href","/sctrack/" + message.meta.scid)))
+    }
+
     if( !isStatic || (songId == nowplayingstart)){
       if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
         var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) 
