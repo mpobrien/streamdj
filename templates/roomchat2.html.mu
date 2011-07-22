@@ -90,7 +90,14 @@
               $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
             });
             $('#scfindlink').click(function(){                                  
-              $('#soundcloudmodal').modal( {closeHtml:"", overlayClose:true, autoResize:true});
+              $('#soundcloudmodal').modal( {closeHtml:"", overlayClose:true, autoResize:true,
+                   onClose: function(){ 
+                     soundManager.unmute('scplaysound');
+                     soundManager.unmute('mySound');
+                     soundManager.stop('previewsound');
+                     $.modal.close();
+                  }
+                });
             });
             $('.fbinvite').click(doFbInvite);
             $('.twinvite').click(doTwitterinvite);
