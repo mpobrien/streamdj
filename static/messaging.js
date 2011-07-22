@@ -125,6 +125,9 @@ var MessageHandlers = {
       .append($('<div class="clearer"> </div>'))
     songLi.hide().appendTo("#queuelisting").show("slide").show("highlight",1000);
     oddify();
+    if( 'scid' in message.meta && message.meta['scid'] == isqueueingId){
+      resetQueueing();
+    }
   },//}}}
 
   "join"   : function(message, isStatic){//{{{
@@ -186,6 +189,7 @@ var MessageHandlers = {
     nowplayingMeta = null;
     $('#albumart').html('')
     $('#albumart').hide();
+    soundManager.stop('scplaysound');
     oddify();
   },//}}}
 
