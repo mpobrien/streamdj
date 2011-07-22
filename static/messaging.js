@@ -277,7 +277,8 @@ var MessageHandlers = {
 
     if('meta' in message && 'scid' in message.meta ){
       nowPlayingInfo.append($('<div class="fav_line scinfo"></div>')
-       .append($('<a class="soundcloudlink">on soundcloud</a>')
+        .append( $('<span class="meta">via</span>').append(makeText()))
+       .append($('<a class="soundcloudlink">Soundcloud</a>')
          .attr("target","_blank")
          .attr("href","/sctrack/" + message.meta.scid)))
     }
