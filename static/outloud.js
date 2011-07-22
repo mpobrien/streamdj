@@ -179,6 +179,7 @@ var oddify = function(){
 
 function setVol(v){
   soundManager.setVolume('mySound', v);
+  soundManager.setVolume('scplaysound', v);
   $('#volinside').css('width', v + '%')
   document.cookie = "olvol_" + roomname + "=" + v;
 }
@@ -503,9 +504,11 @@ $(document).ready(function(){
     $('#volinside').css('width', muted ? '0%' : currentVolume + '%');
     if (muted) {
       soundManager.setVolume('mySound', 0);
+      soundManager.setVolume('scplaysound', 0);
       $('#volicon').addClass( muted ? "muted" : "notmuted").removeClass(muted ? "notmuted" : "muted");
     } else {
       soundManager.setVolume('mySound', currentVolume);
+      soundManager.setVolume('scplaysound', currentVolume);
       $('#volicon').addClass("notmuted").removeClass("muted");
     }
   }
