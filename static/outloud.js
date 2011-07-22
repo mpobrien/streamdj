@@ -323,12 +323,19 @@ $(document).ready(function(){
         alert("Sorry, you've already got 5 songs in the queue already! Let one play before adding more.");
         return;
       }
+
+      var trackId;
       var trackInfo = $(this).data('trackinfo')
-      isqueueingId = trackInfo.id
+      if(trackInfo){
+        trackId = trackInfo.id
+      }else{
+        trackId = $(this).data('tid') 
+      }
+      isqueueingId = trackId
       $('.queue').addClass('qdisabled')
       $(this).removeClass('qdisabled').addClass('queueing')
       var currentlyQueueingItem = $(this);
-      $.get( '/' + roomname + '/scqueue/', {t:trackInfo.id}, function(){
+      $.get( '/' + roomname + '/scqueue/', {t:trackId}, function(){
         /*isqueueing = false;*/
         /*currentlyQueueingItem.removeClass('qdisabled');*/
         /*$('.queue').removeClass('qdisabled')*/
