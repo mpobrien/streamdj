@@ -613,7 +613,8 @@ img.albumartimg {
   cursor: default; }
 
 .prevlink {
-  padding-left: 18px; }
+  padding-left: 18px;
+  padding-bottom: .5em; }
   .prevlink .preview {
     height: 100%;
     display: block; }

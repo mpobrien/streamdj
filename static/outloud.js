@@ -257,7 +257,7 @@ function loadFavorites(pageNum, doSlide){
        }
        if( 'scid' in message){
          newli.append($('<div class="fav_line scinfo"></div>')
-             .append($('<a class="soundcloudlink">on soundcloud</a>')
+             .append($('<a class="soundcloudlink">on Soundcloud</a>')
                .attr("target","_blank")
                .attr("href","/sctrack/" + message['scid']))
              .append($('<span class="prevlink preview scnotplaying favpreview">preview</span>').data("tid", message['scid']))
