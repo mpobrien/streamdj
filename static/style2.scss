@@ -382,7 +382,7 @@ $headerColor: #2A2C31;
 
 .songinfo{
   float:left;
-  width:250px;
+  width:245px;
   font-size:14px;
 }
 
@@ -711,22 +711,48 @@ img.albumartimg{
   background-position: 0% 50%;
 }
 
-.prevlink{
-  padding-left:18px;
+.preview, .queue{
+  margin-left:4px;
+  margin-right:4px;
+}
+
+.soundcloudlink{
+  padding-right:10px;
 }
 
 .preview{
   right:0px;
-  height:100%;
-  display:block;
 }
 
 .queue{
-  height:100%;
+  padding-left:4px;
   padding-right:3px;
   background-image: url('/static/sq_plus.png');
   background-repeat: no-repeat;
   background-position: 0% 50%;
+}
+
+.queueing{
+  background-image: url('/static/queueloading.gif');
+}
+
+.qdisabled{
+  background-image: url('/static/sq_plus_disabled.png');
+  cursor:default;
+}
+
+
+.prevlink{
+  padding-left:18px;
+
+  .preview{
+    height:100%;
+    display:block;
+  }
+
+  .queue{
+    height:100%;
+  }
 }
 
 span.title{
