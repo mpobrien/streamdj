@@ -347,31 +347,39 @@ $(document).ready(function(){
         if($(currentlyPlaying).hasClass('scplaying')){
           $(currentlyPlaying).removeClass('scplaying').addClass('scnotplaying').text('preview')
           soundManager.pause('previewsound')
+          soundManager.unmute('scplaysound')
+          soundManager.unmute('mySound')
           return;
         }else{
           $(currentlyPlaying).removeClass('scnotplaying').addClass('scplaying').text('pause')
           soundManager.play('previewsound')
+          soundManager.mute('scplaysound')
+          soundManager.mute('mySound')
           return;
         }
       }
     }
+    var trackId;
+    var trackInfo = $(this).data('trackinfo')
+    if(trackInfo){
+      trackId = trackInfo.id
+    }else{
+      trackId = $(this).data('tid') 
+    }
+
     currentlyPlaying = this;
     $(this).addClass('scplaying').removeClass('scnotplaying').text('pause');
     var scid = soundManager.getSoundById('previewsound');
-    var trackInfo = $(this).data('trackinfo')
-    console.log(trackInfo);
-    var soundurl = "http://api.soundcloud.com/tracks/" + trackInfo.id + "/stream?client_id=" + sc_clientId;
-    console.log(soundurl);
-    console.log(scid);
+    var soundurl = "http://api.soundcloud.com/tracks/" + trackId + "/stream?client_id=" + sc_clientId;
     if( scid ){
-      console.log("here");
       scid.load({url: soundurl});
       scid.setPosition(0);
       scid.play();
     }else{
-      console.log("here2");
-      scid = soundManager.createSound({id:'previewsound',url:soundurl, autoPlay:true});
+      scid = soundManager.createSound({id:'previewsound', url:soundurl, autoPlay:true});
     }
+    soundManager.mute('scplaysound')
+    soundManager.mute('mySound')
     //soundcloud.getPlayer('yourPlayerId').api_load($(this).data('url'));
   })
 
@@ -429,6 +437,9 @@ $(document).ready(function(){
        $('#favorites').hide('slide', 'fast',function(){
          favoritesopen = false;
          $('#player').show('slide', 'fast');
+         soundManager.stop('previewsound')
+         soundManager.unmute('scplaysound')
+         soundManager.unmute('mySound')
        });
     }else{
        $('#player').hide('slide', 'fast',function(){
@@ -443,6 +454,9 @@ $(document).ready(function(){
      $('#favorites').hide('slide', 'fast',function(){
        favoritesopen = false;
        $('#player').show('slide', 'fast');
+       soundManager.stop('previewsound')
+       soundManager.unmute('scplaysound')
+       soundManager.unmute('mySound')
      });
    });
 
