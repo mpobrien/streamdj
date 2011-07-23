@@ -619,6 +619,17 @@ a.delsong:inactive{
   line-height:24px;
 }
 /******** SOUNDCLOUD SHIT ********/
+#scfindlink{
+  cursor:pointer;
+  padding-left:4px;
+  padding-right:4px;
+}
+
+#scfindlink.hovering{
+  @include rounded(5px);
+  background-color:#eee;
+}
+
 #searchresults{
   @include seriffont;
   margin-top:2px;

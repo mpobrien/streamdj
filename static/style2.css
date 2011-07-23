@@ -529,6 +529,17 @@ a.delsong:inactive {
   line-height: 24px; }
 
 /******** SOUNDCLOUD SHIT ********/
+#scfindlink {
+  cursor: pointer;
+  padding-left: 4px;
+  padding-right: 4px; }
+
+#scfindlink.hovering {
+  border--radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background-color: #eee; }
+
 #searchresults {
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
   margin-top: 2px;
@@ -628,8 +639,7 @@ img.albumartimg {
   cursor: default; }
 
 .prevlink {
-  padding-left: 18px;
-  padding-bottom: .5em; }
+  padding-left: 18px; }
   .prevlink .preview {
     height: 100%;
     display: block; }
