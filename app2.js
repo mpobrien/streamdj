@@ -993,10 +993,13 @@ var scredirect = function(req, res, qs, matches){
     trackId = parseInt(trackId);
     var soundcloudApiPath = '/tracks/' + trackId + '.json?client_id=' + settings.SOUNDCLOUD_CLIENTID
     http.get({ host: 'api.soundcloud.com', path: soundcloudApiPath}, function(client_res) { 
+      var clientResponse = '';
       client_res.on("data", function(clientdata){
+        var raw = clientdata.toString();
+        clientResponse += raw;
+      }).on("end", function(){
         try{
-          var raw = clientdata.toString();
-          var trackInfo = JSON.parse(raw);
+          var trackInfo = JSON.parse(clientResponse);
           if( 'permalink_url' in trackInfo ){
             utilities.httpRedirect(res, trackInfo['permalink_url']);
             return;
@@ -1005,7 +1008,7 @@ var scredirect = function(req, res, qs, matches){
             return;
           }
         }catch(exception){
-          console.log("Could not parse json data", exception);
+          console.log("Could not parse json data", exception, clientdata.toString());
           utilities.httpRedirect(res, 'http://www.soundcloud.com/');
           return;
         }

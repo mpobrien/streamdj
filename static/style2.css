@@ -644,7 +644,7 @@ span.title {
   background-position: 0% 50%;
   background-repeat: no-repeat;
   height: 12px;
-  width: 12px;
+  float: left;
   left: 30px;
   line-height: 12px;
   font-weight: bold;
