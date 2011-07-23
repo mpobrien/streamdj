@@ -89,6 +89,11 @@
             $('#options').click(function(){
               $('#optionsmodal').modal( {closeHtml:"", overlayClose:true});
             });
+            $('#scfindlink').hover(function(){                                  
+                $(this).addClass('hovering');
+              }, function(){
+                $(this).removeClass('hovering');
+              });
             $('#scfindlink').click(function(){                                  
               $('#soundcloudmodal').modal( {closeHtml:"", overlayClose:true, autoResize:true,
                    onClose: function(){ 
@@ -163,7 +168,8 @@
               </div>
              <div id="queueholder">
                <div class="sectionheading" id="queueheading">queue <span class="dragdropcopy">(drag and drop files to add)</span></div>
-               <div style="background-color:#ccc" id="scfindlink">add tracks from soundcloud <img src="http://developers.soundcloud.com/images/cloud.png"/> </div>
+               <div class="meta" style="float:left; line-height:40px; padding-right:15px;">or</div>
+               <div id="scfindlink_container" style="float:left; line-height:40px; height:40px;"> <div id="scfindlink"> add tracks from soundcloud <img src="/static/scbwsquare.png"/> </div></div>
                 <div id="queuelisting">
                   {{#queue}}
                     <div class="queuedsong" id="song_{{songId}}">
