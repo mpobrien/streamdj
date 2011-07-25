@@ -45,13 +45,12 @@ function playAndSync(){
 function sync(){
   $('#loading').show();
   var offset = servernow - clientnow
-  console.log("syncing!");
   var starttimeclient = nowplayingMeta.time - offset;
   var currentNow = +new Date().getTime()
   var position = currentNow - starttimeclient;
   var scplaysound = soundManager.getSoundById('scplaysound');
-  console.log("duration is", scplaysound.duration);
-  console.log("seeking to", position);
+  //console.log("duration is", scplaysound.duration);
+  //console.log("seeking to", position);
   if( scplaysound.duration != null ){
     var percentLoaded = parseInt((scplaysound.duration / position) * 100)
     $('#loading').text("buffering sound... " + percentLoaded + "%");
@@ -63,6 +62,7 @@ function sync(){
   }else{
     scplaysound.setPosition(position);
     $('#loading').hide();
+    scplaysound.setVolume(muted ? 0 : currentVolume);
     scplaysound.play();
   }
 
@@ -298,17 +298,17 @@ var MessageHandlers = {
     var objDiv = document.getElementById("chat");
     objDiv.scrollTop = objDiv.scrollHeight;
     if( !isStatic ){
-      console.log(message);
-      console.log(isStatic, songId, nowplayingstart);
-      console.log("soundcloud baby");
       if( 'scid' in message['meta'] ){
+        console.log("volm", muted ? 0 : currentVolume);
         var scplaysound = soundManager.getSoundById('scplaysound');
         var soundurl = "http://api.soundcloud.com/tracks/" + message['meta']['scid'] + "/stream?client_id=" + sc_clientId;
         if(scplaysound == null ){
-          scplaysound = soundManager.createSound({id:'scplaysound',url: soundurl, autoPlay:true});
+          scplaysound = soundManager.createSound({id:'scplaysound',url: soundurl, autoPlay:true, volume: muted ? 0 : currentVolume});
         }else{
+          scplaysound.stop();
           scplaysound.load({url: soundurl});
           scplaysound.setPosition(0);
+          scplaysound.setVolume( muted ? 0 : currentVolume);
           scplaysound.play();
         }
       }
