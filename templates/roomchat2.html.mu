@@ -4,6 +4,10 @@
         <link href="/static/reset.css" rel="stylesheet" />
         <link href="/static/style2.css" rel="stylesheet" />
         <link rel="icon" type="image/gif" href="/static/favicon.gif" />
+        <script type="text/javascript">
+          var servernow = {{{servernow}}};
+          var clientnow = +new Date().getTime();
+        </script>
         <script type="text/javascript" src="/static/swfobject.js"></script>
         <script type="text/javascript" src="/static/jquery.min.js"></script>
         <script type="text/javascript" src="/static/jqueryui.js"></script>
@@ -109,6 +113,7 @@
       </div>
       <div id="main">
           <div id="leftside"><!--{{{-->
+
             <div id="favorites" style="display:none">
               <button id="closefavorites">&larr; Back to Player</button>
               <div id="favesheader">Favorites</div>
@@ -122,6 +127,7 @@
             </div>
 
             <div id="player">
+             <div id="songprogress"><div id="songprogressFull"> &nbsp; </div></div>
              <div id="currentfile" class="notplaying">
                <div>the silence is deafening &hellip; :(</div>
                <div>upload something!</div>

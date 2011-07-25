@@ -23,6 +23,17 @@ var bumpMessageCount = function(){
   }
 }
 
+var setSongProgress = function(){
+  var offset = servernow - clientnow
+  var starttimeclient = nowplayingMeta.time - offset;
+  var currentNow = +new Date().getTime()
+  var position = currentNow - starttimeclient;
+  var percentLoaded = (position / (nowplayingMeta.length * 1000))
+  console.log(currentNow, starttimeclient, position, percentLoaded )
+  //var percentLoaded = parseInt(position/nowplayingMeta.length)
+  $('#songprogressFull').css('width', (100*percentLoaded)+'%');
+}
+
 var MessageHandlers = {
 
   "chat"   : function(message, isStatic) {//{{{
@@ -185,6 +196,7 @@ var MessageHandlers = {
       .appendTo("#chat");
     var nowPlayingInfo;
     nowplayingMeta = message.meta;
+    nowplayingMeta.time = message.time;
     nowplayingMessage = message;
     var songId = message["songId"]
     nowplayingId = songId;

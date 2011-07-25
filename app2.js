@@ -681,6 +681,7 @@ function display_form(req, res, context){//{{{
         songIds.push("favecount_" + songInfo.songId);
       }
       
+      result.servernow = +new Date().getTime()
       if( !songIds ){
         utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
       }else{

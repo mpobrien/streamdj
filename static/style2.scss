@@ -6,6 +6,7 @@ $centerColLeftPad: 20px;
 $centerColWidth: 740px;
 $playingThumbnailWidth: 128px;
 $volumebarBorderColor: lighten(#3e4147, 40%);
+$headerColor: #2A2C31;
 
 @mixin seriffont{
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
@@ -26,6 +27,14 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   -moz-border-radius: $radius;
   -webkit-border-radius: $radius;
 }
+
+@mixin gradient($from, $to) {
+  background: $from; /* for non-css3 browsers */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$from', endColorstr='$to'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from($from), to($to)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  $from,  $to); /* for firefox 3.6+ */ 
+} 
+
 .dragdropcopy{
   font-size:.8em;
   text-transform:none;
@@ -33,7 +42,7 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   padding-left: 10px;
 }
 
-#header{ height:$headerHeight; background-color: #2A2C31;  z-index:1000; }
+#header{ height:$headerHeight; background-color: $headerColor;  z-index:1000; }
 #main{ margin-top:0px;}
 .headerlink{
   @include sansseriffont;
@@ -184,7 +193,7 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
   @include seriffont;
   font-size:20px;
   line-height:18px;
-  padding-top:10px;
+  padding-top:15px;
   padding-bottom:10px;
 
   #nowPlayingInfo{
@@ -217,6 +226,22 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 }
 .playing{
   text-align:left;
+}
+
+#songprogress{
+  position:absolute;
+  left:0px;
+  height:5px;
+  width:350px;
+  margin-bottom:5px;
+  border-bottom:1px solid #bbb;
+  border-right:1px solid #bbb;
+}
+
+#songprogressFull{
+  width:50%;
+  height:100%;
+  background-color:#aaa;
 }
 
 #progress{

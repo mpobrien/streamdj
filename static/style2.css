@@ -6,7 +6,7 @@
 
 #header {
   height: 50px;
-  background-color: #2A2C31;
+  background-color: #2a2c31;
   z-index: 1000; }
 
 #main {
@@ -129,7 +129,7 @@
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
   font-size: 20px;
   line-height: 18px;
-  padding-top: 10px;
+  padding-top: 15px;
   padding-bottom: 10px; }
   #currentfile #nowPlayingInfo {
     width: 212px; }
@@ -153,6 +153,20 @@
 
 .playing {
   text-align: left; }
+
+#songprogress {
+  position: absolute;
+  left: 0px;
+  height: 5px;
+  width: 350px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #bbb;
+  border-right: 1px solid #bbb; }
+
+#songprogressFull {
+  width: 50%;
+  height: 100%;
+  background-color: #aaa; }
 
 #progress {
   text-align: center; }
