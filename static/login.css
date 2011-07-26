@@ -52,7 +52,9 @@ h1 {
 #blurb {
   font-size: 15px;
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-size: 14px;
   text-align: left;
+  font-style: italic;
   position: absolute;
   line-height: 150%;
   padding-bottom: 40px;
@@ -119,6 +121,28 @@ a:hover {
 img {
   border: none;
   vertical-align: middle; }
+
+a.facebookbutton {
+  background: url(/static/signfacebook_sprite.png) no-repeat 0 0;
+  width: 151px;
+  height: 22px;
+  display: inline-block;
+  text-indent: -9999px; }
+
+a.facebookbutton:active {
+  background-position: 0 -22px;
+  outline: none; }
+
+a.twitterbutton {
+  background: url(/static/signtwitter_sprite.png) no-repeat 0 0;
+  width: 151px;
+  height: 22px;
+  display: inline-block;
+  text-indent: -9999px; }
+
+a.twitterbutton:active {
+  background-position: 0 -22px;
+  outline: none; }
 
 /*Carousel stuff */
 .agile_carousel img {

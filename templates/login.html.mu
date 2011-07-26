@@ -98,7 +98,7 @@
               <div style="color:red;text-align:center;font-size:16px;">{{msg}}</div>
             {{/errors}}
           <div id="login">
-            <a href="/login/tw/?r={{room}}"><img src="/static/signtwitter.png"/></a> -or- <a href="/login/fb/?r={{room}}"><img src="/static/signfacebook.png"/></a>
+            <a class="twitterbutton" href="/login/tw/?r={{room}}"></a> -or- <a class="facebookbutton" href="/login/fb/?r={{room}}"></a>
           </div>
           <div id="disclaimer">
             We will <b>NEVER</b> publish to your account feed without </br> you explicitly choosing to do so.
