@@ -161,10 +161,11 @@
   width: 350px;
   margin-bottom: 5px;
   border-bottom: 1px solid #bbb;
-  border-right: 1px solid #bbb; }
+  border-right: 1px solid #bbb;
+  display: none; }
 
 #songprogressFull {
-  width: 50%;
+  width: 0%;
   height: 100%;
   background-color: #aaa; }
 

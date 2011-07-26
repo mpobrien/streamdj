@@ -33,9 +33,11 @@ var setSongProgress = function(){
     var currentNow = +new Date().getTime()
     var position = currentNow - starttimeclient;
     var percentLoaded = (position / (nowplayingMeta.length * 1000))
+    percentLoaded*=100;
+    if( percentLoaded > 100 ) percentLoaded = 100;
     //console.log(currentNow, starttimeclient, position, percentLoaded )
     //var percentLoaded = parseInt(position/nowplayingMeta.length)
-    $('#songprogressFull').css('width', (100*percentLoaded)+'%');
+    $('#songprogressFull').css('width', (percentLoaded)+'%');
     $('#songprogress').show();
   }
 }
