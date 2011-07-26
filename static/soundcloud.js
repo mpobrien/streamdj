@@ -32,45 +32,11 @@ var trackSearchCallback = function(data){
           .append($('<span class="meta">by</span>'))
           .append(document.createTextNode(' '))
           .append($('<span class="artist"></div>').text(data[i].user.username))))
-      .append($('<td width="70"></td>')
+      .append($('<td width="80"></td>')
           .append($('<div class="prevlink preview scnotplaying">preview</div>').data("trackinfo", data[i]).hide()))
       .append($('<td width="60"></td>')
           .append($('<div class="prevlink queue">queue</div>').data("trackinfo", data[i]).hide()))
       .appendTo('#results_table')
-      /*.append($('<div class="lilheart">&nbsp;</div>').text(data[i].favoritings_count))*/
-      /*.append($('<span class="trackresultinfo"></span>')*/
-      /*.append($('<span class="songlength"></span>').text(prettyDuration))*/
-      /*.append($('<span class="title"></span>').text(data[i].title))*/
-      /*.append(document.createTextNode(' '))*/
-      /*.append($('<span class="meta">by</span>'))*/
-      /*.append(document.createTextNode(' '))*/
-      /*.append($('<span class="artist"></div>').text(data[i].user.username))*/
-      /*.append($('<div class="clearer"></div>')) )*/
-      /*.append($('<div class="previewlinks"></div>')*/
-      /*.append( $('<span class="prevlink preview">preview</span>').data("id", data[i].id))*/
-      /*.append( $('<span class="prevlink queue">queue</span>').data("id", data[i].id)))*/
-      /*.append($('<div class="clearer"></div>')) */
-      /*.appendTo('#searchresults')*/
-      /*.data("url", data[i].permalink_url)*/
-      /*.data("id", data[i].id);*/
-    /*$('.previewlinks').hide();*/
-
-    /*$('<div class="trackresult"></div>')*/
-    /*.append(artwork)*/
-    /*.append($('<div class="lilheart">&nbsp;</div>').text(data[i].favoritings_count))*/
-    /*.append($('<div class="trackresultinfo">')*/
-    /*.append($('<span class="songlength"></span>').text(prettyDuration))*/
-    /*.append($('<span class="title"></span>').text(data[i].title))*/
-    /*.append(document.createTextNode(' '))*/
-    /*.append($('<span class="meta">by</span>'))*/
-    /*.append(document.createTextNode(' '))*/
-    /*.append($('<span class="artist"></span>').text(data[i].user.username)))*/
-    /*.append($('<div class="previewlinks"></div>').hide()*/
-    /*.append( $('<span class="prevlink preview">preview</span>').data("id", data[i].id))*/
-    /*.append( $('<span class="prevlink queue">queue</span>').data("id", data[i].id)))*/
-    /*.appendTo('#searchresults')*/
-    /*.data("url", data[i].permalink_url)*/
-    /*.data("id", data[i].id);*/
   }
 }
 
@@ -84,6 +50,7 @@ function search(){
 }
 
 var currentlyPlaying = null;
+var currentlyQueueing = null;
 
 $(document).ready(function(){
   soundcloud.addEventListener('onPlayerReady', function(player, data){
@@ -103,10 +70,17 @@ $(document).ready(function(){
 
     mouseleave: function(){
       $(this).removeClass("schover");
-      $(this).find('.queue').hide();
       var previewdiv = $(this).find('.preview')
       if( !previewdiv.hasClass('scplaying') ){
         previewdiv.hide();
+      }
+
+      var queuediv = $(this).find('.queue')
+      if( !queuediv.hasClass('queueing') ){
+        console.log("doesn't have", queuediv.attr('class'))
+        queuediv.hide();
+      }else{
+        console.log("has")
       }
     },
   });

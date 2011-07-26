@@ -38,7 +38,7 @@ var generateTwitterMsg = function(songInfo){
 }   
 
 var resetQueueing = function(){
-  $('.queue').removeClass('qdisabled').removeClass('queueing');
+  $('.queue').removeClass('qdisabled').removeClass('queueing').hide();
   isqueueingId = null;
 }
 
@@ -259,8 +259,8 @@ function loadFavorites(pageNum, doSlide){
              .append($('<a class="soundcloudlink">on Soundcloud</a>')
                .attr("target","_blank")
                .attr("href","/sctrack/" + message['scid']))
-             .append($('<span class="prevlink preview scnotplaying favpreview">preview</span>').data("tid", message['scid']))
              .append($('<span class="prevlink queue">queue</span>').data("tid", message['scid'])))
+             //.append($('<span class="prevlink preview scnotplaying favpreview">preview</span>').data("tid", message['scid']))
        }
        unfavorite.appendTo(wrapper)
        newli.appendTo(wrapper);
