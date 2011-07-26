@@ -1,6 +1,17 @@
+var lastQuery;
 var sc_clientId = "07b794af61fdce4a25c9eadce40dda83";
 var trackSearchCallback = function(data){
   $('#search_spinner').hide();
+  if( data.length == 0 ){
+    $('<tr></tr>').append(
+        $('<td class="noresults"></td>')
+        .text('No tracks found on Soundcloud matching:'))
+      .appendTo('#results_table');
+    $('<tr></tr>').append(
+       $('<td class="noresults_qry"></td>').text('\"' + lastQuery + '\"'))
+      .appendTo('#results_table')
+    return;
+  }
   for(var i=0;i<data.length;i++){
     console.log(data[i], data[i].artwork_url != null);
     var artwork = $('<div class="trackresultart"></div>') 
@@ -44,9 +55,10 @@ var trackSearchCallback = function(data){
 function search(){
   $('#search_spinner').show();
   var url;
+  lastQuery = $('#user_query').val();
   url = "http://api.soundcloud.com/tracks.json?client_id=07b794af61fdce4a25c9eadce40dda83&filter=streamable&q=" + escape($('#user_query').val()) + "&callback=?", 
   $.getJSON(url, trackSearchCallback)
-  $('.trackresult').remove();
+  $('.trackresult, .noresults, .noresults_qry').remove();
 }
 
 var currentlyPlaying = null;
