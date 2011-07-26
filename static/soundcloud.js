@@ -56,7 +56,7 @@ function search(){
   $('#search_spinner').show();
   var url;
   lastQuery = $('#user_query').val();
-  url = "http://api.soundcloud.com/tracks.json?client_id=07b794af61fdce4a25c9eadce40dda83&filter=streamable&q=" + escape($('#user_query').val()) + "&callback=?", 
+  url = "http://api.soundcloud.com/tracks.json?client_id=07b794af61fdce4a25c9eadce40dda83&filter=streamable&duration\[to\]=1200000&q=" + escape($('#user_query').val()) + "&callback=?", 
   $.getJSON(url, trackSearchCallback)
   $('.trackresult, .noresults, .noresults_qry').remove();
 }
