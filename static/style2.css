@@ -526,7 +526,9 @@ a.delsong:inactive {
 #scfindlink {
   cursor: pointer;
   padding-left: 4px;
-  padding-right: 4px; }
+  padding-right: 4px;
+  letter-spacing: 1px;
+  font-size: .9em; }
 
 #scfindlink.hovering {
   border--radius: 5px;
@@ -626,7 +628,8 @@ img.albumartimg {
   margin-right: 4px; }
 
 .soundcloudlink {
-  padding-right: 10px; }
+  padding-right: 10px;
+  font-size: .8em; }
 
 .preview {
   right: 0px; }
