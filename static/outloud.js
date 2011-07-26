@@ -270,6 +270,8 @@ $(document).ready(function(){
     isBlurred = false;
   })
 
+  setInterval(setSongProgress, 500);
+
   droptarget = document.getElementById("queueholder"); 
   var y;
   while(y = msgs.pop()){

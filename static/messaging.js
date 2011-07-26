@@ -24,14 +24,20 @@ var bumpMessageCount = function(){
 }
 
 var setSongProgress = function(){
-  var offset = servernow - clientnow
-  var starttimeclient = nowplayingMeta.time - offset;
-  var currentNow = +new Date().getTime()
-  var position = currentNow - starttimeclient;
-  var percentLoaded = (position / (nowplayingMeta.length * 1000))
-  console.log(currentNow, starttimeclient, position, percentLoaded )
-  //var percentLoaded = parseInt(position/nowplayingMeta.length)
-  $('#songprogressFull').css('width', (100*percentLoaded)+'%');
+  if( !nowplayingMeta ){
+    $('#songprogress').hide();
+    return;
+  }else{
+    var offset = servernow - clientnow
+    var starttimeclient = nowplayingMeta.time - offset;
+    var currentNow = +new Date().getTime()
+    var position = currentNow - starttimeclient;
+    var percentLoaded = (position / (nowplayingMeta.length * 1000))
+    //console.log(currentNow, starttimeclient, position, percentLoaded )
+    //var percentLoaded = parseInt(position/nowplayingMeta.length)
+    $('#songprogressFull').css('width', (100*percentLoaded)+'%');
+    $('#songprogress').show();
+  }
 }
 
 var MessageHandlers = {
