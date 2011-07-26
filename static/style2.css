@@ -55,7 +55,12 @@
   background-color: #fff; }
 
 .scinfo {
-  font-size: .6em; }
+  padding-top: 3px;
+  font-size: .7em; }
+  .scinfo .queue {
+    line-height: 18px;
+    padding-top: 3px;
+    cursor: pointer; }
 
 #favorites .meta {
   font-style: italic;
@@ -288,6 +293,10 @@
 
 #queueheading {
   border: 1px solid transparent; }
+
+#queuelisting {
+  border-top: 1px dotted #BBB;
+  margin-bottom: 3px; }
 
 #queueholder {
   margin-top: 35px;
@@ -629,6 +638,7 @@ img.albumartimg {
     height: 100%;
     display: block; }
   .prevlink .queue {
+    padding-top: none;
     height: 100%; }
 
 span.title {

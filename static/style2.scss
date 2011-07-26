@@ -82,7 +82,13 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 }
 
 .scinfo{
-  font-size:.6em;
+  padding-top:3px;
+  font-size:.7em;
+  .queue{
+    line-height:18px;
+    padding-top:3px;
+    cursor:pointer;
+  }
 }
 
 #favorites{
@@ -332,6 +338,11 @@ $volumebarBorderColor: lighten(#3e4147, 40%);
 
 #queueheading{
   border:1px solid transparent;
+}
+
+#queuelisting{
+  border-top:1px dotted #BBB;
+  margin-bottom:3px;
 }
 
 #queueholder{
@@ -734,6 +745,7 @@ img.albumartimg{
   }
 
   .queue{
+    padding-top:none;
     height:100%;
   }
 }
