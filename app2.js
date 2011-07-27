@@ -885,7 +885,10 @@ var adminroom = function(req, res, qs, matches){//{{{
         ["get", "nowplaying_" + roomname],
         ["get", "nowplayingid_" + roomname],
         ["zrange", "roomqueue_" + roomname, 0, -1, "withscores"],
-        ["hgetall", "listeners_" + roomname]
+        ["hgetall", "listeners_" + roomname],
+        ["zcard", "songs_" + roomname],
+        ["zcard", "chats_" + roomname],
+        ["scard", "uniqlisteners_" + roomname],
       ]).exec(function(errz, replies){
         var queue = replies[2];
         var roomqueue = []
@@ -895,12 +898,21 @@ var adminroom = function(req, res, qs, matches){//{{{
           queueItem.strinfo = queue[i];
           roomqueue.push(queueItem);
         }
+        var numsongs = replies[5];
+        var numchats = replies[6];
+        var numuniqlisteners = replies[7];
+        if( !numsongs ) numsongs = 0;
+        if( !numchats ) numchats = 0;
+        if( !numuniqlisteners ) numuniqlisteners = 0;
 
         var context = {"roomname" : roomname,
                        "nowplaying" : replies[0],
                        "nowplaying_id" : replies[1],
                        "roomqueue" : roomqueue,
-                       "listeners" : JSON.stringify(replies[3])
+                       "listeners" : JSON.stringify(replies[3]),
+                       "numsongs" : numsongs,
+                       "numchats" : numchats,
+                       "numuniqlisteners" : numuniqlisteners
                       }
         utilities.sendTemplate(res, templates.getTemplate("adminroom.html"), context);
         return;
