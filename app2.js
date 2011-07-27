@@ -27,13 +27,23 @@ var msggen = new msgs.MessageGenerator();
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
 var error404path = path.join(process.cwd(), "/static/404.html");   
 
-var templates = new TemplateManager('./templates',['login.html.mu', 'roomchat2.html.mu', 'loggedin.html.mu', 'roompreview.html']);
+var templates = new TemplateManager('./templates',['login.html.mu', 'roomchat2.html.mu', 'loggedin.html.mu', 'roompreview.html', 'adminhome.html', 'adminroom.html']);
 templates.initializeTemplates();
 
 function reloadTemplates(req, res){
   templates.initializeTemplates();
   res.end();
 }
+
+var isSiteAdmin = function(uid){//{{{
+  for(var i=0;i<settings.SITE_ADMINS.length;i++){
+    if(uid == settings.SITE_ADMINS[i]){
+      return true;
+    }
+  }
+  return false;
+}//}}}
+
 
 /*function broadcastToRoom(roomname, message, exclude){*/
 /*var chatroom = rooms[roomname]*/
@@ -833,8 +843,112 @@ var skip = function(req, res, qs, matches){
   });
 }
 
+var adminhome = function(req, res, qs, matches){//{{{
+  var cookies = new Cookies(req, res);
+  if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
+  var sessionId = cookies.get("session");
+  getUserInfo(sessionId, function(err, userinfo){
+    if(err || !userinfo) return;
+    var uidkey = userinfo.service + '_' + userinfo.user_id;
+    //Check if this is one of the good guys
+    if( !isSiteAdmin(uidkey) ){
+      res.end('');
+      return;
+    }else{
+      redisClient.smembers("rooms", function(err, rooms){
+        if(err || !rooms){
+          res.end("error :(");
+          return;
+        }else{
+          utilities.sendTemplate(res, templates.getTemplate("adminhome.html"), {"rooms":rooms});
+          return;
+        }
+      });
+    }
+  });
+}//}}}
+
+var adminroom = function(req, res, qs, matches){//{{{
+  var cookies = new Cookies(req, res);
+  if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
+  var sessionId = cookies.get("session");
+  getUserInfo(sessionId, function(err, userinfo){
+    if(err || !userinfo) return;
+    var uidkey = userinfo.service + '_' + userinfo.user_id;
+    //Check if this is one of the good guys
+    if( !isSiteAdmin(uidkey) ){
+      res.end('');
+      return;
+    }else{
+      var roomname = qs.query['room']
+      redisClient.multi( [
+        ["get", "nowplaying_" + roomname],
+        ["get", "nowplayingid_" + roomname],
+        ["zrange", "roomqueue_" + roomname, 0, -1, "withscores"],
+        ["hgetall", "listeners_" + roomname]
+      ]).exec(function(errz, replies){
+        var context = {"roomname" : roomname,
+                       "nowplaying" : replies[0],
+                       "nowplaying_id" : replies[1],
+                       "roomqueue" : replies[2],
+                       "listeners" : JSON.stringify(replies[3])
+                      }
+        utilities.sendTemplate(res, templates.getTemplate("adminroom.html"), context);
+        return;
+      });
+    }
+  });
+}//}}}
+
+var admincommand = function(req, res, qs, matches){//{{{
+  var cookies = new Cookies(req, res);
+  if( !cookies.get("session") ){ res.end(); return } // user is not logged in.
+  var sessionId = cookies.get("session");
+  getUserInfo(sessionId, function(err, userinfo){
+    if(err || !userinfo) return;
+    var uidkey = userinfo.service + '_' + userinfo.user_id;
+    //Check if this is one of the good guys
+    if( !isSiteAdmin(uidkey) ){
+      res.end('');
+      return;
+    }else{
+      var redirectFunc = function(){
+        res.writeHead(302, { 'Location': '/admin/roominfo?room=' + roomname});
+        res.end();
+      }
+
+      var roomname = qs.query['room']
+      var command = qs.query['command']
+      if( command == "clearlisteners" ){
+        redisClient.del("listeners_" + roomname, redirectFunc);
+      }else if(command == "skipsong" ){
+        var songId = qs.query['songId']
+        redisClient.publish("skipnow", roomname + " " + songId, redirectFunc);
+      }else if(command =="queuedelete"){
+        var songId = qs.query['songId']
+        redisClient.multi( [
+          ["zremrangebyscore", "roomqueue_" + roomname, songId, songId],
+          ["incr", "roommsg_" + roomname],
+        ]).exec(function(errz, replies){
+          var numRemoved = replies[0];
+          var message = msggen.queue_del(songId)
+          message.id = replies[1];
+          redisClient.publish("queueremove", roomname + " " + replies[1] + " " + JSON.stringify(message));
+          redirectFunc();
+        });
+      }else{
+        redirectFunc();
+      }
+    }
+  });
+}//}}}
+
+
 var router = new routing.Router([//{{{
   ["^/$", homepage],
+  ["^/admin/?$", adminhome],
+  ["^/admin/roominfo?$", adminroom],
+  ["^/admin/command?$", admincommand],
   ["^/admin/reloadtemplates$", reloadTemplates],
   ['^/([\\w\-]+)/listen/?$', listen],
   //['^/([\\w\-]+)/send/?$', send],
@@ -851,6 +965,8 @@ var router = new routing.Router([//{{{
   ["^/([\\w\-]+)/remove/?$", remove_from_queue],
   ["^/([\\w\-]+)/upload/?$", upload],  
   ["^/([\\w\-]+)/?$", roomdisplay],
+
+
 ]);//}}}
 
 var server = ws.createServer();

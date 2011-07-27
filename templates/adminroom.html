@@ -1,0 +1,30 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>{{roomname}}</h1>
+    <div>
+      <h2>nowplaying</h2>
+      <div>
+        <a href="/admin/command?room={{roomname}}&command=skipsong&songId={{nowplaying_id}}">Skip this song now</a>
+      </div>
+      <div>
+        {{nowplaying}}
+      </div>
+    </div>
+    <div>
+      <h2>queue</h2>
+      <div>
+        {{roomqueue}}
+      </div>
+    </div>
+
+    <div>
+      <h2>listeners</h2>
+      <a href="/admin/command?room={{roomname}}&command=clearlisteners">Clear Listeners List</a>
+      <div>
+        {{listeners}}
+      </div>
+    </div>
+  </body>
+</html>
