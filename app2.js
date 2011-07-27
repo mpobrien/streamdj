@@ -898,9 +898,9 @@ var adminroom = function(req, res, qs, matches){//{{{
           queueItem.strinfo = queue[i];
           roomqueue.push(queueItem);
         }
-        var numsongs = replies[5];
-        var numchats = replies[6];
-        var numuniqlisteners = replies[7];
+        var numsongs = replies[4];
+        var numchats = replies[5];
+        var numuniqlisteners = replies[6];
         if( !numsongs ) numsongs = 0;
         if( !numchats ) numchats = 0;
         if( !numuniqlisteners ) numuniqlisteners = 0;
