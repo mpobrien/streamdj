@@ -887,10 +887,19 @@ var adminroom = function(req, res, qs, matches){//{{{
         ["zrange", "roomqueue_" + roomname, 0, -1, "withscores"],
         ["hgetall", "listeners_" + roomname]
       ]).exec(function(errz, replies){
+        var queue = replies[2];
+        var roomqueue = []
+        for(var i=0;i<queue.length;i+=2){
+          var queueItem = JSON.parse(queue[i]);
+          queueItem.score = queue[i+1];
+          queueItem.strinfo = queue[i];
+          roomqueue.push(queueItem);
+        }
+
         var context = {"roomname" : roomname,
                        "nowplaying" : replies[0],
                        "nowplaying_id" : replies[1],
-                       "roomqueue" : replies[2],
+                       "roomqueue" : roomqueue,
                        "listeners" : JSON.stringify(replies[3])
                       }
         utilities.sendTemplate(res, templates.getTemplate("adminroom.html"), context);
@@ -916,7 +925,6 @@ var admincommand = function(req, res, qs, matches){//{{{
         res.writeHead(302, { 'Location': '/admin/roominfo?room=' + roomname});
         res.end();
       }
-
       var roomname = qs.query['room']
       var command = qs.query['command']
       if( command == "clearlisteners" ){
@@ -965,8 +973,6 @@ var router = new routing.Router([//{{{
   ["^/([\\w\-]+)/remove/?$", remove_from_queue],
   ["^/([\\w\-]+)/upload/?$", upload],  
   ["^/([\\w\-]+)/?$", roomdisplay],
-
-
 ]);//}}}
 
 var server = ws.createServer();

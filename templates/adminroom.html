@@ -15,7 +15,13 @@
     <div>
       <h2>queue</h2>
       <div>
-        {{roomqueue}}
+        <ul>
+          {{#roomqueue}}
+            <li> <a href="/admin/command?room={{roomname}}&command=queuedelete&songId={{score}}">Remove</a>
+                {{strinfo}}
+            </li>
+          {{/roomqueue}}
+        </ul>
       </div>
     </div>
 
