@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <style type="text/css">
+      td{
+        text-align:center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{{roomname}}</h1>
+    <div><h2>Room Info</h2></div>
+    <table border="1">
+      <tr>
+        <td># of chat messages</td>
+        <td><b>{{numchats}}</b></td>
+      </tr>
+
+      <tr>
+        <td># of songs played</td>
+        <td><b>{{numsongs}}</b></td>
+      </tr>
+
+      <tr>
+        <td># of unique visitors in room</td>
+        <td><b>{{numuniqlisteners}}</b></td>
+      </tr>
+    </table>
+
+    <div>
+      <h2>nowplaying</h2>
+      <div>
+        <a href="/admin/command?room={{roomname}}&command=skipsong&songId={{nowplaying_id}}">Skip this song now</a>
+      </div>
+      <div>
+        {{nowplaying}}
+      </div>
+    </div>
+    <div>
+      <h2>queue</h2>
+      <div>
+        <ul>
+          {{#roomqueue}}
+            <li> <a href="/admin/command?room={{roomname}}&command=queuedelete&songId={{score}}">Remove</a>
+                {{strinfo}}
+            </li>
+          {{/roomqueue}}
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <h2>listeners</h2>
+      <a href="/admin/command?room={{roomname}}&command=clearlisteners">Clear Listeners List</a>
+      <div>
+        {{listeners}}
+      </div>
+    </div>
+  </body>
+</html>
