@@ -267,10 +267,14 @@ var MessageHandlers = {
     var nowPlayingInfo;
     nowplayingMeta = message.meta;
 <<<<<<< HEAD
+<<<<<<< HEAD
     nowplayingMeta.time = message.time;
 =======
     nowplayingMeta.time = message['time']
 >>>>>>> sync across clients
+=======
+    nowplayingMeta.time = message['time']
+>>>>>>> 23f3959e200a0bc0b30ff3325b05e3215f65cc1a
     nowplayingMessage = message;
     var songId = message["songId"]
     nowplayingId = songId;
