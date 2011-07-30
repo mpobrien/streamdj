@@ -389,9 +389,11 @@ $(document).ready(function(){
     if( scid ){
       scid.load({url: soundurl});
       scid.setPosition(0);
+      scid.unmute();
       scid.play();
     }else{
       scid = soundManager.createSound({id:'previewsound', url:soundurl, autoPlay:true});
+      scid.unmute();
     }
     soundManager.mute('scplaysound')
     soundManager.mute('mySound')

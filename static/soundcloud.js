@@ -13,7 +13,6 @@ var trackSearchCallback = function(data){
     return;
   }
   for(var i=0;i<data.length;i++){
-    console.log(data[i], data[i].artwork_url != null);
     var artwork = $('<div class="trackresultart"></div>') 
     if( data[i].artwork_url != null ){
       artwork.append($('<img src="' + data[i].artwork_url + '" width="24" height="24" style="vertical-align:middle"></img>'))
@@ -66,7 +65,6 @@ var currentlyQueueing = null;
 
 $(document).ready(function(){
   soundcloud.addEventListener('onPlayerReady', function(player, data){
-    console.log("ready");
   });
   $('#user_query').keypress( function(e){
     if(e.keyCode==13 && $(this).val().length > 0 ){
@@ -89,10 +87,8 @@ $(document).ready(function(){
 
       var queuediv = $(this).find('.queue')
       if( !queuediv.hasClass('queueing') ){
-        console.log("doesn't have", queuediv.attr('class'))
         queuediv.hide();
       }else{
-        console.log("has")
       }
     },
   });
