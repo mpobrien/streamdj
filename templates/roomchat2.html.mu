@@ -1,5 +1,6 @@
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
         <title>{{roomname}} - outloud.fm</title>
         <link href="/static/reset.css" rel="stylesheet" />
         <link href="/static/style2.css" rel="stylesheet" />
