@@ -135,10 +135,11 @@ def main(argv):
       print "got: ", message
       songInfo = json.loads(message[1])
       trackInfo = getTrackInfo(songInfo['trackId'])
+      trackLength = float(trackInfo['duration']) / 1000.;
       metadata = {'Artist' : trackInfo['user']['username'],
                   'Title'  : trackInfo['title'],
                   'scid'   : songInfo['trackId'],
-                  'length' : trackInfo['duration']}
+                  'length' : trackLength}
       metadata['room']= songInfo['room']
       metadata['uid'] = songInfo['uid']
       if( 'artwork_url' in trackInfo and trackInfo['artwork_url'] ):

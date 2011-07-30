@@ -35,15 +35,12 @@ var setSongProgress = function(){
     var percentLoaded = (position / (nowplayingMeta.length * 1000))
     percentLoaded*=100;
     if( percentLoaded > 100 ) percentLoaded = 100;
-    //console.log(currentNow, starttimeclient, position, percentLoaded )
-    //var percentLoaded = parseInt(position/nowplayingMeta.length)
     $('#songprogressFull').css('width', (percentLoaded)+'%');
     $('#songprogress').show();
   }
 }
 
 function playAndSync(){
-  console.log("ready.");
   var offset = servernow - clientnow
   if(nowplayingMeta){
     var starttimeclient = nowplayingMeta.time - offset;
@@ -62,7 +59,16 @@ function playAndSync(){
 }
 
 function sync(){
-  $('#loading').show();
+  if(nowplayingMeta){
+    $('#loading').show();
+  }else{
+    $('#loading').hide();
+    return;
+  }
+  if( !('scid' in nowplayingMeta)){
+    $('#loading').hide();
+    return;
+  }
   var offset = servernow - clientnow
   var starttimeclient = nowplayingMeta.time - offset;
   var currentNow = +new Date().getTime()
@@ -105,16 +111,12 @@ var MessageHandlers = {
   },//}}}
 
   "liked"   : function(message, isStatic) {//{{{
-    console.log(message);
     var songDiv = $('#s_' + message.songId);
     if(!songDiv) return;
-    console.log("yo");
     favCounter = songDiv.find('.favcount');
     var countNum = message.body;
     var innerText = (countNum == 1 ? countNum + ' person favorited this': countNum + ' people favorited this')
     if( favCounter.length ){
-      console.log(innerText);
-      console.log(favCounter);
       favCounter.text(innerText); 
     }else{
       var newfavcount =  $('<div class="favcount"></div>').text(innerText).hide(); 
@@ -213,7 +215,6 @@ var MessageHandlers = {
   },//}}}
 
   "started": function(message, isStatic){//{{{
-    console.log(message);
     var nowtime = new Date().getTime();
     if( !isStatic ){
       var readystatenow = soundManager.getSoundById('mySound').readyState;
@@ -266,15 +267,7 @@ var MessageHandlers = {
       .appendTo("#chat");
     var nowPlayingInfo;
     nowplayingMeta = message.meta;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    nowplayingMeta.time = message.time;
-=======
     nowplayingMeta.time = message['time']
->>>>>>> sync across clients
-=======
-    nowplayingMeta.time = message['time']
->>>>>>> 23f3959e200a0bc0b30ff3325b05e3215f65cc1a
     nowplayingMessage = message;
     var songId = message["songId"]
     nowplayingId = songId;
@@ -326,7 +319,6 @@ var MessageHandlers = {
     objDiv.scrollTop = objDiv.scrollHeight;
     if( !isStatic ){
       if( 'scid' in message['meta'] ){
-        console.log("volm", muted ? 0 : currentVolume);
         var scplaysound = soundManager.getSoundById('scplaysound');
         var soundurl = "http://api.soundcloud.com/tracks/" + message['meta']['scid'] + "/stream?client_id=" + sc_clientId;
         if(scplaysound == null ){

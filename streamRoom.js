@@ -75,7 +75,8 @@ var StreamRoom = function(roomName, redisClient){
           that.emit("file-change", roomName, endingFile, nowPlaying);
           mp3Stream.stopStream();
           console.log(songInfo.meta.length);
-          scTimeout = setTimeout(function(){ console.log("next!"); that.playNextFile(nowPlaying) }, songInfo.meta.length);
+          var timeoutLength = songInfo.meta.length * 1000;
+          scTimeout = setTimeout(function(){ console.log("next!"); that.playNextFile(nowPlaying) }, timeoutLength);
         }else{
           fs.readFile(songInfo.path, function(err3, data){//TODO make this operate on chunked buffer/read, not entire file (less memory)
             that.emit("file-change", roomName, endingFile, nowPlaying);

@@ -99,6 +99,7 @@
                    onClose: function(){ 
                      soundManager.unmute('scplaysound');
                      soundManager.unmute('mySound');
+                     soundManager.mute('previewsound');
                      soundManager.stop('previewsound');
                      $.modal.close();
                   }

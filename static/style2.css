@@ -137,7 +137,8 @@
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
   text-align: center;
   width: 212px;
-  display: none; }
+  display: none;
+  padding-top: 8px; }
 
 #currentfile {
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
