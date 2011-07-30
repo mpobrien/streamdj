@@ -38,6 +38,31 @@ body{
   padding-top:30px;
 }
 
+a.facebookbutton {
+  background: url(/static/signfacebook_sprite.png) no-repeat 0 0;
+  width: 151px;
+  height: 22px;
+  display: inline-block;
+  text-indent: -9999px;
+}
+a.facebookbutton:active { 
+  background-position: 0 -22px; 
+  outline:none;
+}
+
+a.twitterbutton {
+  background: url(/static/signtwitter_sprite.png) no-repeat 0 0;
+   width: 151px;
+   height: 22px;
+   display: inline-block;
+   text-indent: -9999px;
+}
+
+a.twitterbutton:active { 
+  background-position: 0 -22px;
+  outline: none; 
+}
+
 #loginlinks{
   line-height:24px;
   img{
