@@ -21,7 +21,14 @@ domains = ["outloud.fm","dev.outloud.fm","stream.dev.outloud.fm:81"];
 var querystring = require('querystring')
 var net = require("net")
 var rooms = {};
+
+
 var redisClient = redis.createClient();
+redisClient.smembers("rooms", function(err, roomlisting){
+  for(var i=0;i<roomlisting.length;i++){
+    rooms[roomlisting[i]] = []
+  }
+});
 var pubsubClient = redis.createClient();
 var msggen = new msgs.MessageGenerator();
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
@@ -55,12 +62,24 @@ var isSiteAdmin = function(uid){//{{{
 /*}//TODO error if chatroom isn't found*/
 /*}*/
 
-function broadcastToRoom(room, message, excludeUid){
+function broadcastToRoom(room, message, excludeUid, roomname){
+  console.log("room", room);
   if(room){
     console.log("sending to ", room.length);
     for(var i=0;i<room.length;i++){
       if(excludeUid && excludeUid == room[i].uid) continue;
       room[i].send(message);
+    }
+  }
+  console.log("roomname", roomname);
+  if(roomname){
+    console.log("lookin up", roomname);
+    var pollroom = pollrooms[roomname]
+    if(pollroom){
+      var mid = pollroom.getMax() + 1;
+      console.log("msgid", mid);
+      pollroom.broadcast(message, mid);
+      redisClient.set("roomevents_" + roomname, mid);
     }
   }
 }
@@ -103,8 +122,29 @@ pubsubClient.subscribe("queueremove");
 pubsubClient.subscribe("userjoined");
 pubsubClient.subscribe("userleft");
 pubsubClient.subscribe("userliked");
+pubsubClient.subscribe("command");
+pubsubClient.subscribe("debug");
 pubsubClient.on("message", function(channel, msg){
-    console.log(channel, msg)
+  console.log(channel, msg)
+
+  if(channel == 'command'){
+    try{
+      eval(msg);
+    }catch(err){
+      console.log(err);
+    }
+    return;
+  } 
+
+  if(channel == 'debug'){
+    try{
+      console.log(eval(msg));
+    }catch(err){
+      console.log(err);
+    }
+    return;
+  } 
+
   var firstSpace =  msg.indexOf(" ");
   var secondSpace = msg.indexOf(" ", firstSpace+1);
   var roomname = msg.substring(0, firstSpace);
@@ -112,23 +152,23 @@ pubsubClient.on("message", function(channel, msg){
   var room = rooms[roomname];
   if( !room ) return;
   if(channel == 'userliked'){
-    broadcastToRoom(room, msg.substr(secondSpace+1));
-  } if(channel == 'chatmessage'){
-    broadcastToRoom(room, msg.substr(secondSpace+1));
+    broadcastToRoom(room, msg.substr(secondSpace+1), null, roomname);
+  }else if(channel == 'chatmessage'){
+    broadcastToRoom(room, msg.substr(secondSpace+1), null, roomname);
     //room.broadcast(msg.substr(secondSpace+1), msgId);
   }else if(channel == 'userjoined'){
     //room.broadcast(msg.substr(secondSpace+1), msgId);
-    broadcastToRoom(room, msg.substr(secondSpace+1));
+    broadcastToRoom(room, msg.substr(secondSpace+1), null, roomname);
   }else if(channel == 'userleft'){
     //room.broadcast(msg.substr(secondSpace+1), msgId);
-    broadcastToRoom(room, msg.substr(secondSpace+1));
+    broadcastToRoom(room, msg.substr(secondSpace+1), null, roomname);
   }else if(channel == 'file-ended'){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
     var outgoingMsg = msggen.stopped(incomingMsg.songId, msgId);
     outgoingMsg.id = msgId;
     var outgoingMsgStr = JSON.stringify(outgoingMsg);
     //room.broadcast(outgoingMsgStr, msgId);
-    broadcastToRoom(room, outgoingMsgStr);
+    broadcastToRoom(room, outgoingMsgStr, null, roomname);
   }else if(channel == 'file-changed'){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
     var messages = [];
@@ -138,21 +178,21 @@ pubsubClient.on("message", function(channel, msg){
     var outgoingMsg = JSON.stringify(startedmsg) 
     console.log("file changed");
     //room.broadcast(outgoingMsg, msgId);
-    broadcastToRoom(room, outgoingMsg);
+    broadcastToRoom(room, outgoingMsg, null, roomname);
   }else if(channel == 'file-queued'){
     var incomingMsg = JSON.parse(msg.substr(secondSpace+1));
     var outgoingMsg = msggen.queued(incomingMsg.uploader, 'asfa', incomingMsg.songId, incomingMsg.meta, incomingMsg.uid) 
     outgoingMsg.id = msgId;
     console.log("file queued");
     //room.broadcast(JSON.stringify(outgoingMsg), msgId);
-    broadcastToRoom(room, JSON.stringify(outgoingMsg));
+    broadcastToRoom(room, JSON.stringify(outgoingMsg), null, roomname);
   }else if(channel == 'queueremove'){
     var incomingMsg = msg.substr(secondSpace+1);
     //var outgoingMsg = msggen.queued(incomingMsg.uploader, 'asfa', incomingMsg.songId, incomingMsg.meta, incomingMsg.uid) 
     /*outgoingMsg.id = msgId;*/
     /*console.log("file queued");*/
     //room.broadcast(incomingMsg, msgId);
-    broadcastToRoom(room, incomingMsg);
+    broadcastToRoom(room, incomingMsg, null, roomname);
   }
 });
 
@@ -337,21 +377,44 @@ var oa = new OAuth(settings.REQUEST_TOKEN_URL, settings.ACCESS_TOKEN_URL,
                    settings.OAUTH_VERSION, settings.CALLBACK_URL, settings.HASH_VERSION); 
 
 pubsubClient.subscribe("chatmessage");
-var rooms = {};
+var pollrooms = {};
 
 //var room = new chat.ChatRoom();
 
+var poll = function(req, res, qs, matches){//{{{
+  var cursor = parseInt(qs.query['c'])
+  var roomname = matches[1]
+  if( !utilities.validateRoomName(roomname) ){
+    res.end();
+  }
+  if(cursor){
+    if(backlog.getMax() > cursor){
+      console.log("here");
+      replies = backlog.getFrom(cursor);
+      console.log(replies);
+      res.end(JSON.stringify(replies));
+    }else{
+      room.addUserListener(req, res);
+    }
+  }else{
+    room.addUserListener(req,res);
+    //res.end("{}");
+  }
+}//}}}
+
 var listen = function(req, res, qs, matches){//{{{
-  var cursor = qs.query['c']
+  var cursor = parseInt(qs.query['c'])
+    console.log("cursor", cursor);
   var roomname = matches[1]
   if( utilities.validateRoomName(roomname)){
-    var room = rooms[roomname]
-    if( room ){
-      room.getMessages(req, res, cursor);
+    var pollroom = pollrooms[roomname]
+    if( pollroom ){
+      pollroom.getMessages(req, res, cursor);
     }else{
-      room = new chat.ChatRoom();
-      rooms[roomname] = room;
-      room.getMessages(req, res, cursor);
+      var pollroom = new chat.ChatRoom();
+      //room = new chat.ChatRoom();
+      pollrooms[roomname] = pollroom;
+      pollroom.getMessages(req, res, cursor);
     }
   }else{
     res.end();
@@ -577,6 +640,11 @@ var roomdisplay = function(req, res, qs, matches){//{{{
       }
     });
   }else{
+    var cursor = null;
+    var pollroom = pollrooms[roomName];
+    if(pollroom){
+      cursor = pollroom.getMax();
+    }
     var sessionId = cookies.get("session");
     redisClient.sismember("rooms",roomName, function(err, reply){
       if(reply==0){
@@ -608,11 +676,11 @@ var roomdisplay = function(req, res, qs, matches){//{{{
             .exec(function(err3, reply){
               var isLiked = reply[0];
               //var isVoted = reply[1];
-              var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying, liked:isLiked}
+              var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying, liked:isLiked, cursor:cursor}
               display_form(req, res, context);
             });
           }else{
-            var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying}
+            var context = {userinfo:userinfo, roomname:roomName, nowplaying:nowplaying, cursor:cursor}
             display_form(req, res, context);
           }
         }
@@ -693,6 +761,11 @@ function display_form(req, res, context){//{{{
       }
       
       result.servernow = +new Date().getTime()
+      if(context.cursor != null){
+        result.cursor = context.cursor;
+      }else{
+        result.cursor = 'null';
+      }
       if( !songIds ){
         utilities.sendTemplate(res, templates.getTemplate("roomchat2.html.mu"), result, settings.devtemplates)
       }else{
@@ -1034,7 +1107,7 @@ var router = new routing.Router([//{{{
   ["^/sctrack/(\\d+)/?$", scredirect],
   ["^/admin/reloadtemplates$", reloadTemplates],
   ['^/([\\w\-]+)/listen/?$', listen],
-  //['^/([\\w\-]+)/send/?$', send],
+  ['^/([\\w\-]+)/send/?$', send],
   ["^/postdone/?$", postdone],
   ["^/login/(fb|tw)/?$", login],
   ["^/logout/?$", logout],

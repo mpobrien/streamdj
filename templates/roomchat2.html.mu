@@ -20,6 +20,7 @@
         <script type="text/javascript">
           var WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
           var servernow = {{{servernow}}};
+          var cursor = {{{cursor}}};
           var clientnow = +new Date().getTime();
           var wsurl = '{{wsurl}}'
           var nowplayingId = null;

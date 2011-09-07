@@ -2,6 +2,7 @@
 var nowplayingMeta = null;
 var nowplayingMessage = null;
 var lastStoppedTime = null;
+var msgIds = 0;
 var makeText = function(){
   return document.createTextNode(' ');
 }
@@ -100,7 +101,7 @@ var MessageHandlers = {
     var from = message['from']
     var body = message['body']
     var time = message['time']
-    var newMessageHtml = $('<div class="chatmessage"></div>"').attr("id",message["id"])
+    var newMessageHtml = $('<div class="chatmessage"></div>"').attr("id","msg_" + msgIds++)
                           .append( $('<div class="timestamp"></div>').text(makeTimestamp(time)) )
                           .append( $('<span class="sendername"></span>').text(from + ":") )
                           .append( $('<span class="messagebody"></span>').html(linkify(body)) )
@@ -188,7 +189,7 @@ var MessageHandlers = {
   "left"   : function(message, isStatic){//{{{
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"');
-    newMessageHtml.attr("id",message["id"]);
+    newMessageHtml.attr("id","msg_" + (msgIds++));
     /*newMessageHtml.append( $('<span class="timestamp"></span>').text(makeTimestamp(message['time'])) )*/
     /*.append( $('<span class="from"></span>').text(message['from']) )*/
     /*.append( $('<span class="message"></span>').text("left the room") )*/
