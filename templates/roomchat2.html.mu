@@ -173,7 +173,7 @@
              <div id="queueholder">
                <div class="sectionheading" id="queueheading">queue <span class="dragdropcopy">(drag and drop files to add)</span></div>
                <div class="meta" style="float:left; line-height:30px; padding-right:15px;">or</div>
-               <div id="scfindlink_container" style="float:left; line-height:30px; height:30px;"> <div id="scfindlink"> add tracks from Soundcloud <img src="/static/scbwsquare.png"/> </div></div>
+               <div id="scfindlink_container" style="float:left; line-height:30px; height:30px;"> <div id="scfindlink"> add tracks from SoundCloud <img src="/static/scbwsquare.png"/> </div></div>
                <div class="clearer">&nbsp;</div>
                 <div id="queuelisting">
                   {{#queue}}
@@ -222,7 +222,7 @@
       <div id="soundcloudmodal">
         <div id="scsearchbanner">
           <img src="/static/soundcloud-logo.png"/>
-          <input type="text" id="user_query" name="user_query" placeholder="Search Soundcloud"/>
+          <input type="text" id="user_query" name="user_query" placeholder="Search SoundCloud"/>
           <img src="/static/ajax-loader.gif" style="display:none" id="search_spinner" />
           <div id="searchresults">
             <table id="results_table" cellspacing="0" cellpadding="0">
