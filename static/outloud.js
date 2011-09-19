@@ -657,7 +657,7 @@ $(document).ready(function(){
       setInterval(function(){ ws.send("0") }, 45000);
     }
   }else{
-    setTimeout(getMessages,400);
+    setTimeout(getMessages,1000);
   }
 
 })//}}}
