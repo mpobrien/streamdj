@@ -30,7 +30,7 @@
   </head>
   <body>
     <div id="logo">
-       <img src="/static/ol_med.png">
+       <img src="/static/ol_copy.png">
     </div>
     <div id="bodywrapper">
       {{#userinfo}}
