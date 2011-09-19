@@ -5,7 +5,7 @@ var trackSearchCallback = function(data){
   if( data.length == 0 ){
     $('<tr></tr>').append(
         $('<td class="noresults"></td>')
-        .text('No tracks found on Soundcloud matching:'))
+        .text('No tracks found on SoundCloud matching:'))
       .appendTo('#results_table');
     $('<tr></tr>').append(
        $('<td class="noresults_qry"></td>').text('\"' + lastQuery + '\"'))
