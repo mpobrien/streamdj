@@ -8,13 +8,13 @@ exports.FileUpload = function FileUpload(outputPath, req, res){
 
   this.writeChunk = function(data){
     var isBufFull = outputstream.write(data);
-    if (isBufFull) req.pause();
+    if (!isBufFull) req.pause();
   }
 
   var that = this;
   this.setup = function(){
     req.addListener("data", that.writeChunk); 
-    req.addListener("drain", function(){
+    outputstream.addListener("drain", function(){
       req.resume();
     });
     req.addListener("error", function(){
