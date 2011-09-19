@@ -9,6 +9,7 @@
           var servernow = {{{servernow}}};
           var clientnow = +new Date().getTime();
         </script>
+        <script type="text/javascript" src="/static/modernizr.js"></script>
         <script type="text/javascript" src="/static/swfobject.js"></script>
         <script type="text/javascript" src="/static/jquery.min.js"></script>
         <script type="text/javascript" src="/static/jqueryui.js"></script>

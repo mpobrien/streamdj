@@ -7,7 +7,7 @@ Array.prototype.remove = function(e) {//{{{
 };//}}}
 
 var ChatRoom = function(){//{{{
-  this.history = new HistoryBuffer(30);
+  this.history = new HistoryBuffer(40);
   this.listeners = [];
   var that = this;
 
