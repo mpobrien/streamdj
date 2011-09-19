@@ -9,7 +9,8 @@
         padding:15px;
       }
     </style>
-    <script type="text/javascript">
+
+ <script type="text/javascript">
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-23607493-1']);
       _gaq.push(['_trackPageview']);
@@ -19,13 +20,13 @@
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
-
     </script>
+    
   </head>
   <body>
     <div id="container">
       <div id="leftside">
-       <img src="/static/ol_med.png">
+       <img src="/static/ol_copy.png">
       </div>
     </div>
 	    <div id="rightside">
@@ -65,73 +66,42 @@
 
         {{^userinfo}}
           <div id="headline">
+            The coolest way to share music with your friends.  
+          </div>
+           <div class="video">
+              <iframe src="http://player.vimeo.com/video/29197507?title=0&amp;byline=0&amp;portrait=0" width="520" height="355" frameborder="0"></iframe>    
+           </div>
+         <div class="instructions">
+            <div class="instructions_step">
+              <span class="instructions_step_icon step_icon_1"></span>
+              Create a room and invite your friends
+            </div>
+            <div class="instructions_step">
+              <span class="instructions_step_icon step_icon_2"></span>
+              Listen to music and chat in real-time
+            </div> 
+            <div class="instructions_step">
+              <span class="instructions_step_icon step_icon_3"></span>
+              Don't have MP3s? Browse SoundCloud! 
+            </div>
+         </div> 
           
-            The coolest way to share</br>music with your friends.  
+         <div id="login">
+           <a class="facebookbutton" href="/login/fb/?r={{room}}"></a> <br/><br/> 
+           <a class="twitterbutton" href="/login/tw/?r={{room}}"></a>
           </div>
-          <div id="blurb">
-            OUTLOUD.FM lets you create rooms where you <br>and your friends can chat and listen to music with<br> a real time collaborative playlist. Just sign in, pick <br>a room name, and start uploading music! 
-          </div>
-          <div class="slideshow" id="flavor_1"></div>
-          <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
-          <script src="/static/agile_carousel.a1.js"></script>
-          <script>
-            $.getJSON("/static/agile_carousel_data.php", function(data) {
-                $(document).ready(function(){
-                    $("#flavor_1").agile_carousel({
-                        carousel_data: data,
-                        carousel_outer_height: 330,
-                        carousel_height: 330,
-                        slide_height: 230,
-                        carousel_outer_width: 510,
-                        slide_width: 510,
-                        transition_time: 300,
-                        timer: 4000,
-                        continuous_scrolling: true,
-                        control_set_1: "numbered_buttons",
-                        no_control_set: "hover_previous_button,hover_next_button"
-                    });
-                });
-            });
-          </script>
-          <div id="start"> Get Started!  </div> 
-            {{#errors}}
-              <div style="color:red;text-align:center;font-size:16px;">{{msg}}</div>
-            {{/errors}}
-          <div id="login">
-            <a class="twitterbutton" href="/login/tw/?r={{room}}"></a> -or- <a class="facebookbutton" href="/login/fb/?r={{room}}"></a>
-          </div>
-          <div id="disclaimer">
-            We will <b>NEVER</b> publish to your account feed without </br> you explicitly choosing to do so.
+         <div id="disclaimer">
+            We will <b>NEVER</b> publish to your account feed without you </br> explicitly choosing to do so.
           </div>
         {{/userinfo}}
       </div>
 
-    <div style="text-align:center; color:#efffd3; font-size:44px; padding-top:2cm;">
-    </div>
-    <div style="padding-top:50px; padding-bottom:30px;">
-    </div>
-    <div id="info">
     </div>
     <div id="footer">
-      <a href="/static/about.html">about</a>
-    </div>
-  </body>
+        <a href="/static/about.html">about</a> / <a href="http://blog.outloud.fm">blog</a>
+      </div>
+
+</body>
 </html>
          
-	 
-        
-       
-
-
-
-
-
-
-
-
-
-
-
-
-
 
