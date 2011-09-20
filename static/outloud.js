@@ -39,7 +39,6 @@ var generateTwitterMsg = function(songInfo){
 }   
 
 var getMessages = function(){
-  console.log("getting msgs");
   $.getJSON('/' + roomname + '/listen/', {'c':cursor}, function(json){
     cursor = json.c;
     if(json.m instanceof Array){
@@ -49,7 +48,6 @@ var getMessages = function(){
     }else{
       processMessage($.parseJSON(json.m), false);
     }
-    console.log("msgs",json);
     getMessages();
   });
 }

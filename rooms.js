@@ -27,7 +27,7 @@ var ChatRoom = function(){//{{{
     console.log("max:",that.getMax());
     if(cursor>=0 && cursor<that.getMax()){
       var messages = that.history.getFrom(cursor);
-      res.end(JSON.stringify({'m':messages, 'id':that.getMax()}));
+      res.end(JSON.stringify({'m':messages, 'c':that.getMax()}));
     }else{
       var errorFunc = function(exception){
         console.log("ERROR - ", exception);
