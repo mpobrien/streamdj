@@ -29,10 +29,15 @@ var Router = function(routings){
       res.end("404");
       return;
     }
+    //[[regex, function, processors], matches] 
     var tableItem = routingResult[0]
     var matches = routingResult[1]
     var routeFunction = tableItem[1]
     if(tableItem){
+      var functionArgs = [req, res, qs]
+      for(var i=1;i<matches.length;i++){
+        functionArgs.push(matches[i])
+      }
       var processors = tableItem[2]
       if(processors){
         var seriesExecute = function(funcs){
@@ -41,14 +46,14 @@ var Router = function(routings){
               var nextFunc = funcs[index]
               nextFunc(req, res, function(){getNextCallback(index+1)})
             }else{
-              routeFunction(req,res,qs, matches);
+              routeFunction.apply(routeFunction, functionArgs);
             }
           }
           getNextCallback(0)
         }
         seriesExecute(processors)
       }else{
-        routeFunction(req,res,qs, matches);
+        routeFunction.apply(routeFunction, functionArgs);
       }
     }else{
       res.end("404.");

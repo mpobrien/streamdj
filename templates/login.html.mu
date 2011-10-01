@@ -34,7 +34,7 @@
           <div>
             <div class="userinfo" style="float:left; width:100%">
               <div style="float:left">
-                <span id="profileimg"><img src="{{pic}}"/></span><span class="username">{{name}}</span>
+                <span id="profileimg"><img src="{{avatarUrl}}"/></span><span class="username">{{displayName}}</span>
               </div>
               <div style="float:right">
                 <a href="/logout" id="logout">logout</a>

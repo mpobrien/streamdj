@@ -320,11 +320,8 @@ $(document).ready(function(){
 
   droptarget = document.getElementById("queueholder"); 
   var y;
-  while(y = msgs.pop()){
+  while(y = msgs.shift()){
     if(y.messages){
-    /*for( var i=0;i<y.messages.length;i++ ){*/
-    /*processMessage(y.messages[i], true);*/
-    /*}*/
     }else{
       processMessage(y, true);
     }

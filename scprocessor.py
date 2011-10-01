@@ -9,6 +9,7 @@ import subprocess
 import os, sys, base64
 import md5
 import urllib2
+import pymongo
 #print os.path.abspath(__file__)
 r = redis.Redis(host='localhost',port=6379,db=0)
 CLIENT_ID = '07b794af61fdce4a25c9eadce40dda83'

@@ -54,6 +54,7 @@ var StreamRoom = function(roomName, redisClient){
     //1. zrange <key> 0 0 WITHSCORES (returns lowest ranked key and its score)
     //2. zremrangebyscore <key> score score // removes that lowest element
     redisClient.zrange("roomqueue_" + roomName, 0, 0, "withscores", function(err, reply){
+      console.log("here!")
       //TODO check for err.
       if(!reply || reply.length==0){
         if( endingFile ){

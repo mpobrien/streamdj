@@ -9,6 +9,7 @@ var fs    = require('fs')
 var streamRoom = require('./streamRoom')
 var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
 var rooms = {};
+var Room = require('./models').Room
 
 Array.prototype.remove = function(e) {//{{{
   for (var i = 0; i < this.length; i++) {
@@ -39,7 +40,6 @@ pubsubClient.on("message", function(channel, msg){
       room.playNextFile();
     }
   }else if(channel == 'skipnow'){
-  console.log("got skip shit");
     var msgparts = msg.split(" ");
     var roomName = msgparts[0];
     var songId = msgparts[1]
@@ -49,24 +49,16 @@ pubsubClient.on("message", function(channel, msg){
   }
 });
 
-function prepareStartup(){
-  redisClient2.smembers("rooms", function(err, reply){
-    if(reply == null) reply = [];
-    for(var i=0;i<reply.length;i++){
-      var roomname = reply[i];                                                            
-
+function prepareStartup(){//{{{
+  Room.find({}, ['roomName'], function(err, docs){
+    for(var i=0;i<docs.length;i++){
+      var roomname = docs[i].roomName;
       var roomcreator = function(rn){
         redisClient2.zcard("roomqueue_" + rn, function(err2, reply2){
           if(err2) return;
-          //if( reply2 > 0){
           if( true ){
             var newstreamroom = new streamRoom.StreamRoom(rn, redisClient2);
-            newstreamroom.onEmpty = function(name){
-            /*var room = rooms[name];*/
-            /*if(!room.getNowPlaying()){*/
-            /*delete rooms[name];*/
-            /*}*/
-            }
+            newstreamroom.onEmpty = function(name){ }
             newstreamroom.on("file-end", fileEnd);
             newstreamroom.on("file-change", fileChanged);
             rooms[rn] = newstreamroom;
@@ -76,60 +68,58 @@ function prepareStartup(){
           }
         });
       };
-      roomcreator(reply[i]);
+      roomcreator(docs[i].roomName);
     }
   });
-}
+}//}}}
 
 var fileEnd = function(roomName, fileinfo){
   console.log("file ended mesgs");
   fileinfo.roomname = roomName;
-  redisClient2.del("nowplaying_" + roomName);
-  redisClient2.del("nowplayingid_" + roomName);
-  redisClient2.incr("roommsg_" + roomName, function(err, reply){
-    fileinfo.msgId = reply;
-    redisClient2.publish("file-ended", roomName + " " + fileinfo.msgId + " " + JSON.stringify(fileinfo));
-  });
+  Room.update({roomName:roomName}, {"$set":{"nowPlaying":null}}, function(err, reply){
+    redisClient2.publish("file-ended", roomName + " " + '-1' + " " + JSON.stringify(fileinfo));
+  })
 
   if( fileinfo && fileinfo.path){
-    fs.unlink(fileinfo.path, function(error){
+          console.log("Deleted file", fileinfo.path);
+    /*fs.unlink(fileinfo.path, function(error){
         if( error ){
           console.log("error occurred deleting file after finished:", error);
         }else{
           console.log("Deleted file", fileinfo.path);
         }
-    })
+    })*/
   }
 }
 
 var fileChanged = function(roomName, oldfile, newfile){
-  redisClient2.set("nowplaying_" + roomName, JSON.stringify(newfile));
-  redisClient2.set("nowplayingid_" + roomName, newfile.songId);
-  redisClient2.incr("roommsg_" + roomName, function(er, reply){ //TODO check errors
-    console.log("reply",reply)
-    var msgId = reply;
-    console.log("new file:", newfile);
+
+  Room.update({roomName:roomName}, {"$set":{"nowPlaying":JSON.stringify(newfile)}}, function(err, reply){
+    var msgId = "-1"
     var startedMsg = msggen.started(newfile.uploader, newfile.name, newfile.songId, newfile.meta,newfile.uid, msgId);
-    var message = JSON.stringify( startedMsg )
+    var message = JSON.stringify(startedMsg)
     var msg = {"oldfile":oldfile, "newfile":newfile, "roomname":roomName, "msgId":msgId};
     redisClient2.publish("file-changed", roomName + " " + msgId + " " + JSON.stringify(msg));
-    redisClient2.multi([
-     ["zadd","roomlog_" + roomName, msgId, message],
-     ["zadd","songs_" + roomName, msgId, message]
-    ]).exec();
-    redisClient2.zadd("roomlog_" + roomName, msgId, message, function(){ 
+    Room.addMessageByName(roomName, message);
+    //TODO
+    //redisClient2.multi([
+     //["zadd","roomlog_" + roomName, msgId, message],
+     //["zadd","songs_" + roomName, msgId, message]
+    //]).exec();
+    //redisClient2.zadd("roomlog_" + roomName, msgId, message, function(){ 
       //TODO trim the log?
       //redisClient2.ltrim("chatlog_"+ roomName, 100, function(){});
-    });
-  });
+  })
+
   if( oldfile && oldfile.path){
+  /*
     fs.unlink(oldfile.path, function(error){
         if( error ){
           console.log("error occurred deleting file after finished:", error);
         }else{
           console.log("Deleted file", oldfile.path);
         }
-    })
+    })*/
   }
 }
 
@@ -154,45 +144,31 @@ var streamingServer = http.createServer(
     if( roomName in rooms ){
       rooms[roomName].addNewListener(req,res);
     }else{
-      // make sure the room was actually created first?
-      redisClient2.sismember("rooms", roomName, function(err, reply){ //TODO check for errors!
-        if(reply==0){
+      Room.getByRoomNameSparse(roomName, function(err, reply){
+        if(err || !reply){
           console.log(roomName, "is a non existent room");
           res.writeHead(404, {'Content-Type': 'text/plain'});
           res.end();
           return;
         }
+
         console.log("setting up new room");
         var newroom = new streamRoom.StreamRoom(roomName, redisClient2);
-        newroom.onEmpty = function(name){
-        /*var room = rooms[name];*/
-        /*if(room*/
-          /*if(!room.getNowPlaying()){*/
-          /*delete rooms[name];*/
-          /*}*/
-        }
+        newroom.onEmpty = function(name){ }
         newroom.on("file-end", fileEnd);
         newroom.on("file-change", fileChanged);
         console.log("adding new room", roomName);
         rooms[roomName] = newroom;
         newroom.addNewListener(req, res);
         newroom.playNextFile();
-      });
+      })
     }
     
-    //var raw = require('querystring').parse(url_parts.query);
-    // some juggling e.g. for data from jQuery ajax() calls.
-    //var data = raw ? raw : {};
-    //data = raw.data ? JSON.parse(raw.data) : data;
-
-
-
-  //res.writeHead(200, {'Content-Type': 'text/plain'});
-  //res.end('Hello World\n');
 })
 
 prepareStartup();
 streamingServer.listen(settings.streamingport);
+console.log("listening on port:", settings.streamingport);
 
 
 

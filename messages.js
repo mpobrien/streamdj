@@ -5,7 +5,7 @@ exports.MessageGenerator = function MessageGenerator(){
 
   //////////////////
   this.chat = function(from, body, msgId){
-    return {"type":"chat", "id":msgId,'from':from,'body':body, 'time':new Date().getTime()}
+    return {"type":"chat",'from':from,'body':body,'time':new Date().getTime()}
   }
 
 

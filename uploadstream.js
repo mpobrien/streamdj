@@ -2,6 +2,7 @@ var fs = require('fs')
 var sys = require('sys')
 
 exports.FileUpload = function FileUpload(outputPath, req, res){
+  this.outputPath = outputPath;
   //TODO make sure all outpustreams are getting closed!
 
   var outputstream = fs.createWriteStream(outputPath);
