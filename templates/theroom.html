@@ -1,0 +1,273 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+        <title>{{roomname}} - outloud.fm</title>
+        <link href="/static/bootstrap.less" rel="stylesheet/less"/>
+        <link href="/static/style.less" rel="stylesheet/less"/>
+        <script type="text/javascript" src="/static/less.js"></script>
+        <script type="text/javascript" src="/static/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/bootstrap-modal.js"></script>
+        <script type="text/javascript" src="/static/gui.js"></script>
+        <link rel="icon" type="image/gif" href="/static/favicon.gif" />
+        <script type="text/javascript">
+          var servernow = {{{servernow}}};
+          var clientnow = +new Date().getTime();
+        </script>
+        <script type="text/javascript" src="/static/swfobject.js"></script>
+        <!--<script type="text/javascript" src="/static/simplemodal.js"></script>-->
+        <script type="text/javascript" src="/static/soundmanager2.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/static/soundcloud.player.api.js"></script>
+        <script type="text/javascript" src="/static/soundcloud.js"></script>
+
+        <script type="text/javascript">
+          var WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
+          var servernow = {{{servernow}}};
+          var cursor = {{{cursor}}};
+          var clientnow = +new Date().getTime();
+          var wsurl = '{{wsurl}}'
+          var nowplayingId = {{nowplayingId}}
+          var songs = [{{{songs}}}]
+          var chats = [{{{chats}}}]
+          var faveCounts = {}// {{{favCounts}}}
+          var songIds = {}//{{{songIds}}}
+          var countsDict = {}
+          for(var i=0;i<songIds.length;i++){
+            if( songIds[i] != null ){
+              countsDict[songIds[i]] = faveCounts[i];
+            }
+          }
+          var msgs = [{{#room}}{{#log}}{{{.}}}, {{/log}} {{/room}}]
+          //var msgs = songs.concat(chats);
+          //msgs.sort(function(a,b){
+            //return b.time - a.time;
+          //});
+          var roomname = '{{roomname}}'
+          var uidkey = '{{uidkey}}'
+          var username = {{{username}}}
+          var messagecount = msgs.length;
+          var nowplayingstart = 0
+          //var nowplayingstart = {{nowPlaying}};
+          //var lastMsgId =
+          soundManager.url = '/static/swf/';
+          soundManager.onerror = function(){ console.log("error!!!!") };
+          soundManager.debugMode = false;
+          soundManager.useFlashBlock = false; 
+          soundManager.flashVersion = 9;
+          var startStream = function(){
+            var soundOpts = { id: 'mySound', url: '{{listenurl}}', autoPlay: true, stream: true }
+            if( currentVolume>0 ){
+              soundOpts.volume = currentVolume;
+            }
+            x = soundManager.createSound(soundOpts);
+            x.ondataerror = function(){console.log("Data error");}
+            x.onload = function(success){
+              console.log("is success?", success);
+            }
+            if( muted ) soundManager.setVolume('mySound', 0); 
+             //soundManager.setVolume('mySound', 0); 
+          }
+          {{^nowPlaying}}
+          $('#currentfile').html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
+          $('#visualization').hide();
+          $('#currentfile_opts').hide();
+          nowplayingMeta = null;
+          {{/nowPlaying}}
+        </script>
+        <script type="text/javascript" src="/static/web_socket.js"></script>
+        <script type="text/javascript" src="/static/outloud.js"></script>
+        <script type="text/javascript" src="/static/messaging.js"></script>
+        <script type="text/javascript">
+          var currentModal = null;
+          $(document).ready(function(){
+            soundManager.onready(playAndSync);
+            $(window).resize(function(){
+              var objDiv = document.getElementById("chat");
+              objDiv.scrollTop = objDiv.scrollHeight;
+            });
+            if( messagecount == 0){
+              appendGreeting();
+            }
+            setTimeout(function(){
+                soundManager.onready(startStream);
+            }, 100);
+            var favoritesopen = false;
+            $('#scfindlink').hover(function(){                                  
+                $(this).addClass('hovering');
+              }, function(){
+                $(this).removeClass('hovering');
+              });
+            $('#soundcloudmodal').modal({backdrop:true, keyboard:true})
+                                 .bind('hidden', function(){
+                                   soundManager.unmute('scplaysound');
+                                   soundManager.unmute('mySound');
+                                   soundManager.mute('previewsound');
+                                   soundManager.stop('previewsound');
+                                 })
+            $('#scfindlink').click(function(){                                  
+              $('#soundcloudmodal').modal('show')
+            });
+            $('.fbinvite').click(doFbInvite);
+            $('.twinvite').click(doTwitterinvite);
+
+         {{^nowPlaying}}
+          $('#nothingPlaying').show();
+          $('#nowPlayingInfo').hide();
+
+         $('#visualization').hide();
+         $('#currentfile_opts').hide();
+         nowplayingMeta = null;
+         {{/nowPlaying}}
+         {{#liked}}
+           if(nowplayingId){
+             $('#nowplaying_favorite').removeClass("off").addClass("on");
+           }
+         {{/liked}}
+         {{#voted}}
+           if(nowplayingId){
+             $('#thumbsdown').removeClass("t_off").addClass("t_on");
+           }
+         {{/voted}}
+       })
+      </script>
+    </head>
+    <body>
+
+      <div class="topbar">
+        <div class="fill">
+          <div class="container">
+            <a class="brand" href="#"><img src="/static/ol.png"></a>
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="bodywrapper">
+        <div id="leftColumn">
+          <div id="songprogress"><div id="songprogressFull"> &nbsp; </div></div>
+          <div id="nothingPlaying" style="display:none">
+            The silence is deafening.<br/>
+            Play something!
+          </div>
+          <div id="nowPlayingInfo">
+            <div id="nowPlayingArt">
+              <img id="nowplayingArtImg" src="http://i1.sndcdn.com/artworks-000003441075-xy55co-large.jpg?e4d21f2" alt="" width="128" />
+            </div>
+            <div class="clearer">&nbsp;</div>
+            <div id="nowPlayingControls">
+              <div class="controlItem off" id="skipper">Skip</div>
+              <div class="controlItem off" id="favoriteHeart">Favorite</div>
+              <div class="controlItem off" id="downloadLink">Download</div>
+              <div class="controlItem off" id="downloadLink">Share</div>
+            </div>
+            <div id="nowplayingMeta">
+              <div id="titleLine">
+                <span id="title"></span>
+              </div>
+              <div id="artistLine">
+                <span class="meta">by</span>
+                <span id="artist"></span>
+              </div>
+              <div id="albumLine">
+                <span class="meta">from</span>
+                <span id="album"></span>
+              </div>
+            </div>
+          </div>
+
+          <div id="volwrapper" style="display:none">
+            <div id="volicon" class="notmuted">
+            </div>
+            <div id="volcontrol">
+                <div id="volinside">&nbsp;</div>
+            </div>
+          </div>
+
+          <div id="queue">
+
+            <h2>Queue</h2>
+
+            <div id="progress"></div>
+
+            <div id="scfindlink" class="btn" style="text-align:center">
+              <img src="http://outloud.fm/static/scbwsquare.png"/><br/>
+              Add tracks from SoundCloud
+            </div>
+
+
+            <div id="queuelisting">
+              {{#queue}}
+                <div class="queuedsong" id="song_{{songId}}">
+                  <div class="songinfo">
+                    {{#meta}}<div class="title">{{Title}}</div>
+                    <div class="artistinfo"> <span class="meta">by</span> <span class="artistname">{{Artist}}</span> </div>
+                    {{/meta}}
+                  </div>
+                  <div class="uploaderinfo"> <span class="uploader">{{uploader}}</span> 
+                  </div>
+                  {{#mine}}<a class="delsong" id="delsong_{{songId}}" href="javascript:void(0)">(remove)</a>{{/mine}}
+                  <div class="clearer"> </div>
+                </div>
+              {{/queue}}
+            </div>
+
+
+<!--
+            <div id="queueList">
+              <div class="queuedSong">
+                <div class="songinfo">
+                  <div class="title">Title</div>
+                  <div class="artistinfo"> <span class="meta">by</span> <span class="artistname">Artist</span> </div>
+                </div>
+                <div class="uploaderinfo"> <span class="uploader">mpobrien</span></div>
+                <a class="delsong" id="delsong_" href="javascript:void(0)">(remove)</a>
+                <div class="clearer"> </div>
+              </div>
+              <div class="queuedSong">
+                <div class="songinfo">
+                  <div class="title">Title</div>
+                  <div class="artistinfo"> <span class="meta">by</span> <span class="artistname">Artist</span> </div>
+                </div>
+                <div class="uploaderinfo"> <span class="uploader">mpobrien</span></div>
+                <a class="delsong" id="delsong_" href="javascript:void(0)">(remove)</a>
+                <div class="clearer"> </div>
+              </div>
+            </div>
+            --!>
+          </div>
+        </div>
+
+        <div id="centerColumn">
+          <ul class="tabs">
+            <li class="active"><a href="#">Chats (9)</a></li>
+            <li><a href="#">Favorites (421)</a></li>
+            <li><a href="#">Settings</a></li>
+          </ul>
+          <div id="chat">
+          </div>
+          <div id="chatbox">
+            <input type="text" id="newchat" name="newchat"  placeholder="say something!"/>
+          </div>
+        </div>
+
+        <div id="rightColumn"> </div>
+
+    </div>
+
+    <div id="soundcloudmodal" class="modal hide fade in" style="height:400px">
+      <div id="scsearchbanner">
+        <img src="/static/soundcloud-logo.png"/>
+        <input type="text" id="user_query" name="user_query" placeholder="Search SoundCloud"/>
+        <img src="/static/ajax-loader.gif" style="display:none" id="search_spinner" />
+        <div id="searchresults">
+          <table id="results_table" cellspacing="0" cellpadding="0"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+      
+    </body>
+</html>

@@ -1,0 +1,522 @@
+@leftColWidth: 400px;
+
+@volumebarColor: black;
+@volumebarBorderColor: lighten(#3e4147, 40%);
+
+.box-shadow(@arguments) {
+  -webkit-box-shadow: @arguments;
+  -moz-box-shadow: @arguments;
+  box-shadow: @arguments;
+}
+
+
+.border-radius(@topright: 0, @bottomright: 0, @bottomleft: 0, @topleft: 0) {
+  -webkit-border-top-right-radius: @topright;
+  -webkit-border-bottom-right-radius: @bottomright;
+  -webkit-border-bottom-left-radius: @bottomleft;
+  -webkit-border-top-left-radius: @topleft;
+  -moz-border-radius-topright: @topright;
+  -moz-border-radius-bottomright: @bottomright;
+  -moz-border-radius-bottomleft: @bottomleft;
+  -moz-border-radius-topleft: @topleft;
+  border-top-right-radius: @topright;
+  border-bottom-right-radius: @bottomright;
+  border-bottom-left-radius: @bottomleft;
+  border-top-left-radius: @topleft;
+  -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
+}
+
+.clearer{
+  height:0px;
+  clear:both;
+}
+
+#bodywrapper{
+  position:absolute;
+  top:45px;
+  bottom:0px;
+  width:100%;
+}
+#leftColumn{
+  position:absolute;
+  top:0px;
+  width:@leftColWidth;
+  bottom:0px;
+  .box-shadow(5px 0px 5px -3px #bbb);
+}
+#centerColumn{
+  position:absolute;
+  top:0px;
+  left:@leftColWidth+5;
+  width:600px;
+  bottom:0px;
+}
+#rightColumn{
+  position:absolute;
+  top:0px;
+  right:0px;
+  bottom:0px;
+  width:200px;
+}
+
+#chatbox{
+  position:absolute;
+  bottom:0px;
+  width:100%;
+}
+#newchat{
+  width:100%;
+}
+
+
+///////////// LEFT COLUMN ITEMS
+#nothingPlaying{
+  width:@leftColWidth;
+  text-align:center;
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  font-size:20px;
+  padding:10px;
+}
+
+#songprogress{
+  left:0px;
+  height:5px;
+  width:100%;
+  margin-bottom:5px;
+  border-bottom:1px solid #bbb;
+  border-right:1px solid #bbb;
+}
+
+#songprogressFull{
+  width:50%;
+  height:100%;
+  background-color:#aaa;
+}
+
+#nowPlayingInfo{
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+  .meta{
+    font-size: 11px; 
+  }
+  #title, #album, #artist{
+    font-size: 18px; 
+    display:inline;
+  }
+}
+#nowPlayingArt{
+  width:128px;
+  height:128px;
+  float:left;
+  padding-left:5px;
+  border-left:1px
+}
+#nowplayingMeta{
+  padding-left:15px;
+  position:absolute;
+  top:10px;
+  left:128+5px;
+}
+#nowPlayingControls{
+  line-height:24px;
+  height:36px;
+  width:400px-1px;
+  border-bottom:1px solid #cacaca;
+  border-left:1px solid #cacaca;
+  border-left:1px solid #cacaca;
+  margin-top:3px;
+  padding-top:3px;
+  text-align:center;
+  background-color:#eee;
+}
+
+.hover{
+  color:black;
+}
+.on{
+  color:black;
+}
+
+.controlItem{
+  text-align:center;
+  display:inline-block;
+  font-size:12px;
+  padding-top:18px;
+  margin-left:10px;
+  margin-right:10px;
+  cursor:pointer;
+}
+
+#downloadLink.on{
+   background: url('/static/heart.png') no-repeat center 0; }
+#downloadLink.off{
+   background: url('/static/heart_deactive.png') no-repeat center 0 ; }
+#downloadLink.hover{
+   background: url('/static/heart_hover.png') no-repeat center 0; }
+
+#favoriteHeart.on{
+   background: url('/static/heart.png') no-repeat center 0; }
+#favoriteHeart.off{
+   background: url('/static/heart_deactive.png') no-repeat center 0 ; }
+#favoriteHeart.hover{
+   background: url('/static/heart_hover.png') no-repeat center 0; }
+
+#skipper.off{
+   background: url('/static/cog_unhover.png') no-repeat center 0; }
+#skipper.hover{
+   background: url('/static/cog_hover.png') no-repeat center 0; }
+
+#volcontrol{
+   width:128px; border:1px solid @volumebarBorderColor; height:14px; float:left; margin-top:8px;  }
+
+#volinside{ 
+  width:90%; background-color: @volumebarColor; height:100%; padding:0px; margin:0px; }
+
+
+
+.queuedsong{
+  padding-top:5px;
+  padding-bottom:5px;
+  border-bottom:1px dotted #BBB;
+  .meta{
+    font-style:italic;
+    color:#888;
+    font-size:.75em;
+  }
+}
+
+.delsong{
+  display:block;
+  padding-right:3px;
+}
+
+a.delsong:link{
+  color:blue;
+  text-decoration:none;
+}
+a.delsong:hover{
+  color:blue;
+  text-decoration:underline;
+}
+a.delsong:inactive{
+  color:blue;
+  text-decoration:none;
+}
+.songinfo{
+  float:left;
+  padding-left:3px;
+  width:245px;
+  font-size:14px;
+}
+
+.queuedsong > .title, .artistinfo{
+  padding-right:3px;
+  font-size:14px;
+  line-height:12px;
+}
+
+.queuedsong >.uploaderinfo{
+  font-size:11px;
+  float:right;
+  padding-left:8px;
+  padding-right:3px;
+}
+
+.queuedsong > .delsong{
+  clear:right;
+  font-size:11px;
+  float:right;
+}
+
+#queue{
+  font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+}
+
+
+#chat{
+  width:100%;
+  overflow-y:auto;
+  position:absolute;
+  top:50px;
+  bottom:45px;
+  border-bottom:1px solid #ccc;
+
+  .chatmessage{
+    font-size:12px;
+    padding:3px;
+  }
+
+  .join{
+    .from{
+      font-weight:bold;
+      padding-right:8px;
+      font-size:12px;
+    }
+    .message{
+      font-size:12px;
+    }
+  }
+
+  .timestamp{
+    font-family: Helvetica, Arial, sans-serif;
+    font-size:12px;
+    color:#888;
+    float:left;
+    padding-right:6px;
+  }
+  .sendername{
+    font-weight:bold;
+    padding-right:7px;
+  }
+
+  .songmessage{
+    margin-top:7px;
+    font-size:15px;
+    padding-left:3px;
+    padding-top:5px;
+    padding-bottom:5px;
+    background-color: #FFE6E6;
+    border-top:1px dotted #BBB;
+    border-bottom:1px dotted #BBB;
+    line-height:19px;
+
+    .feed_title{ font-weight:normal; }
+    .feed_artist{ font-weight:normal; }
+    .feed_artist > .meta { color:#888; font-size:.8em; font-style:italic; }
+    .feed_uploader_info{
+      .meta { color:#888; font-size:.8em; font-style:italic; } 
+      .uploader{
+        font-size:.9em;
+      }
+    }
+  }
+  .favcount{
+    background: url('/static/heartsmall.png') no-repeat;
+    background-position: 0% 50%;
+    float:left;
+    padding-left:12px;
+    font-size:.8em;
+  }
+
+  .albumart{
+    float:left;
+    padding-right:8px;
+  }
+  .albumartspacer{
+    float:left;
+    width:60px;
+    height:60px;
+  }
+
+}
+
+.progressBar{ width:0%; height:5px; background-color:black; }
+.progressContainer{ width:300px; height:5px;border:1px solid black; }
+
+.progress_container{ width:100px; height:5px; border:1px solid #bbb; }
+
+
+
+
+#searchresults{
+  @include seriffont;
+  margin-top:2px;
+  font-size:12px;
+  line-height:22px;
+  height:100%;
+  background-color:white;
+  overflow-y:auto;
+  height:470px;
+  border:1px dotted #aaa;
+}
+
+#results_table{
+  @include seriffont;
+  width:100%;
+}
+
+
+/* SOUNDCLOUD SHIT */
+#scfindlink{
+  cursor:pointer;
+  padding-left:4px;
+  padding-right:4px;
+  letter-spacing:1px;
+  font-size:.9em;
+}
+
+#searchresults{
+  margin-top:2px;
+  font-size:12px;
+  line-height:22px;
+  height:100%;
+  background-color:white;
+  overflow-y:auto;
+  height:470px;
+  border:1px dotted #aaa;
+}
+
+#results_table{
+  width:100%;
+}
+
+.noresults{
+  text-align:center;
+  padding-top:30px;
+  padding-bottom:10px;
+  font-size:14px;
+  color:#333;
+}
+
+.noresults_qry{
+  text-align:center;
+  padding:10px;
+  font-size:16px;
+  word-wrap: break-word;
+}
+
+tr{
+  border-top:1px solid transparent;
+  border-bottom:1px solid transparent;
+}
+
+.schover{
+  background-color:#eee;
+}
+
+.scplayingrow{
+  border-top:1px solid #ddd;
+  border-bottom:1px solid #ddd;
+}
+
+img{
+  vertical-align:middle;
+  border:none;
+}
+img.albumartimg{
+  display:block;
+}
+.meta{
+  font-style:italic;
+  color:#888;
+  font-size:.8em;
+}
+
+.songlength{
+  margin-left:4px;
+  color:#888;
+}
+
+
+.userresult, .trackresult{
+  text-align:left;
+  padding-top:2px;
+  padding-bottom:2px;
+  cursor:pointer;
+  padding-right:0px;
+  padding-top:16px;
+  padding-bottom:16px;
+}
+.trackresultinfo{
+  //float:left;
+  text-overflow:ellipsis;
+  overflow:hidden;
+  width:400px;
+}
+.trackresultart{
+  width:30px;
+  height:30px;
+  //float:left;
+}
+.trackresult{
+   .title, .meta, .artist{
+     //float:left;
+     margin-left:2px;
+     margin-right:2px;
+   }
+   .songlength{
+     margin-left:4px;
+   }
+}
+
+.scplaying{
+  background-image: url('/static/pause_small.png');
+  background-repeat: no-repeat;
+  background-position: 0% 50%;
+}
+.scnotplaying{
+  background-image: url('/static/play.png');
+  background-repeat: no-repeat;
+  background-position: 0% 50%;
+}
+
+.preview, .queue{
+  margin-left:4px;
+  margin-right:4px;
+}
+
+.soundcloudlink{
+  padding-right:10px;
+  font-size:.8em;
+}
+
+.preview{
+  right:0px;
+}
+
+.queue{
+  padding-left:4px;
+  padding-right:3px;
+  background-image: url('/static/sq_plus.png');
+  background-repeat: no-repeat;
+  background-position: 0% 50%;
+}
+
+.queueing{
+  background-image: url('/static/queueloading.gif');
+}
+
+.qdisabled{
+  background-image: url('/static/sq_plus_disabled.png');
+  cursor:default;
+}
+
+
+.prevlink{
+  padding-left:18px;
+  .preview{
+    height:100%;
+    display:block;
+  }
+
+  .queue{
+    padding-top:none;
+    height:100%;
+  }
+}
+
+span.title{
+  padding-left:5px;
+}
+.lilheart{
+  background-image:url('/static/heartsmall.png');
+  background-position: 0% 50%;
+  background-repeat: no-repeat;
+  height: 12px;
+  float:left;
+  left:30px;
+  line-height:12px;
+  font-weight:bold;
+  font-family:sans-serif;
+  padding-left:10px;
+  margin-left:3px;
+}
+#user_query{
+  width: 550px - 55px - 40px;
+}
+#scsearchbanner{
+  height:15px;
+}
+#yourPlayerId{
+  position:absolute;
+  top:-300px;
+}
