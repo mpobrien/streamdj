@@ -8,13 +8,19 @@ import mutagen
 import subprocess
 import os, sys, base64
 import md5
+import pymongo
+import datetime, time
+from pymongo import Connection
 #print os.path.abspath(__file__)
 r = redis.Redis(host='localhost',port=6379,db=0)
+c = Connection('localhost', port=27017)
+songs = c['outloud'].songs
+
+
 
 THUMBNAIL_SIZE = 256;
 
 UNKNOWN = '(Unknown)'
-
 BUCKET_NAME = 'albumart-outloud'
 AWS_ACCESS_KEY_ID = 'AKIAIEM3AHGAP3CC6U5A'
 AWS_SECRET_ACCESS_KEY = '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'
@@ -40,7 +46,7 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
               'Title'  : title,
               'Album'  : album,
               'length' : mutagenInfo.info.length}
-  newSongId = r.incr("maxsongid")
+  #newSongId = r.incr("maxsongid")
 
   if mutagenInfo.tags and hasattr(mutagenInfo.tags, '_EasyID3__id3'):
     pics = mutagenInfo.tags._EasyID3__id3.getall("APIC")
@@ -108,21 +114,32 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
   
 
 
-  outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'uid':songInfo['uid'], 'path':outputpath, 'meta':metadata, 'songId':newSongId}
-  print json.dumps(outgoingMessage)
   if 'fname' not in songInfo:
       songInfo['fname'] = "(Unknown)"
-  streamMessage = json.dumps( {'path':outputpath, 'name':songInfo['fname'], 'uid':songInfo['uid'], 'uploader':songInfo['uploader'], 'songId':newSongId, 'meta':metadata});
-  #r.rpush("roomqueue_" + songInfo['room'], streamMessage);
-  r.zadd("roomqueue_" + songInfo['room'], streamMessage, newSongId ) #key, score, member 
   #r.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member 
-  roomMsgId = r.incr("roommsg_" + songInfo['room'])
-  print "msg id", roomMsgId
-  r.publish('file-queued', songInfo['room'] + ' ' + str(roomMsgId) + " " + json.dumps(outgoingMessage));
-  r.publish("newQueueReady",songInfo['room']);
+  #roomMsgId = r.incr("roommsg_" + songInfo['room'])
   metadata['room']= songInfo['room']
   metadata['uid'] = songInfo['uid']
-  r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?#}}}
+  newsongdocument = {'title':metadata['Title'],
+                     'artist':metadata['Artist'], 
+                     'album':metadata['Album'], 
+                     'tracklength':float(mutagenInfo.info.length),
+                     'ctime':datetime.datetime.now(),
+                     'room':metadata['room'],
+                     'uid':metadata['uid']
+                     } 
+  if 'pic' in metadata:
+    newsongdocument['image'] = metadata['pic']
+  newObjectId = songs.insert(newsongdocument);
+  outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'uid':songInfo['uid'], 'path':outputpath, 'meta':metadata, 'songId':str(newObjectId)}
+
+  streamMessage = json.dumps( {'path':outputpath, 'name':songInfo['fname'], 'uid':songInfo['uid'], 'uploader':songInfo['uploader'], 'songId':str(newObjectId), 'meta':metadata});
+  #r.rpush("roomqueue_" + songInfo['room'], streamMessage);
+
+  r.zadd("roomqueue_" + songInfo['room'], streamMessage, time.mktime(datetime.datetime.now().timetuple()) ) #key, score, member 
+  r.publish('file-queued', songInfo['room'] + ' ' + str(-1) + " " + json.dumps(outgoingMessage));
+  r.publish("newQueueReady",songInfo['room']);
+  #r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?#}}}
 
 #def send_to_s3
 

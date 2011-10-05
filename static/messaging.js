@@ -199,13 +199,11 @@ var MessageHandlers = {
 
   "stopped": function(message, isStatic){//{{{
     lastStoppedTime = new Date();
-    //isStatic is ignored for now because server does not log these events
     var songId = message["songId"]
     $('#albumart').hide();
     $('#nowplayingtext').text('');
-    $('#currentfile').removeClass("playing").addClass("notplaying").html('<div class="right">the silence is deafening&hellip; :(</div><div class="right">upload something!</div>');
-    $('#currentfile_opts').hide()
-    $('#visualization').hide();
+    $('#nowPlayingInfo').hide();
+    $('#nothingPlaying').show();
     $('#song_' + songId).hide('slide', function(){$(this).remove()} );
     nowplayingId = null;
     nowplayingMeta = null;
@@ -230,20 +228,19 @@ var MessageHandlers = {
       }
     }
     
-    $('#nowplayingheart').removeClass("on").addClass("off");
-    //$('#thumbsdown').removeClass("t_on").addClass("t_off");
+    $('#favoriteHeart').removeClass("on").addClass("off");
     var albumartDiv;
     if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
-      var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) 
-                                           : message.meta.picurl;
+      var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) : message.meta.picurl;
+      $('nowplayingArtImg').attr('src', imageUrl);
       albumartDiv = $('<div id="albumartcol"></div>"')
                        .append($('<div class="albumart"></div>')
                         .append($('<img></img>').attr("width","60").attr("height","60")
                         .attr('src',imageUrl)))
     }else{
+      $('nowplayingArtImg').attr('src', "http://i1.sndcdn.com/artworks-000003441075-xy55co-large.jpg?e4d21f2");
       albumartDiv = $('<div class="albumartspacer">&nbsp;</div>"')
     }
-    albumartDiv.appendTo('#currentfile')
     var songId = message["songId"]
     var favCount = null;
     if( ('favecount_' + songId) in countsDict ){
@@ -252,6 +249,7 @@ var MessageHandlers = {
         favCount = $('<div class="favcount"></div>').text(countNum == 1 ? countNum + ' person favorited this': countNum + ' people favorited this');
       }
     }
+
     $('<div class="songmessage" id="s_' + songId + '">')
       .append($('<div class="timestamp"></div>"').text(makeTimestamp(message['time'])))
       .append(albumartDiv)
@@ -272,37 +270,19 @@ var MessageHandlers = {
     nowplayingMessage = message;
     var songId = message["songId"]
     nowplayingId = songId;
-    $('#currentfile').html('<div id="albumartcol"><div id="currentfile_opts"><div class="optcontrol heartbox off" id="nowplaying_favorite"></div><div class="optcontrol c_off" id="settingscog">&nbsp;</div></div><div id="nowplayingart"></div></div>')
+    $('#title').text(message.meta['Title']) 
+    $('#artist').text(message.meta['Artist']) 
+    $('#album').text(message.meta['Album']) 
+    $('#nothingPlaying').hide();
+    $('#nowPlayingInfo').show();
+    $('#nowplayingMeta').show();
+    $('#nowPlayingControls').show();
+    
+    //$('#nowPlayingControls').show();
     $('#nowplaying_favorite').data("songId", songId); 
     $('#nowplaying_skip').data("songId", songId); 
     if(message['uid'] == uidkey) $('#nowplaying_skip').removeClass('disabled');
     else $('#nowplaying_skip').addClass('disabled')
-
-    var nowPlayingInfo = $('<div id="nowplayinginfo"></div>');
-    $('#currentfile').append(nowPlayingInfo);
-    nowPlayingInfo
-      .append( $('<div class="title"></div>').text(message.meta['Title']) )
-      .append( $('<div class="artistinfo"></div>')
-        .append( $('<span class="meta">by</span>').append(makeText()))
-        .append( $('<span class="artistname"></span>').text(message.meta['Artist'])))
-    if('meta' in message && 'Album' in message.meta && message.meta['Album'] != '(Unknown)'){
-      nowPlayingInfo
-        .append( $('<div class="albuminfo"></div>')
-          .append( $('<span class="meta">from</span>').append(makeText()))
-          .append( $('<span class="albumname"></span>').text(message.meta['Album'])))
-    }
-    nowPlayingInfo
-      .append( $('<div class="np_uploaderinfo"></div>')
-        .append( $('<span class="meta">added by</span>').append(makeText()))
-        .append( $('<span class="uploader"></span>').text(message['from'])))
-
-    if('meta' in message && 'scid' in message.meta ){
-      nowPlayingInfo.append($('<div class="fav_line scinfo"></div>')
-        .append( $('<span class="meta">via</span>').append(makeText()))
-       .append($('<a class="soundcloudlink">SoundCloud</a>')
-         .attr("target","_blank")
-         .attr("href","/sctrack/" + message.meta.scid)))
-    }
 
     if( !isStatic || (songId == nowplayingstart)){
       if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){

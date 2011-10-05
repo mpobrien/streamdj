@@ -15,7 +15,7 @@ var trackSearchCallback = function(data){
   for(var i=0;i<data.length;i++){
     var artwork = $('<div class="trackresultart"></div>') 
     if( data[i].artwork_url != null ){
-      artwork.append($('<img src="' + data[i].artwork_url + '" width="24" height="24" style="vertical-align:middle"></img>'))
+      artwork.append($('<img src="' + data[i].artwork_url + '" width="30" height="30" style="vertical-align:middle"></img>'))
     }else{
       artwork.html('&nbsp;')
     }

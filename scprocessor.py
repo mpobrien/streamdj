@@ -10,122 +10,23 @@ import os, sys, base64
 import md5
 import urllib2
 import pymongo
+from pymongo import Connection
+import datetime
+import time
 #print os.path.abspath(__file__)
 r = redis.Redis(host='localhost',port=6379,db=0)
+c = Connection('localhost', port=27017)
+songs = c['outloud'].songs
 CLIENT_ID = '07b794af61fdce4a25c9eadce40dda83'
 
-def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
-  if not mutagenInfo.tags:
-    artist, album, title = UNKNOWN, UNKNOWN, UNKNOWN
-  else:
-    if mutagenInfo.tags.get('artist'): artist = mutagenInfo.tags.get('artist')[0]
-    else: artist = UNKNOWN
-
-    if mutagenInfo.tags.get('album'): album = mutagenInfo.tags.get('album')[0]
-    else: album = UNKNOWN
-
-    if mutagenInfo.tags.get('title'): title = mutagenInfo.tags.get('title')[0]
-    else: title = UNKNOWN
-
-  if title == UNKNOWN and artist == UNKNOWN:
-    title = songInfo.get('fname', UNKNOWN);
-
-  metadata = {'Artist' : artist,
-              'Title'  : title,
-              'Album'  : album,
-              'length' : mutagenInfo.info.length}
-  newSongId = r.incr("maxsongid")
-
-  if mutagenInfo.tags and hasattr(mutagenInfo.tags, '_EasyID3__id3'):
-    pics = mutagenInfo.tags._EasyID3__id3.getall("APIC")
-    if pics:
-      #TODO check max length of pic data?
-      picdata = pics[0].data
-      picdatahash = md5.new();
-      picdatahash.update(picdata)
-      picfilename = base64.b64encode(picdatahash.digest()).replace("/","_")
-      metadata['pic'] = picfilename
-      setstatus = r.sismember("thumbnails", picfilename)
-      if setstatus == 0:
-        print "Extracting album art"
-        picpath = picoutputdir + '/' + picfilename;
-        #TODO extension? mime type?
-        fout = open(picpath, 'w')
-        fout.write(picdata)
-        fout.close();
-        picinfo = get_image_info(picpath)
-        print picinfo
-        if picinfo:
-          width, height, fileformat = picinfo
-          print width, height, fileformat
-          if width > 128 or height > 128:
-            print "converting"
-            formatString = '%sx%s+50+50' % (THUMBNAIL_SIZE, THUMBNAIL_SIZE);
-            result = call(["convert","-resize", formatString, picpath, picpath])
-          try:
-            f = open(picpath,'r')
-            imgdata = f.read();
-            f.close();
-            conn.put( BUCKET_NAME, 'art/' + picfilename, S3.S3Object(imgdata, {'title': 'title'}), {'Content-Type':'image/png', 'x-amz-acl':'public-read'})
-            r.sadd("thumbnails", picfilename)
-          except Exception, e: 
-            print "Error occurred sending thumbnail data to s3", e
-            traceback.print_exc(file=sys.stdout)
-      else:
-        print "album already in there"
-
-
-       #print os.path.abspath(__file__)
-
-      #print os.path.abspath(__file__)
-
-  # Do we need to convert?
-  mime = mutagenInfo._FileType__get_mime();
-  print mime
-  if 'audio/mp3' not in mime: #it's not an mp3! convert this bitch
-    inputpath = songInfo['path']
-    outputpath = songInfo['path'] + ".out.mp3"
-    retcode = subprocess.call(["ffmpeg", "-i", inputpath, "-ab", "96k", "-ar","44100", outputpath])
-    if retcode == 0:
-      os.remove(inputpath)
-    print "converted", retcode, outputpath
-  else:
-    if isinstance(mutagenInfo, mutagen.mp3.MP3) and mutagenInfo.info.sample_rate != 44100:
-      inputpath = songInfo['path']
-      outputpath = songInfo['path'] + ".out.mp3"
-      retcode = subprocess.call(["ffmpeg", "-i", inputpath, "-ab", "128k", "-ar","44100", outputpath])
-      if retcode == 0:
-        os.remove(inputpath)
-      print "converted", retcode, outputpath
-    else:
-      outputpath = songInfo['path']
-  
-
-
-  outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'uid':songInfo['uid'], 'path':outputpath, 'meta':metadata, 'songId':newSongId}
-  print json.dumps(outgoingMessage)
-  if 'fname' not in songInfo:
-      songInfo['fname'] = "(Unknown)"
-  streamMessage = json.dumps( {'path':outputpath, 'name':songInfo['fname'], 'uid':songInfo['uid'], 'uploader':songInfo['uploader'], 'songId':newSongId, 'meta':metadata});
-  #r.rpush("roomqueue_" + songInfo['room'], streamMessage);
-  r.zadd("roomqueue_" + songInfo['room'], streamMessage, newSongId ) #key, score, member 
-  #r.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member 
-  roomMsgId = r.incr("roommsg_" + songInfo['room'])
-  print "msg id", roomMsgId
-  r.publish('file-queued', songInfo['room'] + ' ' + str(roomMsgId) + " " + json.dumps(outgoingMessage));
-  r.publish("newQueueReady",songInfo['room']);
-  metadata['room']= songInfo['room']
-  metadata['uid'] = songInfo['uid']
-  r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?#}}}
-
-def fetchJSON(url):
+def fetchJSON(url):#{{{
   fromsoundcloud = urllib2.urlopen(url).read();
-  return json.loads(fromsoundcloud)
+  return json.loads(fromsoundcloud)#}}}
 
-def getTrackInfo(trackId):
+def getTrackInfo(trackId):#{{{
   infoUrl = 'http://api.soundcloud.com/tracks/' + trackId + '.json?client_id=' + CLIENT_ID;
   trackInfoJson = fetchJSON(infoUrl);
-  return trackInfoJson
+  return trackInfoJson#}}}
 
 def main(argv):
   settingsdata = open(argv[0], 'r').read()
@@ -135,6 +36,7 @@ def main(argv):
     try:
       print "got: ", message
       songInfo = json.loads(message[1])
+      print "track id is", songInfo['trackId']
       trackInfo = getTrackInfo(songInfo['trackId'])
       trackLength = float(trackInfo['duration']) / 1000.;
       metadata = {'Artist' : trackInfo['user']['username'],
@@ -148,7 +50,24 @@ def main(argv):
 
 
       if trackInfo:
-        newSongId = r.incr("maxsongid")
+        print "ok here"
+        #newSongId = r.incr("maxsongid")
+
+
+        newsongdocument = {'title':metadata['Title'],
+                           'artist':metadata['Artist'], 
+                           'scid':songInfo['trackId'],
+                           'url':trackInfo['permalink_url'],
+                           'purchase_url':trackInfo['purchase_url'], 
+                           'tracklength':float(trackLength),
+                           'ctime':datetime.datetime.now(), } 
+
+        if( 'artwork_url' in trackInfo and trackInfo['artwork_url'] ):
+          newsongdocument['picurl'] = trackInfo['artwork_url']
+        print "inserting"
+        newObjectId = songs.insert(newsongdocument);
+        newSongId = str(newObjectId)
+        print "new doc:",str(newObjectId)
         streamMessage = json.dumps({
                           'fromSoundcloud':True,
                           'room':songInfo['room'],
@@ -159,10 +78,14 @@ def main(argv):
                           'uploader':songInfo['uploader'],
                           'uid':songInfo['uid'],
                         })
+
+
+
         #streamMessage = json.dumps( {'name':songInfo['fname'], 'uid':songInfo['uid'], 'uploader':songInfo['uploader'], 'songId':newSongId, 'meta':metadata});
-        r.zadd("roomqueue_" + songInfo['room'], streamMessage, newSongId ) #key, score, member 
-        roomMsgId = r.incr("roommsg_" + songInfo['room'])
-        r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?#}}}
+        r.zadd("roomqueue_" + songInfo['room'], streamMessage, time.mktime(datetime.datetime.now().timetuple()) ) #key, score, member 
+        #roomMsgId = r.incr("roommsg_" + songInfo['room'])
+        roomMsgId = -1
+        #r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?#}}}
         
 
         outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'uid':songInfo['uid'], 'fromSoundcloud':True, 'meta':metadata, 'songId':newSongId}

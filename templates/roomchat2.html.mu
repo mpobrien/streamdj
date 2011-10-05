@@ -2,6 +2,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
         <title>{{roomname}} - outloud.fm</title>
+        <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.3.0/bootstrap.min.css">
         <link href="/static/reset.css" rel="stylesheet" />
         <link href="/static/style2.css" rel="stylesheet" />
         <link rel="icon" type="image/gif" href="/static/favicon.gif" />

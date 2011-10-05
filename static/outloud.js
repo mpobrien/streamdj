@@ -161,11 +161,13 @@ var handleFiles = function(files){//{{{
 
 /* Message handling */
 function processMessage(message, isStatic){//{{{
+  console.log("got message")
   if( !message ) return;
   if( !('type' in message) ) return;
   var type = message.type;
   var handler = MessageHandlers[type]
   if(handler){
+    console.log(message)
     handler(message, isStatic);
   }
 }//}}}
