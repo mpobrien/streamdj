@@ -14,7 +14,7 @@ var TemplateManager = function(rootDir, templatenames){
     if(that.templates[templateName]){
       return that.templates[templateName];
     }else{
-      return "template not found :(";
+      return "template not found: " + templateName;
     }
 
   }

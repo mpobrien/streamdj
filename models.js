@@ -67,45 +67,36 @@ RoomSchema.statics.getByRoomName = function(name, callback){
 }
 
 RoomSchema.statics.getCurrentSongByRoomName = function(name, callback){
-  this.findOne({roomName:name}, ['nowPlaying'], callback);
+ this.findOne({roomName:name}, ['nowPlaying'], callback);
 }
 
 RoomSchema.statics.getByRoomNameSparse = function(name, callback){
-  this.findOne({roomName:name},['roomName'], callback);
+ this.findOne({roomName:name},['roomName'], callback);
 }
 
 RoomSchema.statics.addNew = function(name, creatorId, callback){
-  var newRoom = new Room({roomName:name, ctime:new Date(), log:prebuiltArray, creator:creatorId})
-  newRoom.save(callback)
-}
-RoomSchema.statics.addMessageByName = function(roomName,messageText, callback){
-  // some day do both in 1 query?
-  Room.update({roomName:roomName}, {"$push":{log:messageText}}, function(err, docs){
-    Room.update({roomName:roomName}, {"$pop":{log:-1}}, callback)
-  })
-}
-RoomSchema.methods.addMessage = function(messageText, callback){
-  // some day do both in 1 query?
-  Room.update({_id:this._id}, {"$push":{log:messageText}}, function(err, docs){
-    Room.update({_id:this._id}, {"$pop":{log:-1}}, callback)
-  })
+ var newRoom = new Room();
+ newRoom.roomName = name;
+ //newRoom.ctime = new Date();
+ //newRoom.log = prebuiltArray;
+ newRoom.creator = creatorId;
+ console.log(newRoom)
+ newRoom.save(callback)
 }
 
+RoomSchema.statics.addMessageByName = function(roomName,messageText, callback){
+   // some day do both in 1 query?
+  Room.update({roomName:roomName}, {"$push":{log:messageText}}, function(err, docs){
+     Room.update({roomName:roomName}, {"$pop":{log:-1}}, callback)
+   })
+}
+ 
+RoomSchema.methods.addMessage = function(messageText, callback){
+ // some day do both in 1 query?
+ Room.update({_id:this._id}, {"$push":{log:messageText}}, function(err, docs){
+   Room.update({_id:this._id}, {"$pop":{log:-1}}, callback)
+ })
+}
+ 
 var Room = mongoose.model('Room', RoomSchema);
 exports.Room = Room;
-
-var RoomEventLog = mongoose.model('RoomEvents', 
-  new Schema({
-    type : Number,
-    room : {type:ObjectId, ref:'Song'},
-    ctime : Date,
-    chatMessage : String,
-    displayName : String,
-    title : String,
-    artist : String,
-    album : String,
-    ctime : Date,
-    image : String,
-    pic : String,
-}));
-

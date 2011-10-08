@@ -22,11 +22,12 @@ var Session   = require('./models').Session
 var Room      = require('./models').Room
 var User      = require('./models').User
 var UserFavorite = require('./models').UserFavorite
+var querystring = require('querystring')
 var rooms = {};
 var pollrooms = {};
 var RoomEventLog      = require('./models').RoomEventLog
 var TemplateManager = require('./templatemanager').TemplateManager
-var templates = new TemplateManager('./templates',['login.html.mu','theroom.html', 'index.html']);
+var templates = new TemplateManager('./templates',['login.html.mu','theroom.html']);
 templates.initializeTemplates();
 domains = ["outloud.fm","dev.outloud.fm","stream.dev.outloud.fm:81"];
 var msggen = new msgs.MessageGenerator();
@@ -153,6 +154,34 @@ pubsubClient.on("message", function(channel, msg){
   }
 });
 
+var room = function(req, res, qs){//{{{
+  if(!req.session || !req.session.uid){
+    utilities.sendTemplate(res, templates.getTemplate("login.html"), {})
+    return;
+  }
+  if(req.method == "POST"){
+    var postData = null;
+    var roomName = req.postData.roomname;
+    console.log(req.session.uid, " is creating/joining room", roomName);
+    roomName = utilities.slugify(roomName);
+    if( utilities.validateRoomName(roomName) ){
+      Room.addNew(roomName, null, function(err,reply){
+        console.log("rooms", roomName);
+        res.writeHead(302, { 'Location': '/' + roomName});
+        res.end()
+      });
+    }else{
+      utilities.sendTemplate(res, templates.getTemplate("login.html"), {userinfo:req.session, roomname:roomName, invalid:true})
+    }
+  }else{
+    var info = {}
+    if(req.session){
+      info.userinfo = req.session;
+    }
+    utilities.sendTemplate(res, "login.html", info)
+  }
+}//}}}
+
 var upload = function(req, res, qs, roomname){//{{{
   if(!req.session){
     res.end();
@@ -204,7 +233,6 @@ var roomdisplay = function(req, res, qs, roomname){//{{{
     return;
   }
   Room.getByRoomName(roomname, function(err, room){
-    console.log("in here");
     if(err || !room){
       res.end("room not found :(");
       return;
@@ -403,24 +431,35 @@ var favorites = function(req, res, qs){//{{{
   if( !pageNum ) pageNum = 0;
   var pagesize = 10;
   responseJson = {numFavorites:10, faves:[], page:pageNum};
-  UserFavorite.find({'uid':req.session.uid},{'scid':1, 'songId':1})
-              .sort('ctime',-1)
-              .skip(pageNum*pagesize)
-              .limit(pagesize)
-              .run(function(err, docs){
-                  console.log(docs);
-                var ids = new Array(docs.length);
-                for(var i=0;i<docs.length;i++){
-                console.log(docs[i]._id instanceof mongo.BSONPure.ObjectID)
-                  if(docs[i]._id) ids.push(docs[i]._id);
-                }
-                console.log(ids);
-                Song.where("_id").in(ids).run(function(err2, docs2){
-                  console.log("songs",docs2);
-                });
-                res.end();
-              })
-
+  UserFavorite.find({'uid':req.session.uid}).count().run(function(err, result){
+    if(err){
+      res.end(JSON.stringify(responseJson));
+      return;
+    }else{
+      responseJson.numFavorites = result;
+      UserFavorite.find({'uid':req.session.uid},{'songId':1}).sort('ctime','descending')
+                  .skip(pageNum*pagesize).limit(pagesize)
+                  .run(function(err, docs){
+                    if(err){
+                      res.end(JSON.stringify(responseJson));
+                      return;
+                    }else{
+                      var ids = new Array(docs.length);
+                      for(var i=0;i<docs.length;i++){
+                        if(docs[i].songId) ids.push(docs[i].songId);
+                      }
+                      if(ids.length > 0){
+                        Song.where("_id").in(ids).run(function(err2, docs2){
+                          responseJson.faves = docs2;
+                          res.end(JSON.stringify(responseJson));
+                        });
+                      }else{
+                        res.end(JSON.stringify(responseJson));
+                      }
+                    }
+                  });
+    }
+  })
 }//}}}
 
 var router = new routing.Router([//{{{
@@ -430,6 +469,7 @@ var router = new routing.Router([//{{{
   ["^/authdone/tw/?$", authdone_twitter],
   ["^/(like|unlike)/?$", like_unlike, [contexts.lookupSession]],
   ["^/favorites/?$", favorites, [contexts.lookupSession]],
+  ["^/room/?$", room, [contexts.getPostData, contexts.lookupSession]],
   ["^/([\\w\-]+)/skip/?$", skip, [contexts.lookupSession]],
   ["^/([\\w\-]+)/scqueue/?$", scQueue, [contexts.lookupSession]],
   ['^/([\\w\-]+)/listen/?$', listen],

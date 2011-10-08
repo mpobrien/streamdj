@@ -2,6 +2,7 @@ var Cookies   = require('cookies')
 var Session   = require('./models').Session
 var uploads   = require('./uploadstream');
 var utilities = require('./utilities')
+var querystring = require('querystring')
 
 var lookupSession = function(req, res, callback){
   var cookies = new Cookies(req, res)
@@ -21,6 +22,17 @@ var lookupSession = function(req, res, callback){
   }
 }
 exports.lookupSession = lookupSession
+
+var getPostData = function(req, res, callback){
+  var postData = null;
+  req.on('data', function(chunk){
+    postData = querystring.parse(chunk.toString());
+  }).on("end", function(){
+    req.postData = postData;
+    callback();
+  });
+}
+exports.getPostData = getPostData
 
 var prepareUpload = function(req, res, callback){
   req.pause();

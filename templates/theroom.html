@@ -241,16 +241,19 @@
         </div>
 
         <div id="centerColumn">
-          <ul class="tabs">
-            <li class="active"><a href="#">Chats (9)</a></li>
-            <li><a href="#">Favorites (421)</a></li>
+          <ul class="tabs" id="centertabs">
+            <li class="active" id="chatstab"><a href="#">Chats (9)</a></li>
+            <li id="favoritestab"><a href="#">Favorites</a></li>
             <li><a href="#">Settings</a></li>
           </ul>
-          <div id="chat">
+          <div id="chatscontainer">
+            <div id="chat">
+            </div>
+            <div id="chatbox">
+              <input type="text" id="newchat" name="newchat"  placeholder="say something!"/>
+            </div>
           </div>
-          <div id="chatbox">
-            <input type="text" id="newchat" name="newchat"  placeholder="say something!"/>
-          </div>
+          <div id="faveslist"></div>
         </div>
 
         <div id="rightColumn"> </div>
