@@ -1,5 +1,6 @@
 var Cookies   = require('cookies')
 var Session   = require('./models').Session
+var User   = require('./models').User
 var uploads   = require('./uploadstream');
 var utilities = require('./utilities')
 var querystring = require('querystring')
@@ -22,6 +23,20 @@ var lookupSession = function(req, res, callback){
   }
 }
 exports.lookupSession = lookupSession
+
+var getUserInfo = function(req, res, callback){
+  if(req.session){
+    User.findOne({_id:req.session.user}, function(e,d){
+      if(d){
+        req.user = d;
+      }
+      callback();
+    })
+  }else{
+    callback();
+  }
+}
+exports.getUserInfo = getUserInfo;
 
 var getPostData = function(req, res, callback){
   var postData = null;

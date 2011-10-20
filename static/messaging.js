@@ -227,7 +227,6 @@ var MessageHandlers = {
         currentSCsound.stop();
       }
     }
-    
     $('#favoriteHeart').removeClass("on").addClass("off");
     var albumartDiv;
     if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
@@ -250,6 +249,7 @@ var MessageHandlers = {
       }
     }
 
+    var songMessage = 
     $('<div class="songmessage" id="s_' + songId + '">')
       .append($('<div class="timestamp"></div>"').text(makeTimestamp(message['time'])))
       .append(albumartDiv)
@@ -277,17 +277,20 @@ var MessageHandlers = {
     $('#nowPlayingInfo').show();
     $('#nowplayingMeta').show();
     $('#nowPlayingControls').show();
-    
     //$('#nowPlayingControls').show();
     $('#nowplaying_favorite').data("songId", songId); 
     $('#nowplaying_skip').data("songId", songId); 
     if(message['uid'] == uidkey) $('#nowplaying_skip').removeClass('disabled');
     else $('#nowplaying_skip').addClass('disabled')
 
+    var imageUrl = null;
+    if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
+      var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) 
+                                           : message.meta.picurl;
+    }
+
     if( !isStatic || (songId == nowplayingstart)){
       if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
-        var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) 
-                                             : message.meta.picurl;
         albumartDiv = $('<img></img>').attr("width","128")
                         .attr('src',imageUrl)
                       .appendTo('#nowplayingart')
@@ -299,6 +302,20 @@ var MessageHandlers = {
     var objDiv = document.getElementById("chat");
     objDiv.scrollTop = objDiv.scrollHeight;
     if( !isStatic ){
+
+      // notifications
+      if (settings.notify_song && window.webkitNotifications && window.webkitNotifications.checkPermission() == 0) {
+        var title = message.meta['Title'];
+        var content = title  + " by " + message.meta['Title']
+        var notification = window.webkitNotifications.createNotification(imageUrl, title, content)
+        notification.show()
+        var closer = function(x){
+          return function(){
+            x.cancel();
+          }
+        }(notification)
+        setTimeout(closer, 3000)
+      }
       if( 'scid' in message['meta'] ){
         var scplaysound = soundManager.getSoundById('scplaysound');
         var soundurl = "http://api.soundcloud.com/tracks/" + message['meta']['scid'] + "/stream?client_id=" + sc_clientId;

@@ -55,11 +55,17 @@ var getMessages = function(){
 
 
 var resetQueueing = function(){
-  $('.queue').removeClass('qdisabled').removeClass('queueing');
+  $('.queueing').removeClass('queueing').text('Queue')
+  $('.scqueue').removeClass('disabled')
 
-  if( currentlyQueueingItem!= null && !$(currentlyQueueingItem).hasClass("favqueue") ){
-    $(currentlyQueueingItem).hide();
-  }
+  //$('.queue').removeClass('qdisabled').removeClass('queueing');
+
+  //if( currentlyQueueingItem!= null && !$(currentlyQueueingItem).hasClass("favqueue") ){
+    ////$(currentlyQueueingItem).hide();
+  //}
+  //if(currentlyQueueingItem!=null){
+    //$(currentlyQueueingItem).removeClass('queuing');
+  //}
   currentlyQueueingItem = null;
   isqueueingId = null;
 }
@@ -360,7 +366,7 @@ $(document).ready(function(){
       }
       isqueueingId = trackId
       $('.queue').addClass('qdisabled')
-      $(this).removeClass('qdisabled').addClass('queueing')
+      $(this).removeClass('qdisabled').addClass('queueing').text('Queueing...')
       currentlyQueueingItem = $(this);
       $.get( '/' + roomname + '/scqueue/', {t:trackId}, function(){
         /*isqueueing = false;*/
@@ -375,17 +381,17 @@ $(document).ready(function(){
         if(!$(currentlyPlaying).hasClass("favpreview")){
           $(currentlyPlaying).hide();
         }
-        $(currentlyPlaying).removeClass('scplaying').addClass('scnotplaying').text('preview')
+        $(currentlyPlaying).removeClass('scplaying').addClass('scnotplaying').text('Preview')
         $(currentlyPlaying).parents('tr').removeClass('scplayingrow')
       }else{
         if($(currentlyPlaying).hasClass('scplaying')){
-          $(currentlyPlaying).removeClass('scplaying').addClass('scnotplaying').text('preview')
+          $(currentlyPlaying).removeClass('scplaying').addClass('scnotplaying').text('Preview')
           soundManager.pause('previewsound')
           soundManager.unmute('scplaysound')
           soundManager.unmute('mySound')
           return;
         }else{
-          $(currentlyPlaying).removeClass('scnotplaying').addClass('scplaying').text('pause')
+          $(currentlyPlaying).removeClass('scnotplaying').addClass('scplaying').text('Pause')
           soundManager.play('previewsound')
           soundManager.mute('scplaysound')
           soundManager.mute('mySound')
@@ -402,7 +408,7 @@ $(document).ready(function(){
     }
 
     currentlyPlaying = this;
-    $(this).addClass('scplaying').removeClass('scnotplaying').text('pause');
+    $(this).addClass('scplaying').removeClass('scnotplaying').text('Pause');
     var scid = soundManager.getSoundById('previewsound');
     var soundurl = "http://api.soundcloud.com/tracks/" + trackId + "/stream?client_id=" + sc_clientId;
     if( scid ){

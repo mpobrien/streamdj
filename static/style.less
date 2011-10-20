@@ -269,6 +269,7 @@ a.delsong:inactive{
   }
 
   .songmessage{
+    font-family: Georgia, Palatino, 'Palatino Linotype', serif;
     margin-top:7px;
     font-size:15px;
     padding-left:3px;
@@ -439,19 +440,17 @@ img.albumartimg{
 }
 
 .scplaying{
-  background-image: url('/static/pause_small.png');
-  background-repeat: no-repeat;
-  background-position: 0% 50%;
+  //background-image: url('/static/pause_small.png');
+  //background-repeat: no-repeat;
+  //background-position: 0% 50%;
 }
 .scnotplaying{
-  background-image: url('/static/play.png');
-  background-repeat: no-repeat;
-  background-position: 0% 50%;
+  //background-image: url('/static/play.png');
+  //background-repeat: no-repeat;
+  //background-position: 0% 50%;
 }
 
 .preview, .queue{
-  margin-left:4px;
-  margin-right:4px;
 }
 
 .soundcloudlink{
@@ -459,40 +458,22 @@ img.albumartimg{
   font-size:.8em;
 }
 
-.preview{
-  right:0px;
-}
-
-.queue{
-  padding-left:4px;
+.preview, .queue{
+  padding-left:3px;
   padding-right:3px;
-  background-image: url('/static/sq_plus.png');
-  background-repeat: no-repeat;
-  background-position: 0% 50%;
+  padding-top:3px;
+  padding-bottom:3px;
 }
 
 .queueing{
-  background-image: url('/static/queueloading.gif');
+  //background-image: url('/static/queueloading.gif');
 }
 
 .qdisabled{
-  background-image: url('/static/sq_plus_disabled.png');
+  //background-image: url('/static/sq_plus_disabled.png');
   cursor:default;
 }
 
-
-.prevlink{
-  padding-left:18px;
-  .preview{
-    height:100%;
-    display:block;
-  }
-
-  .queue{
-    padding-top:none;
-    height:100%;
-  }
-}
 
 span.title{
   padding-left:5px;
@@ -532,12 +513,23 @@ span.title{
     margin-left:0px;
   }
   #favespages{
-    margin-left:auto;
-    margin-right:auto;
+    font-family: Georgia, Palatino, 'Palatino Linotype', serif;
     clear:both;
+    padding-left:20px;
   }
   .faveitem{
+    .favemeta{
+      font-family: Georgia, Palatino, 'Palatino Linotype', serif;
+    }
     padding:10px;
+    .controls{
+      div{
+        margin-bottom:3px;
+      }
+      text-align:center;
+      position:absolute;
+      right:0px;
+    }
   }
   .odd{
     background-color:#efefef;
@@ -556,3 +548,67 @@ span.title{
     font-size:.8em;
   }
 }
+#settingspanel{
+  top:50px;
+  position:absolute;
+  margin-left:30px;
+  label{
+    width:400px;
+  }
+  .settingitem{
+    label{
+      margin-left:10px;
+      float:right;
+      text-align:left;
+    }
+    label.disabled{
+      color:#AAA;
+    }
+    line-height:24px;
+  }
+  input[type="checkbox"] {
+    margin-left:10px;
+    height:24px;
+  }
+}
+
+button.minimal {
+  background: #e3e3e3;
+  border: 1px solid #bbb;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 1px 1px #f6f6f6;
+  -moz-box-shadow: inset 0 0 1px 1px #f6f6f6;
+  -ms-box-shadow: inset 0 0 1px 1px #f6f6f6;
+  -o-box-shadow: inset 0 0 1px 1px #f6f6f6;
+  box-shadow: inset 0 0 1px 1px #f6f6f6;
+  color: #333;
+  font: bold 12px "helvetica neue", helvetica, arial, sans-serif;
+  line-height: 1;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
+  text-align: center;
+  text-shadow: 0 1px 0 #fff;
+  }
+  button.minimal:hover {
+    background: #d9d9d9;
+    -webkit-box-shadow: inset 0 0 1px 1px #eaeaea;
+    -moz-box-shadow: inset 0 0 1px 1px #eaeaea;
+    -ms-box-shadow: inset 0 0 1px 1px #eaeaea;
+    -o-box-shadow: inset 0 0 1px 1px #eaeaea;
+    box-shadow: inset 0 0 1px 1px #eaeaea;
+    color: #222;
+    cursor: pointer; }
+  button.minimal:active {
+    background: #d0d0d0;
+    -webkit-box-shadow: inset 0 0 1px 1px #e3e3e3;
+    -moz-box-shadow: inset 0 0 1px 1px #e3e3e3;
+    -ms-box-shadow: inset 0 0 1px 1px #e3e3e3;
+    -o-box-shadow: inset 0 0 1px 1px #e3e3e3;
+    box-shadow: inset 0 0 1px 1px #e3e3e3;
+    color: #000; }

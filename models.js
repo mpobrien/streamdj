@@ -4,6 +4,7 @@ var prebuiltArray = ["","","","","","","","","","","","","","","","","","","",""
 
 var Schema = mongoose.Schema
 var ObjectId = Schema.ObjectId;
+//var ObjectID = require('mongo').BSONPure.ObjectID
 
 var SongSchema = new Schema({
   title : String,
@@ -15,6 +16,15 @@ var SongSchema = new Schema({
   soundcloudId: Number,
   songId: Number,
 });
+
+SongSchema.statics.getById = function(id, callback){
+  try{
+    var oid = new ObjectID(id)
+    this.findOne({_id:new ObjectID(id)}, callback);
+  }catch(err){
+    callback(null, null);
+  }
+}
 
 var Song =  mongoose.model('Song',SongSchema);
 exports.Song = Song;
@@ -29,7 +39,7 @@ var Session = mongoose.model('Session',
 }));
 exports.Session = Session;
 
-var UserSchema = new Schema({ displayName : String, uid : String, avatarUrl : String})
+var UserSchema = new Schema({ displayName : String, uid : String, avatarUrl : String, settings:String})
 UserSchema.statics.getByUid = function(uid){
   return this.findOne({uid:uid});
 }

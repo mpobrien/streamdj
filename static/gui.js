@@ -1,4 +1,53 @@
 $(document).ready(function(){
+
+  $('.scpreview').live({
+    click:function(){
+    }
+  })
+  $('#settingspanel input').change(function(){
+    $('#savesettings').removeClass("disabled")
+  })
+
+  $('#savesettings').click(
+    function(){
+      var params = {}
+      params.notify_chat = $('#notifyonchat').attr('checked') ? "1" : "0"
+      params.notify_song = $('#notifyonsong').attr('checked') ? "1" : "0"
+      settings.notify_chat = $('#notifyonchat').attr('checked')
+      settings.notify_song = $('#notifyonsong').attr('checked')
+      $.getJSON('/savesettings/', params, function(data){
+        var newalert = $('<div style="margin:5px; text-align:center; font-weight:bold;font-size:1.2em" class="alert-message block-message success">OK, Your settings have been saved!</div>')
+        var closer = function(x){
+          return function(){
+            $(x).fadeOut(function(){
+              $(this).remove();
+            })
+          }
+        }(newalert)
+        $('#savesettings').addClass('disabled').after(newalert)
+        setTimeout(closer, 1000);
+      })
+    });
+
+  $('.scqueue').live({
+    click:function(){
+      if(isqueueingId) return;
+      numinqueue = $('.delsong').length;
+      if( numinqueue >= 5){
+        alert("Sorry, you've already got 5 songs in the queue already! Let one play before adding more.");
+        return;
+      }
+      //$('.queue').addClass('qdisabled')
+      $('.scqueue').addClass('disabled')
+      currentlyQueueingItem = $(this);
+      var scid = $(this).parents('.controls').data("scid")
+      isqueueingId = scid;
+      $(this).removeClass('qdisabled').addClass('queueing')
+      $.get( '/' + roomname + '/scqueue/', {t:scid}, function(){
+      });
+    }
+  })
+
   $('.controlItem').live({
     mouseenter: function(){
       $(this).addClass("hover");
@@ -10,6 +59,15 @@ $(document).ready(function(){
 
   });
 
+  $('#favespages li').live({
+    click:function(){
+      var page = $(this).data("pagenum");
+      if(page >= 0){
+        loadFaves(page);
+      }
+    }
+  })
+  
   $('#skipper').click(
     function(){
       if(nowplayingId && nowplayingMeta && nowplayingMeta.uid == uidkey){
@@ -23,14 +81,11 @@ $(document).ready(function(){
     if(!nowplayingId) return null;
     var params = {};
     params['s'] = nowplayingId;
-    console.log(params);
     if( !$(this).hasClass('on') ){
-      console.log("liking");
       $.get( '/like/', params, function(){
         $(me).removeClass('off').removeClass('hover').addClass('on');
       });
     }else{
-      console.log("unliking");
       $.get( '/unlike/', params, function(){
         $(me).removeClass('on').removeClass('hover').addClass('off');
       });
@@ -50,14 +105,21 @@ $(document).ready(function(){
       $('#faveslist').hide();
     }else{
       $('#faveslist').show();
+      loadFaves(0);
     }
 
+    if(tabselector != '#settingstab'){
+      $('#settingspanel').hide();
+    }else{
+      $('#settingspanel').show();
+      setupSettings();
+    }
   }
 
   var loadFaves = function(pageNum){
     var pageNum = parseInt(pageNum);
     var faveslist = $('#faveslist');
-    faveslist.html('')
+    faveslist.html('').show()
     $.getJSON('/favorites/', {p:pageNum}, function(data){
       if(!data.faves || data.numFavorites == 0){
         //TODO add a messages saying no favorites yet
@@ -78,19 +140,11 @@ $(document).ready(function(){
     })
   }
 
-  $('#favoritestab').click(
-      function(){
-        activateTab('#favoritestab')
-        loadFaves(0)
-      }
+  $('#settingstab, #favoritestab, #chatstab').click(
+    function(){
+      activateTab('#' + $(this).attr('id'))
+    }
   )
-
-  $('#chatstab').click(
-      function(){
-        activateTab('#chatstab')
-      }
-  )
-
 
 })
 
@@ -117,6 +171,7 @@ function createFaveItem(item){
   if(item.scid){
     var sccontainer = $('<div></div>')
     sccontainer.append($('<a class="sclink"></a>').text("from SoundCloud").attr('href', "/sctrack/" + item.scid)).appendTo(meta)
+    container.append($('<div class="controls"><div class="btn small scpreview" style="display:block">Preview</div><div class="btn small scqueue" style="display:block">Queue</div></div>').data("scid",item.scid))
   }
   container.append($('<div class="clearer"></div>'))
   return container;
@@ -130,15 +185,25 @@ function createPagination(numPages, currentPage){
   var lis = [];
   if(numPages > 1){
     prev = $('<li class="prev"><a href="#">&larr; Previous</a></li>')
-    if(currentPage = 0) prev.addClass("disabled")
+    if(currentPage == 0){ 
+      prev.addClass("disabled")
+    }else{
+      prev.data("pagenum", currentPage-1)
+    }
     ul.append(prev)
     next = $('<li class="next"><a href="#">Next &rarr;</a></li>')
-    if(currentPage = numPages - 1) next.addClass("disabled")
+    if(currentPage == numPages - 1){
+      next.addClass("disabled")
+    }else{
+      next.data("pagenum", currentPage+1)
+    }
   }
   for(var i=0;i<numPages;i++){
     var li = $('<li><a href="#">' + (i+1) + '</a></li>');
-    if(i == (currentPage-1)){
+    if(i == currentPage){
       li.addClass("active")
+    }else{
+      li.data("pagenum", i)
     }
     ul.append(li)
   }
@@ -170,5 +235,23 @@ function humanizeTime(seconds) {
     return interval + " minutes";
   }
   return Math.floor(seconds) + " seconds";
+}
+
+function setupNotify(){
+  if( window.webkitNotifications.checkPermission() > 0 ){
+    $('#desktopenabler').show();
+    $('#notifyonsong').attr('disabled', true);
+    $('#notifyonchat').attr('disabled', true);
+  }else{
+    $('#desktopenabler').hide();
+    $('#notifyonsong').attr('disabled', false);
+    $('#notifyonchat').attr('disabled', false);
+  }
+}
+
+function setupSettings(){
+  setupNotify();
+  $('#notifyonsong').attr("checked", settings.notify_song > 0)
+  $('#notifyonchat').attr("checked", settings.notify_chat > 0)
 }
 

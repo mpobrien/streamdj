@@ -72,6 +72,22 @@ var listen = function(req, res, qs, roomname){//{{{
   }
 }//}}}
 
+var savesettings = function(req, res, qs){
+  if(!req.session || !req.session.user){
+    res.end();
+    return;
+  }
+
+  var cursor = parseInt(qs.query['c'])
+  var settingsInfo = {}
+  settingsInfo.notify_chat = qs.query['notify_chat'] == '1' ? 1 : 0;
+  settingsInfo.notify_song = qs.query['notify_song'] == '1' ? 1 : 0;
+  User.update({_id:req.session.user}, {$set:{"settings":JSON.stringify(settingsInfo)}}, function(e, d){
+    console.log(e,d);
+  })
+  res.end('{}')
+}
+
 pubsubClient.subscribe("chatmessage");
 pubsubClient.subscribe("file-changed");
 pubsubClient.subscribe("file-ended");
@@ -258,7 +274,11 @@ var roomdisplay = function(req, res, qs, roomname){//{{{
       }
       info.wsurl = "ws://" + settings.domain + ":" + settings.port + "/" + roomname,
       info.username = JSON.stringify(req.session.displayName)
-      
+      if(req.user.settings){
+        info.usersettings = req.user.settings
+      }else{
+        info.usersettings = "{notify_chat:0, notify_user:0}"
+      }
       redisClient.zrange("roomqueue_" + roomname, 0, 30, function(err, reply){
         var currentQueue = reply;
         var queueinfo = [];
@@ -462,6 +482,85 @@ var favorites = function(req, res, qs){//{{{
   })
 }//}}}
 
+var scredirect = function(req, res, qs, trackId){
+  if(isNaN(parseInt(trackId))){
+    utilities.httpRedirect(res, 'http://www.soundcloud.com/');
+    return;
+  }else{
+    trackId = parseInt(trackId);
+    var soundcloudApiPath = '/tracks/' + trackId + '.json?client_id=' + settings.SOUNDCLOUD_CLIENTID
+    http.get({ host: 'api.soundcloud.com', path: soundcloudApiPath}, function(client_res) { 
+      var clientResponse = '';
+      client_res.on("data", function(clientdata){
+        var raw = clientdata.toString();
+        clientResponse += raw;
+      }).on("end", function(){
+        try{
+          var trackInfo = JSON.parse(clientResponse);
+          if( 'permalink_url' in trackInfo ){
+            utilities.httpRedirect(res, trackInfo['permalink_url']);
+            return;
+          }else{
+            utilities.httpRedirect(res,  'http://www.soundcloud.com/');
+            return;
+          }
+        }catch(exception){
+          console.log("Could not parse json data", exception, clientdata.toString());
+          utilities.httpRedirect(res, 'http://www.soundcloud.com/');
+          return;
+        }
+      })
+      .on("error", function(error){
+        console.log("Error occurred getting soundcloud data:", error);
+        utilities.httpRedirect(res, 'http://www.soundcloud.com/');
+        return;
+      });
+    }).on("error", function(e){
+      console.log("Error occurred reaching soundcloud API:", e);
+      utilities.httpRedirect(res, 'http://www.soundcloud.com/');
+      return;
+    });
+  }
+}
+
+
+var remove_from_queue = function(req, res, qs, roomname){
+  /*
+  var songId = qs.query['s']
+  res.end("{}");
+  Song.getById(songId, function(err, doc){
+    if(err || !doc) return;
+
+  })
+  //Room.getCurrentSongByRoomName()
+  getUserInfo(sessionId, function(err, userinfo){
+    if(err || !userinfo) return; //TODO handle/log error.  //TODO make sure user name is valid, + not empyy
+    //get the song info by ID - 
+    //verify that its the right room, and the right uploader
+    //if so, zremrangebyscore roomqueue_<roomname> songId songId
+    var uidkey = userinfo.service + "_" + userinfo.user_id
+    redisClient.get("s_" + songId, function(err3, reply3){
+      if(err3 || !reply3) return;
+
+      var songInfo = JSON.parse(reply3);
+      if(songInfo.room == roomname && songInfo.uid == uidkey){
+        redisClient.multi( [
+          ["zremrangebyscore", "roomqueue_" + roomname, songId, songId],
+          ["incr", "roommsg_" + roomname],
+        ]).exec(function(errz, replies){
+          var numRemoved = replies[0];
+          var message = msggen.queue_del(songId)
+          message.id = replies[1];
+          redisClient.publish("queueremove", roomname + " " + replies[1] + " " + JSON.stringify(message));
+        });
+      }
+    });
+  });
+  //redisClient.zremrangebyscore("roomqueue_" + roomName, songId, songId, function(err2, reply2){
+  /*/
+}
+
+
 var router = new routing.Router([//{{{
   ["^/$", homepage, [contexts.lookupSession]],
   ["^/login/(fb|tw)/?$", login],
@@ -470,12 +569,15 @@ var router = new routing.Router([//{{{
   ["^/(like|unlike)/?$", like_unlike, [contexts.lookupSession]],
   ["^/favorites/?$", favorites, [contexts.lookupSession]],
   ["^/room/?$", room, [contexts.getPostData, contexts.lookupSession]],
+  ["^/savesettings/?$", savesettings, [contexts.lookupSession]],
   ["^/([\\w\-]+)/skip/?$", skip, [contexts.lookupSession]],
   ["^/([\\w\-]+)/scqueue/?$", scQueue, [contexts.lookupSession]],
   ['^/([\\w\-]+)/listen/?$', listen],
   ['^/([\\w\-]+)/send/?$', send, [contexts.lookupSession]],
-  ["^/([\\w\-]+)/?$", roomdisplay, [contexts.lookupSession]],
-  ["^/([\\w\-]+)/upload/?$", upload, [contexts.prepareUpload, contexts.lookupSession]],  
+  ["^/([\\w\-]+)/?$", roomdisplay, [contexts.lookupSession, contexts.getUserInfo]],
+  ["^/([\\w\-]+)/upload/?$", upload, [contexts.prepareUpload, contexts.lookupSession]],
+  ["^/sctrack/(\\d+)/?$", scredirect],
+  ["^/([\\w\-]+)/remove/?$", remove_from_queue, [contexts.lookupSession]],
   //["^/authdone/fb/?$", authdone_facebook],
 ]);//}}}
 

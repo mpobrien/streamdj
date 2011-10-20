@@ -42,10 +42,10 @@ var trackSearchCallback = function(data){
           .append($('<span class="meta">by</span>'))
           .append(document.createTextNode(' '))
           .append($('<span class="artist"></div>').text(data[i].user.username))))
-      .append($('<td width="80"></td>')
-          .append($('<div class="prevlink preview scnotplaying">preview</div>').data("trackinfo", data[i]).hide()))
+      .append($('<td width="60"></td>').css('text-align','right')
+          .append($('<div class="btn preview scnotplaying">Preview</div>').data("trackinfo", data[i]).hide()))
       .append($('<td width="60"></td>')
-          .append($('<div class="prevlink queue">queue</div>').data("trackinfo", data[i]).hide()))
+          .append($('<div class="btn queue">Queue</div>').data("trackinfo", data[i]).hide()))
       .appendTo('#results_table')
   }
 }
