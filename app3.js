@@ -16,7 +16,7 @@ var OAuth     = require('oauth').OAuth;
 var redis     = require('redis');
 var msgs      = require('./messages')
 var chat      = require('./rooms')
-var mongo     = require('mongodb')
+var mongodb   = require('mongodb')
 var Song      = require('./models').Song
 var Session   = require('./models').Session
 var Room      = require('./models').Room
@@ -31,12 +31,26 @@ var templates = new TemplateManager('./templates',['login.html.mu','theroom.html
 templates.initializeTemplates();
 domains = ["outloud.fm","dev.outloud.fm","stream.dev.outloud.fm:81"];
 var msggen = new msgs.MessageGenerator();
-var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString()) 
+var settings = JSON.parse(fs.readFileSync(process.argv[2] ? process.argv[2] : "./settings.json").toString())
 var oa = new OAuth(settings.REQUEST_TOKEN_URL, settings.ACCESS_TOKEN_URL,
                    settings.key, settings.secret, 
                    settings.OAUTH_VERSION, settings.CALLBACK_URL, settings.HASH_VERSION); 
 var redisClient = redis.createClient();
 var pubsubClient = redis.createClient();
+
+mongoserver = new mongodb.Server(settings.MONGO_HOST, settings.MONGO_PORT, {}),
+db_connector = new mongodb.Db('outloud', mongoserver, {});
+var roomsCollection;
+db_connector.open(function(err, db){
+  if(err || !db){
+    console.log("error:", err)
+    return;
+  }
+  db_connector.collection('rooms', function(e, c){ 
+    roomsCollection = c;
+  })
+});
+
 
 function broadcastToRoom(room, message, excludeUid, roomname){
   console.log("room", room);
@@ -243,11 +257,26 @@ var homepage = function(req, res, qs, matches){//{{{
   utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), info)
 }//}}}
 
+var roomonline = function(req, res, qs, roomname){
+  res.end('')
+  if(req.session==null){
+    return;
+  }
+  var pplhash = {}
+  pplhash["people." + req.session.uid + ".time"] = +new Date()
+  pplhash["people." + req.session.uid + ".name"] = req.session.displayName
+  pplhash["people." + req.session.uid + ".img"] = req.session.avatarUrl
+  var updateDoc = {"$set":pplhash}
+  roomsCollection.update({"roomName":roomname}, updateDoc)
+}
+
 var roomdisplay = function(req, res, qs, roomname){//{{{
+
   if(req.session == null){ // room preview here
     utilities.httpRedirect(res, "/")
     return;
   }
+
   Room.getByRoomName(roomname, function(err, room){
     if(err || !room){
       res.end("room not found :(");
@@ -264,6 +293,18 @@ var roomdisplay = function(req, res, qs, roomname){//{{{
       info.servernow = +new Date().getTime()
       info.uidkey = req.session.uid;
       info.listenurl = "http://" + settings.streamserver_domain + ":" + settings.streamingport + "/listen/" + roomname
+      info.listeners = [];
+      var now = +new Date()
+      var added_me = false;
+      if('people' in room){
+        for(var id in room.people){
+          if(id == req.session.uid) continue;
+          if(room.people[id].time >= (now - 30000)){
+            info.listeners.push(room.people[id])
+          }
+        }
+      }
+      info.listeners.unshift({name:req.session.displayName, img:req.session.avatarUrl})
 
       var pollroom = pollrooms[roomname];
       if(pollroom){
@@ -292,6 +333,9 @@ var roomdisplay = function(req, res, qs, roomname){//{{{
         }
         info.queue = queueinfo;
         console.log(info.queue);
+        if(settings.devtemplates){ // BLOCKING FUNCTION - USE IN DEV ONLY
+          templates.initializeTemplates();
+        }
         utilities.sendTemplate(res, templates.getTemplate("theroom.html"), info)
       })
     }
@@ -570,6 +614,7 @@ var router = new routing.Router([//{{{
   ["^/favorites/?$", favorites, [contexts.lookupSession]],
   ["^/room/?$", room, [contexts.getPostData, contexts.lookupSession]],
   ["^/savesettings/?$", savesettings, [contexts.lookupSession]],
+  ["^/([\\w\-]+)/o/?$", roomonline, [contexts.lookupSession]],
   ["^/([\\w\-]+)/skip/?$", skip, [contexts.lookupSession]],
   ["^/([\\w\-]+)/scqueue/?$", scQueue, [contexts.lookupSession]],
   ['^/([\\w\-]+)/listen/?$', listen],

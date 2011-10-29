@@ -92,11 +92,30 @@
                 soundManager.onready(startStream);
             }, 100);
             var favoritesopen = false;
-            $('#scfindlink').hover(function(){                                  
+            $('#scfindlink').hover(function(){
                 $(this).addClass('hovering');
               }, function(){
                 $(this).removeClass('hovering');
               });
+            $('#previewmodal').modal({backdrop:true, keyboard:true})
+            $('#previewmodal').bind('hide', function(){
+              soundManager.stop('previewsound')
+              soundManager.unmute('scplaysound')
+            })
+
+            $('#previewmodal > .progress').click(function(e){
+              var x = e.pageX - this.offsetLeft - $('#previewmodal')[0].offsetLeft;
+              var pct = x/436;
+              var sound = soundManager.getSoundById('previewsound')
+              if(sound){
+                newposition = sound.durationEstimate * pct
+                if(newposition<sound.duration){
+                  sound.setPosition(newposition)
+                }
+              }
+              console.log("hey", e.pageX, this.offsetLeft, x)
+              console.log(x/436)
+            })
             $('#soundcloudmodal').modal({backdrop:true, keyboard:true})
                                  .bind('hidden', function(){
                                    soundManager.unmute('scplaysound');
@@ -104,7 +123,7 @@
                                    soundManager.mute('previewsound');
                                    soundManager.stop('previewsound');
                                  })
-            $('#scfindlink').click(function(){                                  
+            $('#scfindlink').click(function(){
               $('#soundcloudmodal').modal('show')
             });
             $('.fbinvite').click(doFbInvite);
@@ -135,12 +154,11 @@
 
       <div class="topbar">
         <div class="fill">
-          <div class="container">
+          <div class="container" style="width:100%; padding-left:30px;">
             <a class="brand" href="#"><img src="/static/ol.png"></a>
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
               <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="#logout">Log Out</a></li>
             </ul>
           </div>
         </div>
@@ -155,7 +173,7 @@
           </div>
           <div id="nowPlayingInfo">
             <div id="nowPlayingArt">
-              <img id="nowplayingArtImg" src="http://i1.sndcdn.com/artworks-000003441075-xy55co-large.jpg?e4d21f2" alt="" width="128" />
+              <img id="nowplayingArtImg" src="" alt="" width="128" />
             </div>
             <div class="clearer">&nbsp;</div>
             <div id="nowPlayingControls">
@@ -189,7 +207,7 @@
 
           <div id="queue">
 
-            <h2>Queue</h2>
+            <h2 style="text-align:center; padding-top:15px;">Queue</h2>
 
             <div id="progress"></div>
 
@@ -219,7 +237,7 @@
 
         <div id="centerColumn">
           <ul class="tabs" id="centertabs">
-            <li class="active" id="chatstab"><a href="#">Chats (9)</a></li>
+            <li class="active" id="chatstab"><a href="#" id="chatstabcounter">Chats</a></li>
             <li id="favoritestab"><a href="#">Favorites</a></li>
             <li id="settingstab"><a href="#">Settings</a></li>
           </ul>
@@ -247,8 +265,27 @@
           </div>
         </div>
 
-        <div id="rightColumn"> </div>
+        <div id="rightColumn">
+          <ul id="listenerslist">
+          {{#listeners}}
+            <li>
+            <img src="{{img}}" class="listener_avatar"></img>
+            {{name}}
+            </li>
+          {{/listeners}}
+          </ul>
+        </div>
 
+    </div>
+    <div id="previewmodal" class="modal hide fade in clearfix">
+      <div class="albart"><img id="preview_albart"></img>&nbsp;</div>
+      <div class="progress">
+        <div id="loadedprogress">&nbsp;</div>
+        <div id="previewprogress">&nbsp;</div>
+        <div><img id="progressimg" width="436" height="64"></img></div>
+      </div>
+      <div class="previewmeta">
+      </div>
     </div>
 
     <div id="soundcloudmodal" class="modal hide fade in" style="height:500px; padding:10px;">

@@ -11,7 +11,7 @@
   "OAUTH_VERSION" : "1.0",
   "HASH_VERSION" : "HMAC-SHA1",
   "CALLBACK_URL" : "http://outloud.fm/authdone",
-  "devtemplates" : true,
+  "devtemplates" : false,
   "streamingport" : 81,
   "streamserver_domain": "stream.outloud.fm",
   "SITE_ADMINS":["fb_8801758",  "fb_11700320", "tw_15614172", "tw_135242091"],

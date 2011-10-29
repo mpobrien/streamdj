@@ -82,7 +82,7 @@ function bit_url(url, callback) {
   });
 }
 var appendGreeting = function(){
-  $('#chat').append($('<div class="greeting"><div style="font-style:bold;">Welcome to your shiny new room!</div><div>Invite some friends! <span class="fbinvite"><img src="/static/facebook_small.png"/></span> <span class="twinvite" style="cursor:pointer;"><img src="/static/twitter_small.png"/></span></div><div>Or copy and paste this URL: <span class="roomlink">http://outloud.fm/' + roomname +'</span></div></div>'))
+  $('#chat').append($('<div class="greeting block-message alert-message"><div style="font-style:bold;">Welcome to your shiny new room!</div><div>Invite some friends! <span class="fbinvite"><img src="/static/facebook_small.png"/></span> <span class="twinvite" style="cursor:pointer;"><img src="/static/twitter_small.png"/></span></div><div>Or copy and paste this URL: <span class="roomlink">http://outloud.fm/' + roomname +'</span></div></div>'))
 }
 
 var extractCookie = function(cstring, c_name){
@@ -167,13 +167,11 @@ var handleFiles = function(files){//{{{
 
 /* Message handling */
 function processMessage(message, isStatic){//{{{
-  console.log("got message")
   if( !message ) return;
   if( !('type' in message) ) return;
   var type = message.type;
   var handler = MessageHandlers[type]
   if(handler){
-    console.log(message)
     handler(message, isStatic);
   }
 }//}}}

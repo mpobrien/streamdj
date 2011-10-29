@@ -70,6 +70,7 @@ var RoomSchema = new Schema({
     ctime : Date,
     log : [String],
     nowPlaying : String,
+    people: {},
     creator: {type: ObjectId, ref:'User'},
 })
 RoomSchema.statics.getByRoomName = function(name, callback){

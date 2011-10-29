@@ -1,9 +1,61 @@
 $(document).ready(function(){
-
+  setInterval( $.get( '/' + roomname + '/o/', function(){}), 30000);
   $('.scpreview').live({
     click:function(){
+      $('#previewmodal').modal('show')
+      soundManager.mute('mySound');
+      soundManager.mute('scplaysound');
+      soundManager.stop('previewsound');
+      var scid = $(this).data('scid')
+      var soundurl = "http://api.soundcloud.com/tracks/" + scid + "/stream?client_id=" + sc_clientId;
+      var sound = soundManager.getSoundById('previewsound');
+      if(!sound){
+        sound = soundManager.createSound({id:'previewsound', url:soundurl});
+      }
+      sound.load({url: soundurl});
+      sound.setPosition(0);
+      sound.unmute();
+      sound.play();
+      var updaterFunc = function(){
+        var s = soundManager.getSoundById('previewsound')
+        if(s!=null){
+          var pct = (s.position / s.durationEstimate)*100
+          $('#previewprogress').css('width', pct + '%')
+          var loadpct = (s.bytesLoaded / s.bytesTotal)*100
+          $('#loadedprogress').css('width', loadpct + '%')
+          setTimeout(arguments.callee, 100)
+        }else{
+          $('#previewprogress').css('width', '0%')
+        }
+      }
+      $('#preview_albart').attr('src', '').attr('height', '64').attr('width', '64')
+      $('.previewmeta').html('')
+      setTimeout(updaterFunc,100)
+      var url = "http://api.soundcloud.com/tracks/" + scid + ".json?client_id=07b794af61fdce4a25c9eadce40dda83&callback=?";
+      $.getJSON(url, function(data){
+        console.log(data);
+        if('waveform_url' in data){
+          $('#progressimg').attr('src', data.waveform_url)
+        }else{
+          $('#progressimg').attr('src', '')
+        }
+        $('.previewmeta').append(
+          $('<div class="favemeta"></div>')
+            .append($('<div class="feed_title"></div>').text(data['title']))
+            .append($('<div class="feed_artist"></div>')
+              .append($('<span class="meta">by</span>').append(makeText()))
+              .append($('<span class="artist"></span>').text(data.user.username))))
+        if(data.favoritings_count){
+          $('.previewmeta').append($('<div class="lilheart">&nbsp;</div>').text(data.favoritings_count + ' people favorited this'))
+        }
+        if(data.artwork_url){
+          $('#preview_albart').attr('src', data.artwork_url)
+        }
+      })
     }
   })
+
+
   $('#settingspanel input').change(function(){
     $('#savesettings').removeClass("disabled")
   })
@@ -40,7 +92,7 @@ $(document).ready(function(){
       //$('.queue').addClass('qdisabled')
       $('.scqueue').addClass('disabled')
       currentlyQueueingItem = $(this);
-      var scid = $(this).parents('.controls').data("scid")
+      var scid = $(this).data("scid")
       isqueueingId = scid;
       $(this).removeClass('qdisabled').addClass('queueing')
       $.get( '/' + roomname + '/scqueue/', {t:scid}, function(){
@@ -99,6 +151,8 @@ $(document).ready(function(){
       $('#chatscontainer').hide();
     }else{
       $('#chatscontainer').show();
+      var objDiv = document.getElementById("chat");
+      objDiv.scrollTop = objDiv.scrollHeight;
     }
 
     if(tabselector != '#favoritestab'){
@@ -171,7 +225,10 @@ function createFaveItem(item){
   if(item.scid){
     var sccontainer = $('<div></div>')
     sccontainer.append($('<a class="sclink"></a>').text("from SoundCloud").attr('href', "/sctrack/" + item.scid)).appendTo(meta)
-    container.append($('<div class="controls"><div class="btn small scpreview" style="display:block">Preview</div><div class="btn small scqueue" style="display:block">Queue</div></div>').data("scid",item.scid))
+    var prevbutton = $('<div class="btn small scpreview" style="display:block">Preview</div>').data('scid', item.scid)
+    var queuebutton = $('<div class="btn small scqueue" style="display:block">Queue</div>').data('scid', item.scid)
+    container.append($('<div class="controls"></div>').append(prevbutton).append(queuebutton))
+    //container.append($('<div class="controls"><div class="btn small scpreview" style="display:block">Preview</div><div class="btn small scqueue" style="display:block">Queue</div></div>').data("scid",item.scid))
   }
   container.append($('<div class="clearer"></div>'))
   return container;

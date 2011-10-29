@@ -22,6 +22,10 @@ var bumpMessageCount = function(){
     unreadCount++;
     document.title = "(" + unreadCount + ") " + roomname + " - outloud.fm"
   }
+  currenttab = $('#centertabs > .active').attr('id')
+  if(currenttab=='chatstab'){
+
+  }
 }
 
 var setSongProgress = function(){
@@ -229,9 +233,11 @@ var MessageHandlers = {
     }
     $('#favoriteHeart').removeClass("on").addClass("off");
     var albumartDiv;
+    console.log( message.meta && ('pic' in message.meta || 'picurl' in message.meta))
     if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
       var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) : message.meta.picurl;
-      $('nowplayingArtImg').attr('src', imageUrl);
+      console.log("here", imageUrl)
+      $('#nowplayingArtImg').attr('src', imageUrl);
       albumartDiv = $('<div id="albumartcol"></div>"')
                        .append($('<div class="albumart"></div>')
                         .append($('<img></img>').attr("width","60").attr("height","60")
