@@ -55,12 +55,12 @@ def main(argv):
 
 
         newsongdocument = {'title':metadata['Title'],
-                           'artist':metadata['Artist'], 
+                           'artist':metadata['Artist'],
                            'scid':songInfo['trackId'],
                            'url':trackInfo['permalink_url'],
-                           'purchase_url':trackInfo['purchase_url'], 
+                           'purchase_url':trackInfo['purchase_url'],
                            'tracklength':float(trackLength),
-                           'ctime':datetime.datetime.now(), } 
+                           'ctime':datetime.datetime.now(), }
 
         if( 'artwork_url' in trackInfo and trackInfo['artwork_url'] ):
           newsongdocument['picurl'] = trackInfo['artwork_url']
@@ -72,7 +72,7 @@ def main(argv):
                           'fromSoundcloud':True,
                           'room':songInfo['room'],
                           'url':trackInfo['permalink_url'],
-                          'purchase_url':trackInfo['purchase_url'], 
+                          'purchase_url':trackInfo['purchase_url'],
                           'songId':newSongId,
                           'meta':metadata,
                           'uploader':songInfo['uploader'],
@@ -82,18 +82,18 @@ def main(argv):
 
 
         #streamMessage = json.dumps( {'name':songInfo['fname'], 'uid':songInfo['uid'], 'uploader':songInfo['uploader'], 'songId':newSongId, 'meta':metadata});
-        r.zadd("roomqueue_" + songInfo['room'], streamMessage, time.mktime(datetime.datetime.now().timetuple()) ) #key, score, member 
+        r.zadd("roomqueue_" + songInfo['room'], streamMessage, time.mktime(datetime.datetime.now().timetuple()) ) #key, score, member
         #roomMsgId = r.incr("roommsg_" + songInfo['room'])
         roomMsgId = -1
         #r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?#}}}
-        
+
 
         outgoingMessage = {'room':songInfo['room'],'uploader':songInfo['uploader'], 'uid':songInfo['uid'], 'fromSoundcloud':True, 'meta':metadata, 'songId':newSongId}
         r.publish('file-queued', songInfo['room'] + ' ' + str(roomMsgId) + " " + json.dumps(outgoingMessage));
         r.publish("newQueueReady",songInfo['room']);
       print trackInfo
       print metadata
-    except Exception, e: 
+    except Exception, e:
       print "Error occurred getting track info from soundcloud!!!", e
       traceback.print_exc(file=sys.stdout)
 

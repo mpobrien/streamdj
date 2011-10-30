@@ -1,5 +1,7 @@
 $(document).ready(function(){
-  setInterval( $.get( '/' + roomname + '/o/', function(){}), 30000);
+  $.getJSON( '/' + roomname + '/o/', function(){
+    setInterval( function(){$.getJSON( '/' + roomname + '/o/', function(){})}, 30000);
+  })
   $('.scpreview').live({
     click:function(){
       $('#previewmodal').modal('show')

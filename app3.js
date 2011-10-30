@@ -1,4 +1,5 @@
 var fs        = require('fs');
+var net       = require('net')
 var path      = require('path')
 var contexts  = require('./contexts')
 var asyncid3  = require('./asyncid3')
@@ -53,7 +54,6 @@ db_connector.open(function(err, db){
 
 
 function broadcastToRoom(room, message, excludeUid, roomname){
-  console.log("room", room);
   if(room){
     for(var i=0;i<room.length;i++){
       if(excludeUid && excludeUid == room[i].uid) continue;
@@ -234,7 +234,6 @@ var poll = function(req, res, qs, matches){//{{{
   }
   if(cursor){
     if(backlog.getMax() > cursor){
-      console.log("here");
       replies = backlog.getFrom(cursor);
       console.log(replies);
       res.end(JSON.stringify(replies));
@@ -258,7 +257,7 @@ var homepage = function(req, res, qs, matches){//{{{
 }//}}}
 
 var roomonline = function(req, res, qs, roomname){
-  res.end('')
+  res.end('{}')
   if(req.session==null){
     return;
   }
@@ -266,12 +265,13 @@ var roomonline = function(req, res, qs, roomname){
   pplhash["people." + req.session.uid + ".time"] = +new Date()
   pplhash["people." + req.session.uid + ".name"] = req.session.displayName
   pplhash["people." + req.session.uid + ".img"] = req.session.avatarUrl
+  pplhash["people." + req.session.uid + ".uid"] = req.session.uid
   var updateDoc = {"$set":pplhash}
   roomsCollection.update({"roomName":roomname}, updateDoc)
 }
 
 var roomdisplay = function(req, res, qs, roomname){//{{{
-
+  res.writeHead(200, {'Content-Type': 'text/html', 'charset':'utf-8'});
   if(req.session == null){ // room preview here
     utilities.httpRedirect(res, "/")
     return;
@@ -298,13 +298,24 @@ var roomdisplay = function(req, res, qs, roomname){//{{{
       var added_me = false;
       if('people' in room){
         for(var id in room.people){
-          if(id == req.session.uid) continue;
+          if(id == req.session.uid){
+            continue;
+          }
           if(room.people[id].time >= (now - 30000)){
             info.listeners.push(room.people[id])
           }
         }
+        if(!(req.session.uid in room.people)){
+          var message = JSON.stringify(msggen.join(req.session.displayName, req.session.uid.slice(0,2), req.session.uid, req.session.avatarUrl, true))
+          redisClient.publish("userjoined", roomname + " " + "-1" + " " + message);
+        } else {
+          if(room.people[req.session.uid].time <= (now-30000)){
+            var message = JSON.stringify(msggen.join(req.session.displayName, req.session.uid.slice(0,2), req.session.uid, req.session.avatarUrl, false))
+            redisClient.publish("userjoined", roomname + " " + "-1" + " " + message);
+          }
+        }
       }
-      info.listeners.unshift({name:req.session.displayName, img:req.session.avatarUrl})
+      info.listeners.unshift({name:req.session.displayName, img:req.session.avatarUrl, uid:req.session.uid})
 
       var pollroom = pollrooms[roomname];
       if(pollroom){
@@ -431,6 +442,90 @@ var authdone_twitter = function(req, res, qs){//{{{
       });
     });
   });
+}//}}}
+
+var authdone_facebook = function(req, res, qs){//{{{
+  var roomname = qs.query['r']
+  var fbcode = qs.query['code']
+  ctx = (roomname && utilities.validateRoomName(roomname) ? {room:roomname} : {room:''})
+  if(!fbcode){ // something happend... user hit deny? whatever, redirect to home page
+    console.log("User denied auth request?");
+    ctx = (roomname && utilities.validateRoomName(roomname) ? {room:roomname} : {room:''})
+    utilities.sendTemplate(res, templates.getTemplate("login.html"), ctx); 
+    return;
+  }
+
+  var redirecturi = settings.CALLBACK_URL + "/fb/" + (roomname ? "?r=" + roomname : "");
+  var accesstoken_path = '/oauth/access_token?client_id='
+                         + settings.facebook_app_id
+                         + '&client_secret='+settings.facebook_api_secret 
+                         + '&code=' + fbcode + '&redirect_uri=' + escape(redirecturi) 
+
+  var cookies = new Cookies(req, res)
+  https.get({ host: 'graph.facebook.com', path: accesstoken_path}, function(client_res) { 
+    client_res.on('data', function(d) {
+      //TODO catch error here - token not present or invalid stuff
+      var raw = d.toString();
+      var authtoken = querystring.parse(raw)
+      https.get({ host: 'graph.facebook.com', path: "/me?access_token=" + authtoken.access_token}, function(client_res2) { 
+        client_res2.on('data', function(d) {
+
+          var me_data;
+          try{
+            me_data = JSON.parse(d.toString())
+          }catch(exception){
+            console.log("ERROR during facebook oauth callback:", exception);
+            console.log("from facebook:", d.toString());
+            utilities.sendTemplate(res, templates.getTemplate("login.html"), ctx); 
+            return;
+          }
+
+
+          User.update({uid:'fb_' + me_data.id}, {displayName : me_data.name, uid:'fb_' + me_data.id, avatarUrl: "http://graph.facebook.com/" + me_data.id + '/picture'}, { upsert: true }, function(err, docs){
+            if(err){
+              console.log("error saving user", err.stack);
+              return;
+            }
+            User.findOne({uid:"fb_"+me_data.id}, function(err2, doc2){
+              if(doc2 && !err2){
+                console.log(doc2)
+                var userSession = new Session({user:doc2._id, uid:doc2.uid, avatarUrl: "http://graph.facebook.com/" + me_data.id + '/picture', displayName : me_data.name});
+                userSession.save(function(err3,doc3){
+                  cookies.set("session", doc3._id, {domain:settings.domain, httpOnly:false, expires: new Date(+new Date() + (1000 * 60 * 60 * 24 * 14))});
+                  var redirectUrl = 'http://' + settings.domain + ':' + settings.port + '/';
+                  if( roomname && utilities.validateRoomName(roomname) ) redirectUrl += roomname;
+                  res.writeHead(302, { 'Location': redirectUrl });
+                  res.end();
+                });
+              }else{
+                res.end();
+              }
+            });
+          });
+
+          console.log(me_data);
+          console.log(me_data.name, " logged in with facebook");
+        }).on("error", function(e2){
+          console.log("error:", e2);
+          utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}); 
+        })
+
+      }).on("error", function(ee7){
+        console.log("error:", ee7);
+        utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}); 
+      })
+      authtoken.access_token;
+
+    })
+    .on('error', function(e12) {
+      console.log("FB error:", e12);
+      utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}); 
+    });
+  }).on("error", function(e9){
+    console.log("FB error:", e9);
+    utilities.sendTemplate(res, templates.getTemplate("login.html.mu"), {errors:[{msg:"Facebook could not be reached. Try again in a moment."}], room:roomname}); 
+  });
+
 }//}}}
 
 var login = function(req, res, qs, fromService){//{{{
@@ -609,6 +704,7 @@ var router = new routing.Router([//{{{
   ["^/$", homepage, [contexts.lookupSession]],
   ["^/login/(fb|tw)/?$", login],
   ["^/logout/?$", logout],
+  ["^/authdone/fb/?$", authdone_facebook],
   ["^/authdone/tw/?$", authdone_twitter],
   ["^/(like|unlike)/?$", like_unlike, [contexts.lookupSession]],
   ["^/favorites/?$", favorites, [contexts.lookupSession]],
@@ -662,7 +758,72 @@ server.addListener("request", function(req, res) {//{{{
 })//}}}
 
 server.addListener("connection", function(connection){
-    console.log("websocket connection!!");
+  console.log("websocket connection!!");
+  var qs = require('url').parse(connection._req.url, true)
+  var roomname = qs.pathname.slice(1);
+  connection.authorized = false;
+  connection.roomname = roomname;
+  connection.addListener("message", function(msg){
+    console.log(msg);
+    if( !connection.authorized ){
+      if(msg.substr(0, 5)==="auth:"){
+        var authstring = msg.substr(5)
+        var sessionId = utilities.extractCookie(authstring, "session") //TODO check if present/valid?
+        Session.findById(sessionId, function(err, doc){
+          if(!err && doc){
+            connection.name = doc.displayName;
+            connection.uid = doc.uid;
+            connection.authorized = true;
+            if(roomname in rooms){
+              rooms[roomname].push(connection);
+            }else{
+              rooms[roomname] = [connection];
+            }
+          }else{
+            connection.close();
+            return;
+          }
+        });
+      }else{ // tried to send message on an unauthorized connection - disconnect it
+        //TODO actually disconnect it. im not sure how right now.
+        //TODO remove it from the chat connections handler
+      }
+    }else{
+      if(msg=='0'){ //ping! //TODO check timing of pings to prevent DOS
+        connection.send("1");
+      }else{
+        var eventMsg = msggen.chat(connection.name, msg, -1)
+        var eventMsgString = JSON.stringify(eventMsg);
+        Room.addMessageByName(connection.roomname, eventMsgString)
+        redisClient.publish("chatmessage", roomname + " " + -1 + " " + eventMsgString);
+        console.log("[" + connection.roomname + "] ", connection.name + ":", msg);
+      }
+    }
+  });
+  connection.addListener("close", function(){
+    var chatroom = rooms[roomname];
+    if( chatroom ) rooms[roomname].remove(connection);
+    redisClient.hdel("listeners_" + roomname, connection.uid, function(err, reply){
+      if(reply==1){
+        var message = JSON.stringify( msggen.left(connection.name, connection.uid))
+        redisClient.publish("userleft", roomname + " " + "-1" + " " + message);
+      }
+    })
+  })
 });
 
 server.listen(settings.port);
+
+net.createServer(//{{{
+  function(socket){
+    socket.write("<?xml version=\"1.0\"?>\n");
+    socket.write("<!DOCTYPE cross-domain-policy SYSTEM \"http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd\">\n");
+    socket.write("<cross-domain-policy>\n");
+    domains.forEach( function(domain) {
+      var parts = domain.split(':');
+      socket.write("<allow-access-from domain=\""+parts[0]+"\"to-ports=\""+(parts[1]||'80')+"\"/>\n");
+    });
+    socket.write("</cross-domain-policy>\n");
+    socket.end();   
+  }
+).listen(843);

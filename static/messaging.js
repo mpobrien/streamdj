@@ -157,6 +157,7 @@ var MessageHandlers = {
   },//}}}
 
   "join"   : function(message, isStatic){//{{{
+    if(message['uid'] == uidkey) return;
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"')
     //newMessageHtml.attr("id",message["id"]);
@@ -165,32 +166,32 @@ var MessageHandlers = {
       newMessageHtml.append( $('<span class="from"></span>').text(message['from']) )
       newMessageHtml.append( $('<span class="message"></span>').text("joined the room") )
       newMessageHtml.appendTo("#chat");
+      var objDiv = document.getElementById("chat");
+      objDiv.scrollTop = objDiv.scrollHeight;
     }
-    if($('#user_' + message['uid']).length==0){
-      var newlistener = $('<div style="line-height:24px"></div>');
-      var listenerInfo = message['uid'].split('_')
+
+    var listenerInfo = message['uid'].split('_')
+    if($('#listener_' + message['uid']).length==0){
       if(listenerInfo[0] == 'tw'){
         var picpath = message['body']
       }else{
         var picpath = 'http://graph.facebook.com/' + listenerInfo[1] + '/picture/?type=square'
       }
-      var newlistener_pic = $('<img src="' + picpath + '" width="24px" height="24px"></img>');
-      var newlistener_name = $('<span class="username"></span');
-      newlistener_name.text(message['from'])
-
-      var listenerLink = $('<a></a>')
-      listenerLink.attr('href', listenerInfo[0] =='tw' ? 'http://twitter.com/account/redirect_by_id?id=' + listenerInfo[1]
-                                                      : 'http://facebook.com/profile.php?id=' + listenerInfo[1] )
-      listenerLink.attr("target","_blank")
-      listenerLink.append(newlistener_pic);
-      newlistener.append(listenerLink);
-      newlistener.append(newlistener_name);
-      newlistener.attr('id', 'user_' + message['uid'])
-      newlistener.appendTo("#listeners");
+      var avatarimg = $('<img class="listener_avatar"></img>').attr("src",picpath)
+      console.log(avatarimg)
+      var newli = $('<li></li>').attr('id', "listener_" + message['uid']);
+      newli.append(avatarimg)
+      newli.append($('<span style="padding-left:5px; line-height:30px"></span>').text(message['from']))
+      newli.hide().appendTo("#listenerslist").fadeIn()
+/*
+ *      listenerLink.attr('href', listenerInfo[0] =='tw' ? 'http://twitter.com/account/redirect_by_id?id=' + listenerInfo[1] : 'http://facebook.com/profile.php?id=' + listenerInfo[1] )
+ *      listenerLink.attr("target","_blank")
+ */
     }
   },//}}}
 
   "left"   : function(message, isStatic){//{{{
+    console.log("got!", message)
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"');
     newMessageHtml.attr("id","msg_" + (msgIds++));
@@ -198,7 +199,7 @@ var MessageHandlers = {
     /*.append( $('<span class="from"></span>').text(message['from']) )*/
     /*.append( $('<span class="message"></span>').text("left the room") )*/
     /*.appendTo("#chat");*/
-    $('#user_'+ message['uid']).remove();//eadeOut(30, function(){$(this).remove()})
+    $('#listener_'+ message['uid']).fadeOut(30, function(){$(this).remove()})
   },//}}}
 
   "stopped": function(message, isStatic){//{{{
@@ -233,10 +234,8 @@ var MessageHandlers = {
     }
     $('#favoriteHeart').removeClass("on").addClass("off");
     var albumartDiv;
-    console.log( message.meta && ('pic' in message.meta || 'picurl' in message.meta))
     if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
       var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) : message.meta.picurl;
-      console.log("here", imageUrl)
       $('#nowplayingArtImg').attr('src', imageUrl);
       albumartDiv = $('<div id="albumartcol"></div>"')
                        .append($('<div class="albumart"></div>')

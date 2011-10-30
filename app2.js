@@ -157,6 +157,7 @@ pubsubClient.on("message", function(channel, msg){
     broadcastToRoom(room, msg.substr(secondSpace+1), null, roomname);
     //room.broadcast(msg.substr(secondSpace+1), msgId);
   }else if(channel == 'userjoined'){
+    console.log("hey!")
     //room.broadcast(msg.substr(secondSpace+1), msgId);
     broadcastToRoom(room, msg.substr(secondSpace+1), null, roomname);
   }else if(channel == 'userleft'){

@@ -20,7 +20,7 @@ exports.MessageGenerator = function MessageGenerator(){
   this.join = function(who, service, uid, pic, isnew){
     //msgId++;
     var link = service == 'tw' ?  'http://twitter.com/' + uid : 'http://facebook.com/profile.php?id=' + uid;
-    return {"type":"join",'from':who, 'uid':service + '_' + uid, 'serv':service, 'isnew':isnew, body:pic, 'time':new Date().getTime()}
+    return {"type":"join",'from':who, 'uid':uid, 'serv':service, 'isnew':isnew, body:pic, 'time':new Date().getTime()}
   }
 
   //////////////////

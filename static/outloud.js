@@ -643,6 +643,7 @@ $(document).ready(function(){
     ws = new WebSocket(wsurl);
 
     ws.onmessage = function(message){
+      console.log("GOT:", message)
       if(message.data=='1'){ return; }
       //var msgs = $.parseJSON(message.data);
       var jsonMessage = $.parseJSON(message.data)
@@ -662,6 +663,7 @@ $(document).ready(function(){
     }
 
     ws.onopen = function(){
+      console.log("sending:", "auth:" + document.cookie)
       ws.send("auth:" + document.cookie);
       setInterval(function(){ ws.send("0") }, 45000);
     }

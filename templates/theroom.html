@@ -1,6 +1,6 @@
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>{{roomname}} - outloud.fm</title>
         <link href="/static/bootstrap.less" rel="stylesheet/less"/>
         <link href="/static/style.less" rel="stylesheet/less"/>
@@ -173,7 +173,7 @@
           </div>
           <div id="nowPlayingInfo">
             <div id="nowPlayingArt">
-              <img id="nowplayingArtImg" src="" alt="" width="128" />
+              <img id="nowplayingArtImg" alt="" width="128" />
             </div>
             <div class="clearer">&nbsp;</div>
             <div id="nowPlayingControls">
@@ -268,9 +268,8 @@
         <div id="rightColumn">
           <ul id="listenerslist">
           {{#listeners}}
-            <li>
-            <img src="{{img}}" class="listener_avatar"></img>
-            {{name}}
+            <li id="listener_{{uid}}">
+            <img src="{{img}}" class="listener_avatar"></img><span style="padding-left:5px; line-height:30px;">{{name}}</span>
             </li>
           {{/listeners}}
           </ul>
