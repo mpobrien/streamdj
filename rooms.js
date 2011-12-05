@@ -19,15 +19,15 @@ var ChatRoom = function(){//{{{
     that.history.push(message, messageId);
     while(that.listeners.length > 0 ){
       var listenerItem = that.listeners.shift();
-      listenerItem.end(JSON.stringify({'m':message, 'c':messageId}));
+      listenerItem.end(listenerItem.callbackname + "(" + JSON.stringify({'m':message, 'c':messageId}) + ")");
     }
   }
 
-  this.getMessages = function(req, res, cursor){
-    console.log("max:",that.getMax());
+  this.getMessages = function(req, res, callbackname, cursor){
+    console.log("max:",that.getMax(), callbackname);
     if(cursor>=0 && cursor<that.getMax()){
       var messages = that.history.getFrom(cursor);
-      res.end(JSON.stringify({'m':messages, 'c':that.getMax()}));
+      res.end(callbackname + "(" + JSON.stringify({'m':messages, 'c':that.getMax()}) + ")");
     }else{
       var errorFunc = function(exception){
         console.log("ERROR - ", exception);
@@ -40,6 +40,7 @@ var ChatRoom = function(){//{{{
       }
       req.on("clientError",errorFunc).on("error",errorFunc).on("close",cleanup);
       req.connection.setTimeout(0);
+      res.callbackname = callbackname
       that.listeners.push(res);
     }
   }

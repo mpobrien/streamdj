@@ -1,3 +1,4 @@
+alluploads = []
 window.linkify =//{{{
 (function(){var k="[a-z\\d.-]+://",h="(?:(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])",c="(?:(?:[^\\s!@#$%^&*()_=+[\\]{}\\\\|;:'\",.<>/?]+)\\.)+",n="(?:ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|coop|com|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|xn--0zwm56d|xn--11b5bs3a9aj6g|xn--80akhbyknj4f|xn--9t4b11yi5a|xn--deba0ad|xn--g6w251d|xn--hgbk6aj7f53bba|xn--hlcj6aya9esc7a|xn--jxalpdlp|xn--kgbechtv|xn--zckzah|ye|yt|yu|za|zm|zw)",f="(?:"+c+n+"|"+h+")",o="(?:[;/][^#?<>\\s]*)?",e="(?:\\?[^#<>\\s]*)?(?:#[^<>\\s]*)?",d="\\b"+k+"[^<>\\s]+",a="\\b"+f+o+e+"(?!\\w)",m="mailto:",j="(?:"+m+")?[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"+f+e+"(?!\\w)",l=new RegExp("(?:"+d+"|"+a+"|"+j+")","ig"),g=new RegExp("^"+k,"i"),b={"'":"`",">":"<",")":"(","]":"[","}":"{","B;":"B+","b:":"b9"},i={callback:function(q,p){return p?'<a href="'+p+'" title="'+p+'" target="_blank">'+q+"</a>":q},punct_regexp:/(?:[!?.,:;'"]|(?:&|&amp;)(?:lt|gt|quot|apos|raquo|laquo|rsaquo|lsaquo);)$/};return function(u,z){z=z||{};var w,v,A,p,x="",t=[],s,E,C,y,q,D,B,r;for(v in i){if(z[v]===undefined){z[v]=i[v]}}while(w=l.exec(u)){A=w[0];E=l.lastIndex;C=E-A.length;if(/[\/:]/.test(u.charAt(C-1))){continue}do{y=A;r=A.substr(-1);B=b[r];if(B){q=A.match(new RegExp("\\"+B+"(?!$)","g"));D=A.match(new RegExp("\\"+r,"g"));if((q?q.length:0)<(D?D.length:0)){A=A.substr(0,A.length-1);E--}}if(z.punct_regexp){A=A.replace(z.punct_regexp,function(F){E-=F.length;return""})}}while(A.length&&A!==y);p=A;if(!g.test(p)){p=(p.indexOf("@")!==-1?(!p.indexOf(m)?"":m):!p.indexOf("irc.")?"irc://":!p.indexOf("ftp.")?"ftp://":"http://")+p}if(s!=C){t.push([u.slice(s,C)]);s=E}t.push([A,p])}t.push([u.substr(s)]);for(v=0;v<t.length;v++){x+=z.callback.apply(window,t[v])}return x||u}})();//}}}
 var usewebsocket = false;
@@ -40,7 +41,8 @@ var generateTwitterMsg = function(songInfo){
 }   
 
 var getMessages = function(){
-  $.getJSON('/' + roomname + '/listen/', {'c':cursor}, function(json){
+  //$.getJSON('/' + roomname + '/listen/', {'c':cursor}, function(json){
+  $.getJSON('http://event.dev.outloud.fm/' + roomname + '/listen?callback=?', {'c':cursor}, function(json){
     cursor = json.c;
     if(json.m instanceof Array){
       for(var i=0;i<=json.m.length;i++){
@@ -135,17 +137,31 @@ var handleFiles = function(files){//{{{
     return;
   }
   for( var fn in files ){
+    console.log("hey")
     var file = files[fn];
-    if( !file.fileSize ) continue;
-    if( file.fileSize > 1024 * 1024 * 20){
+    console.log(file)
+    var fsize = null;
+    if( file.fileSize ){
+      fsize = file.fileSize;
+    }else if(file.size){
+      fsize = file.size;
+    }
+    if( !fsize ) continue;
+    console.log("hey2")
+    if( fsize > 1024 * 1024 * 20){
       alert("Files may be no larger than 20 megs each.");
       continue;
     }
+
+    console.log("hey3")
     pendinguploads++;
     var qxhr = new XMLHttpRequest();
+    alluploads.push(qxhr)
+    console.log("hey4")
     var progbar = new ProgressBar();
     $('#progress').append(progbar.outer)
-    qxhr.onreadystatechange = function(){}
+    qxhr.onload = function(e){ console.log("LOAD!", e)}
+    qxhr.onreadystatechange = function(e){ console.log("readystatechanged", e)}
     qxhr.upload.onerror = function(e){ /*console.debug("error", e);*/ }
     qxhr.upload.onloadstart = function(e){ /*console.debug("loadstart", e);*/ }
     qxhr.upload.onprogress = function makeupdater(bar){
@@ -184,7 +200,7 @@ var sendMessage = function(){//{{{
   if(ws && ws.readyState == 1){
     ws.send(msgtext);
   }else{
-    $.getJSON('/' + roomname + '/send', {m:msgtext}, function(data){});
+    $.getJSON('http://msg.dev.outloud.fm/' + roomname + '/send?callback=?', {m:msgtext}, function(data){});
   }
   var objDiv = document.getElementById("chat");
   objDiv.scrollTop = objDiv.scrollHeight;
@@ -560,7 +576,7 @@ $(document).ready(function(){
   $('#volcontrol').click(
     function(e){
       var x = e.pageX - $(this).offset().left;
-      var pct = parseInt((x * 100) / 140)
+      var pct = parseInt((x * 100) / 60)
       currentVolume = pct;
       if(muted) muteToggle(false)
       setVol(pct);
@@ -573,6 +589,7 @@ $(document).ready(function(){
 
 
   function dragEnter(evt){
+    console.log("enter1ed!")
     evt.stopPropagation();
     evt.preventDefault();
     return false;
@@ -593,12 +610,15 @@ $(document).ready(function(){
   }
 
   function drop(evt){
+
+    console.log("dropped!")
     evt.preventDefault();
     evt.stopPropagation();
     $('#queueheading').removeClass("highlight");
     var files = evt.dataTransfer.files;
     var count = files.length;
     if( count == 0 ) return;
+    console.log(files)
     handleFiles(files)
     return false;
   }
@@ -611,7 +631,7 @@ $(document).ready(function(){
   /*droptarget.addEventListener("dragenter", dragEnter, false);*/
   /*droptarget.addEventListener("dragleave", dragExit, false);*/
   /*droptarget.addEventListener("dragover", dragOver, false);*/
-  
+
   oddify();
   $('.heartbox').live({
     mouseenter: function(){

@@ -22,7 +22,9 @@ var Song      = require('./models').Song
 var Session   = require('./models').Session
 var Room      = require('./models').Room
 var User      = require('./models').User
-var UserFavorite = require('./models').UserFavorite
+var mongoose = require('mongoose')
+var ObjectID = require('mongodb').BSONPure.ObjectID;
+var UserFavorite = require('./models').UserFavorite;
 var querystring = require('querystring')
 var rooms = {};
 var pollrooms = {};
@@ -52,6 +54,11 @@ db_connector.open(function(err, db){
   })
 });
 
+var test = function(req, res, qs, matches){
+  var cookies = new Cookies(req, res)
+  console.log(cookies)
+}
+
 
 function broadcastToRoom(room, message, excludeUid, roomname){
   if(room){
@@ -72,14 +79,15 @@ function broadcastToRoom(room, message, excludeUid, roomname){
 var listen = function(req, res, qs, roomname){//{{{
   console.log("listen!");
   var cursor = parseInt(qs.query['c'])
+  var callback = qs.query['callback']
   if( utilities.validateRoomName(roomname)){
     var pollroom = pollrooms[roomname]
     if( pollroom ){
-      pollroom.getMessages(req, res, cursor);
+      pollroom.getMessages(req, res, callback, cursor);
     }else{
       var pollroom = new chat.ChatRoom();
       pollrooms[roomname] = pollroom;
-      pollroom.getMessages(req, res, cursor);
+      pollroom.getMessages(req, res, callback, cursor);
     }
   }else{
     res.end();
@@ -218,6 +226,8 @@ var upload = function(req, res, qs, roomname){//{{{
     return;
   }
   req.fileUpload.on("filedone", function(){
+    console.log("Ending request!")
+    res.end();
     var uidkey = req.session.uid;
     var fname = req.headers['x-file-name']
     var uploadedFileInfo = JSON.stringify({"path":req.fileUpload.outputPath, "room":roomname, "uploader":req.session.displayName,'uid':uidkey, 'fname':fname});
@@ -305,7 +315,7 @@ var roomdisplay = function(req, res, qs, roomname){//{{{
             info.listeners.push(room.people[id])
           }
         }
-        if(!(req.session.uid in room.people)){
+        if(!room.people || !(req.session.uid in room.people)){
           var message = JSON.stringify(msggen.join(req.session.displayName, req.session.uid.slice(0,2), req.session.uid, req.session.avatarUrl, true))
           redisClient.publish("userjoined", roomname + " " + "-1" + " " + message);
         } else {
@@ -575,13 +585,34 @@ var skip = function(req, res, qs, roomname){//{{{
   })
 }//}}}
 
-var like_unlike = function(req, res, qs, matches){//{{{
+var like_unlike = function(req, res, qs, roomname){//{{{
   var songId = qs.query['s']
-  res.end("{}");
-  console.log("songid",songId,"uid", req.session.uid);
-  if(songId){
-    UserFavorite.addFavorite(req.session.uid, songId);
+  var scId = null;
+  if('scid' in qs.query){
+    scId = qs.query['scid']
   }
+  res.end("{}");
+  Room.getCurrentSongByRoomName(roomname, function(err, result){
+    if(err || !result) return;
+    if(result.nowPlaying){
+      //TODO this is bad. parsing json is bad. just put it in the doc.
+      var np = JSON.parse(result.nowPlaying);
+      console.log("nowplaying:", np)
+      var pic = null;
+      if('picurl' in np.meta) pic = np.meta.picurl
+      if('pic' in np.meta) pic = np.meta.picurl
+      console.log(np)
+      UserFavorite.addFavorite(req.session.uid,
+                               new ObjectID(np.songId),
+                               scId,
+                               np.meta.Title,
+                               np.meta.Artist,
+                               np.meta.Album,
+                               np.uploader,
+                               pic,
+                               np.meta.uid, function(){});
+    }
+  })
 }//}}}
 
 var favorites = function(req, res, qs){//{{{
@@ -596,27 +627,16 @@ var favorites = function(req, res, qs){//{{{
       return;
     }else{
       responseJson.numFavorites = result;
-      UserFavorite.find({'uid':req.session.uid},{'songId':1}).sort('ctime','descending')
+      UserFavorite.find({'uid':req.session.uid}).sort('mtime','descending')
                   .skip(pageNum*pagesize).limit(pagesize)
                   .run(function(err, docs){
                     if(err){
                       res.end(JSON.stringify(responseJson));
                       return;
                     }else{
-                      var ids = new Array(docs.length);
-                      for(var i=0;i<docs.length;i++){
-                        if(docs[i].songId) ids.push(docs[i].songId);
-                      }
-                      if(ids.length > 0){
-                        Song.where("_id").in(ids).run(function(err2, docs2){
-                          responseJson.faves = docs2;
-                          res.end(JSON.stringify(responseJson));
-                        });
-                      }else{
-                        res.end(JSON.stringify(responseJson));
-                      }
+                      res.end(JSON.stringify(docs));
                     }
-                  });
+                  })
     }
   })
 }//}}}
@@ -699,27 +719,25 @@ var remove_from_queue = function(req, res, qs, roomname){
   /*/
 }
 
-
 var router = new routing.Router([//{{{
   ["^/$", homepage, [contexts.lookupSession]],
   ["^/login/(fb|tw)/?$", login],
   ["^/logout/?$", logout],
   ["^/authdone/fb/?$", authdone_facebook],
   ["^/authdone/tw/?$", authdone_twitter],
-  ["^/(like|unlike)/?$", like_unlike, [contexts.lookupSession]],
   ["^/favorites/?$", favorites, [contexts.lookupSession]],
   ["^/room/?$", room, [contexts.getPostData, contexts.lookupSession]],
   ["^/savesettings/?$", savesettings, [contexts.lookupSession]],
+  ["^/([\\w\-]+)/(like|unlike)/?$", like_unlike, [contexts.lookupSession]],
   ["^/([\\w\-]+)/o/?$", roomonline, [contexts.lookupSession]],
   ["^/([\\w\-]+)/skip/?$", skip, [contexts.lookupSession]],
   ["^/([\\w\-]+)/scqueue/?$", scQueue, [contexts.lookupSession]],
   ['^/([\\w\-]+)/listen/?$', listen],
   ['^/([\\w\-]+)/send/?$', send, [contexts.lookupSession]],
   ["^/([\\w\-]+)/?$", roomdisplay, [contexts.lookupSession, contexts.getUserInfo]],
-  ["^/([\\w\-]+)/upload/?$", upload, [contexts.prepareUpload, contexts.lookupSession]],
+  ["^/([\\w\-]+)/upload/?$", upload, [contexts.uploadFuncGen(settings.uploadDirectory), contexts.lookupSession]],
   ["^/sctrack/(\\d+)/?$", scredirect],
   ["^/([\\w\-]+)/remove/?$", remove_from_queue, [contexts.lookupSession]],
-  //["^/authdone/fb/?$", authdone_facebook],
 ]);//}}}
 
 var server = ws.createServer();

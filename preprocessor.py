@@ -65,8 +65,11 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
         fout = open(picpath, 'w')
         fout.write(picdata)
         fout.close();
-        picinfo = get_image_info(picpath)
-        print picinfo
+        picinfo = None
+        try:
+          picinfo = get_image_info(picpath)
+        except:
+          picinfo = None
         if picinfo:
           width, height, fileformat = picinfo
           print width, height, fileformat
@@ -80,7 +83,7 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
             f.close();
             conn.put( BUCKET_NAME, 'art/' + picfilename, S3.S3Object(imgdata, {'title': 'title'}), {'Content-Type':'image/png', 'x-amz-acl':'public-read'})
             r.sadd("thumbnails", picfilename)
-          except Exception, e: 
+          except Exception, e:
             print "Error occurred sending thumbnail data to s3", e
             traceback.print_exc(file=sys.stdout)
       else:
@@ -111,23 +114,23 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
       print "converted", retcode, outputpath
     else:
       outputpath = songInfo['path']
-  
+
 
 
   if 'fname' not in songInfo:
       songInfo['fname'] = "(Unknown)"
-  #r.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member 
+  #r.zadd("fave_" + uidkey, new Date().getTime(), songId ) //key, score, member
   #roomMsgId = r.incr("roommsg_" + songInfo['room'])
   metadata['room']= songInfo['room']
   metadata['uid'] = songInfo['uid']
   newsongdocument = {'title':metadata['Title'],
-                     'artist':metadata['Artist'], 
-                     'album':metadata['Album'], 
+                     'artist':metadata['Artist'],
+                     'album':metadata['Album'],
                      'tracklength':float(mutagenInfo.info.length),
                      'ctime':datetime.datetime.now(),
                      'room':metadata['room'],
                      'uid':metadata['uid']
-                     } 
+                     }
   if 'pic' in metadata:
     newsongdocument['image'] = metadata['pic']
   newObjectId = songs.insert(newsongdocument);
@@ -136,7 +139,7 @@ def processFile(mutagenInfo, songInfo, picoutputdir):#{{{
   streamMessage = json.dumps( {'path':outputpath, 'name':songInfo['fname'], 'uid':songInfo['uid'], 'uploader':songInfo['uploader'], 'songId':str(newObjectId), 'meta':metadata});
   #r.rpush("roomqueue_" + songInfo['room'], streamMessage);
 
-  r.zadd("roomqueue_" + songInfo['room'], streamMessage, time.mktime(datetime.datetime.now().timetuple()) ) #key, score, member 
+  r.zadd("roomqueue_" + songInfo['room'], streamMessage, time.mktime(datetime.datetime.now().timetuple()) ) #key, score, member
   r.publish('file-queued', songInfo['room'] + ' ' + str(-1) + " " + json.dumps(outgoingMessage));
   r.publish("newQueueReady",songInfo['room']);
   #r.set("s_" + str(newSongId), json.dumps(metadata)); #TODO make this a hash instead?#}}}
@@ -155,7 +158,7 @@ def main(argv):
     try:
       parsedFile = mutagen.File(songInfo['path'], easy=True)
       processFile(parsedFile, songInfo, picoutputdir)
-    except Exception, e: 
+    except Exception, e:
       print "Couldn't parse audio information, skipping:", e
       traceback.print_exc(file=sys.stdout)
 

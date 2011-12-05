@@ -55,8 +55,8 @@
   position:absolute;
   top:0px;
   left:@leftColWidth+5;
-  width:600px;
   bottom:0px;
+  right:200px;
 }
 #rightColumn{
   position:absolute;
@@ -73,8 +73,10 @@
 }
 #newchat{
   width:100%;
-  margin-bottom:18px;
-  height:24px;
+  margin-bottom:9px;
+  height:35px;
+  color:black;
+  font-size:1.2em;
   border:1px solid #999;
 }
 
@@ -128,12 +130,12 @@
 }
 #nowPlayingControls{
   line-height:24px;
-  height:36px;
+  height:40px;
   width:400px-1px;
   border-bottom:1px solid #cacaca;
   border-left:1px solid #cacaca;
   border-left:1px solid #cacaca;
-  margin-top:3px;
+  margin-top:25px;
   padding-top:3px;
   text-align:center;
   background-color:#eee;
@@ -156,11 +158,40 @@
   cursor:pointer;
 }
 
+.volcontrolItem{
+  position:relative;
+  text-align:center;
+  display:inline-block;
+  font-size:12px;
+  top:-10px;
+  margin-left:10px;
+  margin-right:10px;
+  cursor:pointer;
+  width:60px;
+}
+
+#volwrapper{
+  display:inline-block;
+}
+#volicon{
+text-align:center;
+display:inline-block;
+width:24px;
+height:24px;
+}
+#volcontrol{
+display:inline-block;
+}
+#volicon{
+   background: url('/static/vol2.png') no-repeat center 0; }
+#volicon.muted{
+   background: url('/static/vol2off.png') no-repeat center 0; }
+
 #downloadLink.on{
    background: url('/static/heart.png') no-repeat center 0; }
 #downloadLink.off{
    background: url('/static/heart_deactive.png') no-repeat center 0 ; }
-#downloadLink.hover{
+aaawnloadLink.hover{
    background: url('/static/heart_hover.png') no-repeat center 0; }
 
 #favoriteHeart.on{
@@ -176,7 +207,7 @@
    background: url('/static/cog_hover.png') no-repeat center 0; }
 
 #volcontrol{
-   width:128px; border:1px solid @volumebarBorderColor; height:14px; float:left; margin-top:8px;  }
+   width:60px; border:1px solid @volumebarBorderColor; height:8px; float:left; margin-top:3px;  }
 
 #volinside{ 
   width:90%; background-color: @volumebarColor; height:100%; padding:0px; margin:0px; }
@@ -291,6 +322,9 @@ a.delsong:inactive{
     border-top:1px dotted #BBB;
     border-bottom:1px dotted #BBB;
     line-height:19px;
+    .sclink{
+      font-size:.8em;
+    }
 
     .feed_title{ font-weight:normal; }
     .feed_artist{ font-weight:normal; }
@@ -525,8 +559,18 @@ span.title{
   font-family: Georgia, Palatino, 'Palatino Linotype', serif;
 }
 #faveslist{
+  position:absolute;
+  top:40px;
+  bottom:0px;
+  width:100%;
+
   .faveitems{
     margin-left:0px;
+    position:absolute;
+    top:40px;
+    bottom:0px;
+    width:100%;
+    overflow-y:auto;
   }
   #favespages{
     font-family: Georgia, Palatino, 'Palatino Linotype', serif;

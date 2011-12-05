@@ -49,13 +49,15 @@ var getPostData = function(req, res, callback){
 }
 exports.getPostData = getPostData
 
-var prepareUpload = function(req, res, callback){
-  req.pause();
-  var filePath = utilities.randomString(64);
-  var fullPath = "/home/mike/uploaded" + filePath + ".mp3";
-  var fileUpload = new uploads.FileUpload(fullPath, req, res)
-  fileUpload.setup();
-  req.fileUpload = fileUpload;
-  callback();
+var uploadFuncGen = function(rootPath){
+  return function(req, res, callback){
+    req.pause();
+    var filePath = utilities.randomString(64);
+    var fullPath = rootPath + "/" + filePath + ".mp3"
+    var fileUpload = new uploads.FileUpload(fullPath, req, res)
+    fileUpload.setup();
+    req.fileUpload = fileUpload;
+    callback();
+  }
 }
-exports.prepareUpload = prepareUpload
+exports.uploadFuncGen = uploadFuncGen

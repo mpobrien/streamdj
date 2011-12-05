@@ -2,6 +2,7 @@ var fs = require('fs')
 var sys = require('sys')
 
 exports.FileUpload = function FileUpload(outputPath, req, res){
+  console.log(outputPath)
   this.outputPath = outputPath;
   //TODO make sure all outpustreams are getting closed!
 
@@ -32,7 +33,8 @@ exports.FileUpload = function FileUpload(outputPath, req, res){
       that.emit("filedone");
     });
 
-    outputstream.on("error", function(){
+    outputstream.on("error", function(e){
+      console.log(e, e.stack)
       that.emit("error");
     });
   }

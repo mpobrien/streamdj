@@ -25,6 +25,7 @@
           var cursor = {{{cursor}}};
           var clientnow = +new Date().getTime();
           var wsurl = '{{wsurl}}'
+          var pageLoadId = {{nowplayingId}}
           var nowplayingId = {{nowplayingId}}
           var songs = [{{{songs}}}]
           var chats = [{{{chats}}}]
@@ -53,7 +54,8 @@
           soundManager.onerror = function(){ console.log("error!!!!") };
           soundManager.debugMode = false;
           soundManager.useFlashBlock = false; 
-          soundManager.flashVersion = 9;
+          soundManager.useHTML5Audio = true;
+          //soundManager.flashVersion = 9;
           var startStream = function(){
             var soundOpts = { id: 'mySound', url: '{{listenurl}}', autoPlay: true, stream: true }
             if( currentVolume>0 ){
@@ -157,8 +159,7 @@
           <div class="container" style="width:100%; padding-left:30px;">
             <a class="brand" href="#"><img src="/static/ol.png"></a>
             <ul class="nav">
-              <li><a href="#about">About</a></li>
-              <li><a href="#logout">Log Out</a></li>
+              <li><a href="/logout">Log Out</a></li>
             </ul>
           </div>
         </div>
@@ -180,8 +181,17 @@
               <div class="controlItem off" id="skipper">Skip</div>
               <div class="controlItem off" id="favoriteHeart">Favorite</div>
               <div class="controlItem off" id="downloadLink">Download</div>
-              <div class="controlItem off" id="downloadLink">Share</div>
+              <div class="volcontrolItem">
+                <div id="volwrapper" style="display:block">
+                  <div id="volicon" class="notmuted">
+                  </div>
+                  <div id="volcontrol">
+                      <div id="volinside">&nbsp;</div>
+                  </div>
+                </div>
+              </div>
             </div>
+            <div class="clearer">&nbsp;</div>
             <div id="nowplayingMeta">
               <div id="titleLine">
                 <span id="title"></span>
@@ -194,16 +204,12 @@
                 <span class="meta">from</span>
                 <span id="album"></span>
               </div>
+              <div id="scinfo" style="display:none">
+              </div>
             </div>
           </div>
+          <div class="clearer">&nbsp;</div>
 
-          <div id="volwrapper" style="display:none">
-            <div id="volicon" class="notmuted">
-            </div>
-            <div id="volcontrol">
-                <div id="volinside">&nbsp;</div>
-            </div>
-          </div>
 
           <div id="queue">
 
@@ -266,6 +272,7 @@
         </div>
 
         <div id="rightColumn">
+          <h3 style="text-align:center; font-family:Georgia;">Listeners</h3>
           <ul id="listenerslist">
           {{#listeners}}
             <li id="listener_{{uid}}">

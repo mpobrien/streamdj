@@ -1,6 +1,6 @@
 $(document).ready(function(){
   $.getJSON( '/' + roomname + '/o/', function(){
-    setInterval( function(){$.getJSON( '/' + roomname + '/o/', function(){})}, 30000);
+    setInterval( function(){$.getJSON( '/' + roomname + '/o/', function(){})}, 60000);
   })
   $('.scpreview').live({
     click:function(){
@@ -48,7 +48,13 @@ $(document).ready(function(){
               .append($('<span class="meta">by</span>').append(makeText()))
               .append($('<span class="artist"></span>').text(data.user.username))))
         if(data.favoritings_count){
-          $('.previewmeta').append($('<div class="lilheart">&nbsp;</div>').text(data.favoritings_count + ' people favorited this'))
+          var counttext = ' favorited this'
+          if(data.favoritings_count == 1){
+            counttext = '1 person' + counttext
+          }else{
+            counttext = data.favoritings.count + ' people' + counttext
+          }
+          $('.previewmeta').append($('<div class="lilheart">&nbsp;</div>').text(counttext))
         }
         if(data.artwork_url){
           $('#preview_albart').attr('src', data.artwork_url)
@@ -135,12 +141,16 @@ $(document).ready(function(){
     if(!nowplayingId) return null;
     var params = {};
     params['s'] = nowplayingId;
+    if(nowplayingMeta && 'scid' in nowplayingMeta){
+      params.scid = nowplayingMeta.scid
+    }
+    me = this
     if( !$(this).hasClass('on') ){
-      $.get( '/like/', params, function(){
+      $.get( '/' + roomname + '/like/', params, function(){
         $(me).removeClass('off').removeClass('hover').addClass('on');
       });
     }else{
-      $.get( '/unlike/', params, function(){
+      $.get( '/' + roomname + '/unlike/', params, function(){
         $(me).removeClass('on').removeClass('hover').addClass('off');
       });
     }
@@ -177,19 +187,23 @@ $(document).ready(function(){
     var faveslist = $('#faveslist');
     faveslist.html('').show()
     $.getJSON('/favorites/', {p:pageNum}, function(data){
+      console.log("got favorites!", data)
       if(!data.faves || data.numFavorites == 0){
         //TODO add a messages saying no favorites yet
         //return;
       }
+      var faveitems = $('<ul class="faveitems"></ul>');
       var numPages = Math.ceil(data.numFavorites/10);
       if(numPages > 1){
         ps = createPagination(numPages, pageNum);
         faveslist.append(ps);
+        faveitems.css('top', "70px")
       }
-      var faveitems = $('<ul class="faveitems"></ul>');
+      console.log("here")
       faveslist.append(faveitems)
-      for(var i=0;i<data.faves.length;i++){
-        var faveitem = createFaveItem(data.faves[i]);
+      for(var i=0;i<data.length;i++){
+        console.log("making fave item from:", data[i])
+        var faveitem = createFaveItem(data[i]);
         if(i%2 == 0){ faveitem.addClass("odd")}
         faveitems.append(faveitem);
       }
@@ -209,8 +223,18 @@ function createFaveItem(item){
   var meta = $('<div class="favemeta"></div>')
   var pic = $('<div class="albumart"></div>').appendTo(container)
   meta.appendTo(container)
-  if(item.picurl){
-    $('<img>').attr("height", "48").attr("width", "48").attr("src", item.picurl).appendTo(pic)
+
+  console.log(item)
+  if(item.pic){
+    var img = $('<img>').attr("height", "48").attr("width", "48")
+    if(item.pic.indexOf("http:") >= 0 ){
+      img.attr("src", item.pic)
+    }else{
+      var imageUrl = 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(item.pic)
+      img.attr("src", imageUrl)
+    }
+    console.log(img)
+    img.appendTo(pic)
   }else{
   }
   if(item.title){
@@ -257,6 +281,10 @@ function createPagination(numPages, currentPage){
       next.data("pagenum", currentPage+1)
     }
   }
+  var startPage=0;
+  var endPage = numPages;
+
+
   for(var i=0;i<numPages;i++){
     var li = $('<li><a href="#">' + (i+1) + '</a></li>');
     if(i == currentPage){

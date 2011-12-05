@@ -26,6 +26,16 @@ SongSchema.statics.getById = function(id, callback){
   }
 }
 
+SongSchema.statics.getById = function(id, callback){
+  try{
+    var oid = new ObjectID(id)
+    this.findOne({_id:new ObjectID(id)}, callback);
+  }catch(err){
+    callback(null, null);
+  }
+}
+
+
 var Song =  mongoose.model('Song',SongSchema);
 exports.Song = Song;
 
@@ -46,22 +56,84 @@ UserSchema.statics.getByUid = function(uid){
 var User = mongoose.model('User',UserSchema);
 exports.User = User;
 
-var UserFavoriteSchema = new Schema({uid:String, scid:Number, songId: {type: ObjectId, ref:'Song'}, ctime:Date});
+var UserFavoriteSchema = new Schema(
+  {uid:String,
+   title:String,
+   artist:String,
+   album:String,
+   player:String,
+   puid:String,
+   scid:Number,
+   pic:String,
+   songId: {type: ObjectId, ref:'User'},
+   mtime:Date
+});
 
-UserFavoriteSchema.statics.addScFavorite = function(uid, scid, callback){
-  //TODO make sure scid exists?
-  console.log("sc favoriting");
-
-  UserFavorite.update({uid:uid, scid:scid}, {uid:uid, scid:scid, ctime:new Date()}, {upsert:true}, function(err, docs){console.log(err, docs)});
-  Song.update({soundcloudId:scid}, {"$addToSet":{likers:uid}});
+UserFavoriteSchema.statics.addFavorite = function(uid, songId, scid, title, artist, album, player, pic, player_uid, callback){
+  if(scid){
+    updatedoc = {title:title,
+                 artist:artist,
+                 album:album,
+                 player:player,
+                 mtime:new Date(),
+                 player_uid:player_uid}
+    if(pic) updatedoc.pic = pic
+    UserFavorite.update({uid:uid, scid:scid}, {$set:updatedoc}, {upsert:true},callback);
+  }else{
+    updatedoc = {uid:uid,
+                 songId:songId,
+                 title:title,
+                 artist:artist,
+                 album:album,
+                 player:player,
+                 mtime:new Date(),
+                 player_uid:player_uid}
+    if(pic) updatedoc.pic = pic
+    UserFavorite.insert(updatedoc, callback);
+  }
 }
+//var UserFavorite = mongoose.model(UserFavoriteSchema, 'UserFavorite');
 
-UserFavoriteSchema.statics.addFavorite = function(uid, songId, callback){
+
+/*
+ *var UserFavoriteSchema = new Schema({faves:[{}], uid:String, numfaves: Number});
+ *
+ *UserFavoriteSchema.statics.addFavorite = function(uid, scid, title, artist, album, player, pic, player_uid, callback){
+ *  var faveItem = { time: new Date(),
+ *                    title:title,
+ *                    artist:artist,
+ *                    album:album,
+ *                    player:player,
+ *                    puid:player_uid }
+ *  if(scid) updateDoc['scid'] = scid;
+ *  if(pic) updateDoc['pic']   = pic;
+ *
+ *  if(scid){
+ *    if(scid){
+ *      UserFavorite.findOne({uid:uid, "faves":{$elemMatch:{ scid:scid }}}, function(err, result){
+ *        if(!result){
+ *          UserFavorite.update({uid:uid}, {$push:updateDoc})
+ *        }else{
+ *          UserFavorite.update({uid:uid, "faves":{$elemMatch:{ scid:scid }}}, function(err, result){
+ *        }
+ *      })
+ *    }
+ *  }
+ *
+ *
+ *
+ *  UserFavorite.update({uid:uid}, {$push:{"faves":faveItem}, {$inc:{ "numfaves" : 1 } }, {upsert:true}, function(err,docs){
+ *    callback();
+ *  }
+ *}
+ */
+
+/*UserFavoriteSchema.statics.addFavorite = function(uid, songId, callback){
   //TODO make sure scid exists?
   console.log("doin it!");
   UserFavorite.update({uid:uid, songId:songId}, {uid:uid, songId:songId, ctime:new Date()}, {upsert:true}, function(e,d){console.log(e,d)});
   Song.update({_id:songId}, {"$addToSet":{likers:uid}});
-}
+}*/
 var UserFavorite = mongoose.model('UserFavorite', UserFavoriteSchema);
 exports.UserFavorite = UserFavorite;
 
@@ -101,13 +173,13 @@ RoomSchema.statics.addMessageByName = function(roomName,messageText, callback){
      Room.update({roomName:roomName}, {"$pop":{log:-1}}, callback)
    })
 }
- 
+
 RoomSchema.methods.addMessage = function(messageText, callback){
  // some day do both in 1 query?
  Room.update({_id:this._id}, {"$push":{log:messageText}}, function(err, docs){
    Room.update({_id:this._id}, {"$pop":{log:-1}}, callback)
  })
 }
- 
+
 var Room = mongoose.model('Room', RoomSchema);
 exports.Room = Room;

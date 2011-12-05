@@ -112,6 +112,20 @@ var MessageHandlers = {
                           .appendTo("#chat");
     var objDiv = document.getElementById("chat");
     objDiv.scrollTop = objDiv.scrollHeight;
+
+      // notifications
+    if (isBlurred && !isStatic && settings.notify_chat && window.webkitNotifications && window.webkitNotifications.checkPermission() == 0) {
+      var title = from
+      var content = body
+      var notification = window.webkitNotifications.createNotification(null, title, content)
+      notification.show()
+      var closer = function(x){
+        return function(){
+          x.cancel();
+        }
+      }(notification)
+      setTimeout(closer, 2000)
+    }
     bumpMessageCount();
   },//}}}
 
@@ -191,7 +205,6 @@ var MessageHandlers = {
   },//}}}
 
   "left"   : function(message, isStatic){//{{{
-    console.log("got!", message)
     //isStatic is ignored for now because server does not log these events
     var newMessageHtml = $('<div class="join"></div>"');
     newMessageHtml.attr("id","msg_" + (msgIds++));
@@ -236,13 +249,13 @@ var MessageHandlers = {
     var albumartDiv;
     if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
       var imageUrl = 'pic' in message.meta ? 'http://s3.amazonaws.com/albumart-outloud/art/' + encodeURIComponent(message.meta.pic) : message.meta.picurl;
-      $('#nowplayingArtImg').attr('src', imageUrl);
+      $('#nowplayingArtImg').attr('src', imageUrl).show();
       albumartDiv = $('<div id="albumartcol"></div>"')
                        .append($('<div class="albumart"></div>')
                         .append($('<img></img>').attr("width","60").attr("height","60")
                         .attr('src',imageUrl)))
     }else{
-      $('nowplayingArtImg').attr('src', "http://i1.sndcdn.com/artworks-000003441075-xy55co-large.jpg?e4d21f2");
+      $('#nowplayingArtImg').hide()
       albumartDiv = $('<div class="albumartspacer">&nbsp;</div>"')
     }
     var songId = message["songId"]
@@ -263,6 +276,7 @@ var MessageHandlers = {
         .append($('<div class="feed_artist"></div>')
           .append($('<span class="meta">by</span>').append(makeText()))
           .append($('<span class="artist"></span>').text(message.meta['Artist'])))
+          .append( 'scid' in message.meta ? $('<a class="sclink">on SoundCloud</a>').attr('href','/sctrack/' + message.meta.scid) : null)
         .append($('<div class="feed_uploader_info"></div>')
           .append($('<span class="meta">added by</span>').append(makeText()))
           .append($('<span class="uploader"></span>').text(message['from']).append(makeText())))
@@ -278,6 +292,12 @@ var MessageHandlers = {
     $('#title').text(message.meta['Title']) 
     $('#artist').text(message.meta['Artist']) 
     $('#album').text(message.meta['Album']) 
+    if('scid' in message.meta){
+      $('#scinfo').html('').append($('<a class="sclink">on SoundCloud</a>').attr('href',"/sctrack/" + message.meta.scid)).show();
+    }else{
+      $('#scinfo').html('').hide();
+    }
+
     $('#nothingPlaying').hide();
     $('#nowPlayingInfo').show();
     $('#nowplayingMeta').show();
@@ -295,6 +315,7 @@ var MessageHandlers = {
     }
 
     if( !isStatic || (songId == nowplayingstart)){
+      console.log("setting", imageUrl)
       if( message.meta && ('pic' in message.meta || 'picurl' in message.meta)){
         albumartDiv = $('<img></img>').attr("width","128")
                         .attr('src',imageUrl)

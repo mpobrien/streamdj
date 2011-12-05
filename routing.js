@@ -22,7 +22,6 @@ var Router = function(routings){
   }
 
   this.route = function(req, res){
-    console.log(req.url);
     var qs = require('url').parse(req.url, true)
     var routingResult = that.getRoutingFunction(qs.pathname);
     if(!routingResult){
